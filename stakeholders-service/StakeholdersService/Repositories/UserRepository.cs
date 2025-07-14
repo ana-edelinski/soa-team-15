@@ -44,5 +44,24 @@ namespace StakeholdersService.Repositories
             return false;
         }
 
+        public List<User> GetPaged(int page, int pageSize, out int totalCount)
+        {
+            totalCount = _dbContext.Users.Count();
+
+            return _dbContext.Users
+                .OrderBy(u => u.Id)
+                .Skip(page * pageSize)
+                .Take(pageSize)
+                .ToList();
+        }
+
+
+        public User Update(User user)
+        {
+            _dbContext.Users.Update(user);
+            _dbContext.SaveChanges();
+            return user;
+        }
+
     }
 }

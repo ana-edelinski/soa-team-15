@@ -24,5 +24,20 @@ namespace StakeholdersService.Repositories
         {
             return _dbContext.People.FirstOrDefault(p => p.UserId == id);
         }
+
+        public PagedResult<Person> GetPaged(int page, int pageSize)
+        {
+            var query = _dbContext.People.AsQueryable();
+
+            var totalCount = query.Count();
+
+            var items = query
+                .OrderBy(p => p.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return new PagedResult<Person>(items, totalCount);
+        }
     }
 }
