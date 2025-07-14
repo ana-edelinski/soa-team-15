@@ -11,7 +11,7 @@ using StakeholdersService.Database;
 namespace StakeholdersService.Migrations
 {
     [DbContext(typeof(StakeholdersContext))]
-    [Migration("20250714084544_InitialCreate")]
+    [Migration("20250714095444_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -55,6 +55,9 @@ namespace StakeholdersService.Migrations
                         .HasColumnType("bigint");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Password")
                         .IsRequired()

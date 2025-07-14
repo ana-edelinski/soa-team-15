@@ -50,7 +50,7 @@ namespace StakeholdersService.Repositories
 
             return _dbContext.Users
                 .OrderBy(u => u.Id)
-                .Skip(page * pageSize)
+                .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
         }
@@ -61,6 +61,11 @@ namespace StakeholdersService.Repositories
             _dbContext.Users.Update(user);
             _dbContext.SaveChanges();
             return user;
+        }
+
+        public User? GetActiveByName(string username)
+        {
+            return _dbContext.Users.FirstOrDefault(user => user.Username == username && user.IsActive);
         }
 
     }

@@ -38,7 +38,7 @@ namespace StakeholdersService.UseCases
                 var user = _userRepository.Create(new User(
                     account.Username,
                     account.Password,
-                role));
+                role, true));
 
                 var person = _personRepository.Create(new Person(
                     user.Id,
@@ -50,6 +50,25 @@ namespace StakeholdersService.UseCases
             {
                 return Result.Fail(e.Message);
             }
+        }
+
+        public Result<AuthenticationTokensDto> Login(CredentialsDto credentials)
+        {
+            var user = _userRepository.GetActiveByName(credentials.Username);
+            if (user == null || credentials.Password != user.Password)
+            {
+                return Result.Fail("Invalid username or password.");
+            }
+            long personId;
+            try
+            {
+                personId = _userRepository.GetPersonId(user.Id);
+            }
+            catch (KeyNotFoundException)
+            {
+                personId = 0;
+            }
+            return _tokenGenerator.GenerateAccessToken(user, personId);
         }
     }
 }

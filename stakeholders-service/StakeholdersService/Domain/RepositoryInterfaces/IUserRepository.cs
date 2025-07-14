@@ -9,6 +9,8 @@
         bool IsAuthor(long userId);
         List<User> GetPaged(int page, int pageSize, out int totalCount);
         User Update(User user);
+        User? GetActiveByName(string username);
+
 
     }
 }

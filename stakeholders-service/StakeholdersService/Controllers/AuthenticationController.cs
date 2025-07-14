@@ -31,5 +31,17 @@ namespace StakeholdersService.Controllers
 
             return Ok();
         }
+
+        [HttpPost("login")]
+        public ActionResult<AuthenticationTokensDto> Login([FromBody] CredentialsDto credentials)
+        {
+            var result = _authenticationService.Login(credentials);
+
+            if (result.IsFailed)
+            {
+                return BadRequest("Invalid username or password.");
+            }
+            return Ok(result.Value);
+        }
     }
 }
