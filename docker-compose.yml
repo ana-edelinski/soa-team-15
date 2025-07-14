@@ -1,0 +1,48 @@
+version: '3.9'
+
+services:
+  stakeholders-service:
+    build:
+      dockerfile: Dockerfile
+      context: ./stakeholders-service
+      target: final
+    restart: on-failure
+    networks:
+      - database
+    ports:
+      - "8080:80"
+    environment:
+      DATABASE_HOST: database
+      DATABASE_PORT: 5432
+      DATABASE_PASSWORD: super
+      DATABASE_USER: postgres
+      DATABASE_SCHEMA: stakeholdersdb
+    depends_on:
+      - database
+  database:
+    image: postgres:13
+    restart: always
+    networks:
+      - database
+    environment:
+      POSTGRES_PASSWORD: super
+      POSTGRES_USER: postgres
+      POSTGRES_DB: stakeholdersdb
+    volumes:
+      - type: volume
+        source: database-data
+        target: /var/lib/postgresql/data
+      - type: bind
+        source: stakeholders-service/stakeholders-init-data.sql
+        target: /docker-entrypoint-initdb.d/stakeholders-init-data.sql
+    ports:
+      - "5432:5432"
+
+volumes:
+  database-data:
+    name: stakeholdersdb
+
+networks:
+  database:
+    name: database
+    driver: bridge
