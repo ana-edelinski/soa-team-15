@@ -29,24 +29,20 @@ namespace StakeholdersService.UseCases
 
             try
             {
-                // Parse role from input (Tourist or Guide)
-                var role = Enum.Parse<UserRole>(account.Role, true);
+                if (!Enum.TryParse<UserRole>(account.Role, true, out var role) ||
+                    (role != UserRole.Tourist && role != UserRole.TourAuthor))
+                {
+                    return Result.Fail("Invalid role. Allowed roles are only 'Tourist' or 'Author'.");
+                }
 
                 var user = _userRepository.Create(new User(
                     account.Username,
                     account.Password,
-                role,
-                    true));
+                role));
 
                 var person = _personRepository.Create(new Person(
                     user.Id,
-                    account.Name,
-                    account.Surname,
-                    account.Email,
-                    account.ProfilePicture,
-                    account.Biography,
-                    account.Motto,
-                    account.Wallet));
+                    account.Email));
 
                 return _tokenGenerator.GenerateAccessToken(user, person.Id);
             }

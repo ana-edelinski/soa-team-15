@@ -6,16 +6,14 @@
         public string Username { get; set; }
         public string Password { get; set; }
         public UserRole Role { get; set; }
-        public bool IsActive { get; set; }
 
         public User() { }
 
-        public User(string username, string password, UserRole role, bool isActive)
+        public User(string username, string password, UserRole role)
         {
             Username = username;
             Password = password;
             Role = role;
-            IsActive = isActive;
             Validate();
         }
 
@@ -34,7 +32,7 @@
     public enum UserRole
     {
         Administrator,
-        Guide,
+        TourAuthor,
         Tourist
     }
 }

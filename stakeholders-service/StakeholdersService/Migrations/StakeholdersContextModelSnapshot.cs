@@ -30,32 +30,12 @@ namespace StakeholdersService.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<string>("Biography")
-                        .HasColumnType("text");
-
                     b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Motto")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Surname")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
-
-                    b.Property<decimal?>("Wallet")
-                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
@@ -72,9 +52,6 @@ namespace StakeholdersService.Migrations
                         .HasColumnType("bigint");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("Password")
                         .IsRequired()

@@ -17,11 +17,6 @@ namespace StakeholdersService.Repositories
             return _dbContext.Users.Any(user => user.Username == username);
         }
 
-        public User? GetActiveByName(string username)
-        {
-            return _dbContext.Users.FirstOrDefault(user => user.Username == username && user.IsActive);
-        }
-
         public User Create(User user)
         {
             _dbContext.Users.Add(user);
@@ -45,15 +40,9 @@ namespace StakeholdersService.Repositories
         public bool IsAuthor(long userId)
         {
             var user = _dbContext.Users.FirstOrDefault(i => i.Id == userId);
-            if (user.Role == UserRole.Guide) return true;
+            if (user.Role == UserRole.TourAuthor) return true;
             return false;
         }
 
-        public List<User> GetActiveUsers()
-        {
-            return _dbContext.Users
-                .Where(user => user.IsActive && user.Role == UserRole.Tourist)
-                .ToList();
-        }
     }
 }

@@ -23,8 +23,7 @@ namespace StakeholdersService.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Username = table.Column<string>(type: "text", nullable: false),
                     Password = table.Column<string>(type: "text", nullable: false),
-                    Role = table.Column<int>(type: "integer", nullable: false),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
+                    Role = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -39,13 +38,7 @@ namespace StakeholdersService.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Surname = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
-                    ImageUrl = table.Column<string>(type: "text", nullable: true),
-                    Biography = table.Column<string>(type: "text", nullable: true),
-                    Motto = table.Column<string>(type: "text", nullable: true),
-                    Wallet = table.Column<decimal>(type: "numeric", nullable: true)
+                    Email = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -16,7 +16,6 @@ builder.Services.AddSwaggerGen();
 
 // Add your application services
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddScoped<ITokenGenerator, JwtGenerator>();
