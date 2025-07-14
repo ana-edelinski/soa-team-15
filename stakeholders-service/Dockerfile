@@ -23,7 +23,21 @@ COPY --from=publish /app/publish .
 # Configure ASP.NET Core to listen on port 80 inside the container
 ENV ASPNETCORE_URLS=http://+:80
 EXPOSE 80
+ENV ASPNETCORE_ENVIRONMENT=Docker
 
 CMD ["dotnet", "StakeholdersService.dll"]
 
+# ========== MIGRATION STAGE ==========
+
+FROM build AS migration
+WORKDIR /src/StakeholdersService
+
+# Install EF CLI
+RUN dotnet tool install --global dotnet-ef --version 8.*
+
+# Make tools available
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+# Default command for migration stage
+CMD ["dotnet-ef", "database", "update"]
 

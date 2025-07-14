@@ -1,16 +1,15 @@
 version: '3.9'
 
 services:
-  stakeholders-service:
+  stakeholders-migration:
     build:
-      dockerfile: Dockerfile
       context: ./stakeholders-service
-      target: final
-    restart: on-failure
+      dockerfile: Dockerfile
+      target: migration
+    depends_on:
+      - database
     networks:
       - database
-    ports:
-      - "8080:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - DATABASE_HOST=database
@@ -18,8 +17,7 @@ services:
       - DATABASE_PASSWORD=super
       - DATABASE_USER=postgres
       - DATABASE_SCHEMA=stakeholdersdb
-    depends_on:
-      - database
+
   database:
     image: postgres:13
     restart: always
@@ -33,9 +31,6 @@ services:
       - type: volume
         source: stakeholdersdb
         target: /var/lib/postgresql/data
-      - type: bind
-        source: stakeholders-service/stakeholders-init-data.sql
-        target: /docker-entrypoint-initdb.d/stakeholders-init-data.sql
     ports:
       - "5432:5432"
 
@@ -45,5 +40,4 @@ volumes:
 
 networks:
   database:
-    name: database
     driver: bridge
