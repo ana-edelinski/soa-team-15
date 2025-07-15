@@ -20,17 +20,17 @@ namespace StakeholdersService.Controllers
         }
 
         [HttpPost("register")]
-        public ActionResult Register([FromBody] AccountRegistrationDto account)
+        public ActionResult<AuthenticationTokensDto> Register([FromBody] AccountRegistrationDto account)
         {
             var result = _authenticationService.RegisterTourist(account);
-
             if (result.IsFailed)
             {
                 return BadRequest(result.Errors);
             }
 
-            return Ok();
+            return Ok(result.Value); 
         }
+
 
         [HttpPost("login")]
         public ActionResult<AuthenticationTokensDto> Login([FromBody] CredentialsDto credentials)
