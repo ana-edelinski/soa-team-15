@@ -20,6 +20,7 @@ services:
       - DATABASE_SCHEMA=stakeholdersdb
     depends_on:
       - database
+
   database:
     image: postgres:13
     restart: always
@@ -38,6 +39,14 @@ services:
         target: /docker-entrypoint-initdb.d/stakeholders-init-data.sql
     ports:
       - "5432:5432"
+
+  frontend:
+    build:
+      context: ./frontend/Explorer
+    ports:
+      - "4200:80"
+    depends_on:
+      - stakeholders-service
 
 volumes:
   stakeholdersdb:
