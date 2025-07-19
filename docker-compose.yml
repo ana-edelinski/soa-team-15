@@ -13,15 +13,15 @@ services:
       - "8080:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
-      - DATABASE_HOST=database
+      - DATABASE_HOST=stakeholders-db
       - DATABASE_PORT=5432
       - DATABASE_PASSWORD=super
       - DATABASE_USER=postgres
       - DATABASE_SCHEMA=stakeholdersdb
     depends_on:
-      - database
+      - stakeholders-db
 
-  database:
+  stakeholders-db:
     image: postgres:13
     restart: always
     networks:
@@ -40,6 +40,38 @@ services:
     ports:
       - "5432:5432"
 
+  blog-service:
+    build:
+      context: ./blog-service
+    restart: on-failure
+    networks:
+      - database
+    ports:
+      - "8081:8080"
+    environment:
+      - BLOG_SERVICE_PORT=8080
+      - BLOG_DB_HOST=blog-db
+      - BLOG_DB_PORT=5432
+      - BLOG_DB_NAME=blogdb
+      - BLOG_DB_USER=postgres
+      - BLOG_DB_PASS=super
+    depends_on:
+      - blog-db
+
+  blog-db:
+    image: postgres:13
+    restart: always
+    networks:
+      - database
+    environment:
+      POSTGRES_PASSWORD: super
+      POSTGRES_USER: postgres
+      POSTGRES_DB: blogdb
+    volumes:
+      - type: volume
+        source: blogdb
+        target: /var/lib/postgresql/data
+
   frontend:
     build:
       context: ./frontend/Explorer
@@ -47,10 +79,13 @@ services:
       - "4200:80"
     depends_on:
       - stakeholders-service
+      - blog-service
 
 volumes:
   stakeholdersdb:
     name: stakeholdersdb
+  blogdb:
+    name: blogdb
 
 networks:
   database:

@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"time"
+	"blog-service/domain"
 
 	"github.com/gorilla/mux"
 	"gorm.io/driver/postgres"
@@ -40,8 +41,8 @@ func (server *Server) InitializeDb() *gorm.DB {
 		log.Fatal(err)
 	}
 
-	// Auto migrate models
-	if err := db.AutoMigrate(&repository.BlogRepository{}); err != nil {
+	// Migriraj model Blog iz domain paketa
+	if err := db.AutoMigrate(&domain.Blog{}); err != nil {
 		log.Fatal(err)
 	}
 
