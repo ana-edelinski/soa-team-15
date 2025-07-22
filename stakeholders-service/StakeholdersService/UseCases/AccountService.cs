@@ -109,5 +109,51 @@ namespace StakeholdersService.UseCases
             return Result.Fail(updateResult.Errors);
         }
 
+
+        public Result<UserProfileDto> GetPersonByUserId(long userId)
+        {
+            var person = _personRepository.GetByUserId(userId);
+            if (person == null)
+                throw new Exception("Person not found.");
+
+            return new UserProfileDto
+            {
+                UserId = userId,
+                Name = person.Name,
+                Surname = person.Surname,
+                Biography = person.Biography,
+                Motto = person.Motto,
+                ProfileImagePath = person.ProfileImagePath
+            };
+        }
+
+        public Result<UserProfileDto> UpdatePerson(UserProfileDto dto)
+        {
+            var person = _personRepository.GetByUserId(dto.UserId);
+            if (person == null)
+                throw new Exception("Person not found.");
+
+            if (dto.Name != null)
+                person.Name = dto.Name;
+            if (dto.Surname != null)
+                person.Surname = dto.Surname;
+            if (dto.Biography != null)
+                person.Biography = dto.Biography;
+            if (dto.Motto != null)
+                person.Motto = dto.Motto;
+            if (dto.ProfileImagePath != null)
+                person.ProfileImagePath = dto.ProfileImagePath;
+
+            _personRepository.Update(person);
+            return new UserProfileDto
+            {
+                UserId = person.UserId,
+                Name = person.Name,
+                Surname = person.Surname,
+                Biography = person.Biography,
+                Motto = person.Motto,
+                ProfileImagePath = person.ProfileImagePath
+            };
+        }
     }
 }

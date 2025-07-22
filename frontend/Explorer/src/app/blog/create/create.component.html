@@ -1,12 +1,30 @@
 <h2>Add a New Blog</h2>
 
-<form (ngSubmit)="createBlog()">
+<form (ngSubmit)="createBlog()" #blogForm="ngForm">
 
   <label for="title">Title:</label><br>
-  <input type="text" [(ngModel)]="blog.title" name="title" placeholder="Blog title" /><br><br>
+  <input type="text" 
+         [(ngModel)]="blog.title" 
+         name="title" 
+         placeholder="Blog title" 
+         required 
+         #titleRef="ngModel"
+         (blur)="titleRef.control.markAsTouched()" /><br>
+  <div *ngIf="titleRef.invalid && titleRef.touched" style="color: red; font-size: 13px;">
+    Title is required.
+  </div><br>
 
   <label for="content">Content (Markdown):</label><br>
-  <textarea [(ngModel)]="blog.content" name="content" rows="10" cols="60" placeholder="Markdown content..."></textarea><br><br>
+  <textarea [(ngModel)]="blog.content" 
+            name="content" 
+            rows="10" cols="60" 
+            placeholder="Markdown content..." 
+            required 
+            #contentRef="ngModel"
+            (blur)="contentRef.control.markAsTouched()"></textarea><br>
+  <div *ngIf="contentRef.invalid && contentRef.touched" style="color: red; font-size: 13px;">
+    Content is required.
+  </div><br>
 
   <h3>Live Preview</h3>
   <div style="border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9;">
@@ -14,7 +32,16 @@
   </div><br><br>
 
   <label for="authorId">Author ID:</label><br>
-  <input type="text" [(ngModel)]="blog.authorId" name="authorId" placeholder="Author ID" /><br><br>
+  <input type="text" 
+         [(ngModel)]="blog.authorId" 
+         name="authorId" 
+         placeholder="Author ID" 
+         required 
+         #authorRef="ngModel"
+         (blur)="authorRef.control.markAsTouched()" /><br>
+  <div *ngIf="authorRef.invalid && authorRef.touched" style="color: red; font-size: 13px;">
+    Author ID is required.
+  </div><br>
 
   <label for="images">Images (Multiple selection supported):</label><br>
   <input type="file" (change)="onImageSelected($event)" multiple accept="image/*" /><br><br>
@@ -34,6 +61,6 @@
     </div>
   </div>
 
-  <button type="submit" [disabled]="!blog.title || !blog.content || !blog.authorId">Add Blog</button>
+  <button type="submit" [disabled]="blogForm.invalid">Add Blog</button>
 
 </form>

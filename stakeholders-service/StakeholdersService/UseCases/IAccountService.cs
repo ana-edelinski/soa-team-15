@@ -7,5 +7,10 @@ namespace StakeholdersService.UseCases
     {
         Result<PagedResult<AccountDto>> GetPagedAccount(int page, int pageSize);
         Result<AccountDto> BlockUser(AccountDto account);
+
+        Result<UserProfileDto> GetPersonByUserId(long userId);
+        Result<UserProfileDto> UpdatePerson(UserProfileDto profile);
+
+
     }
 }

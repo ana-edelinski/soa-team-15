@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create',
@@ -47,37 +48,51 @@ export class CreateComponent {
     this.imagePreviews.splice(index, 1);
   }
 
-  createBlog() {
-    if (!this.blog.title || !this.blog.content || !this.blog.authorId) {
-      alert("Please fill in all required fields!");
-      return;
-    }
+ createBlog() {
+  console.log('🔄 Form submitted');
+  console.log('📦 Blog:', this.blog);
 
-    const formData = new FormData();
-    formData.append('title', this.blog.title);
-    formData.append('content', this.blog.content);
-    formData.append('authorId', this.blog.authorId);
-
-    // Append all selected images
-    for (let i = 0; i < this.selectedImages.length; i++) {
-      formData.append('images', this.selectedImages[i]);
-    }
-
-    console.log('Uploading blog with', this.selectedImages.length, 'images');
-
-    this.http.post('http://localhost:8081/api/blogs', formData).subscribe({
-      next: (response) => {
-        console.log('Blog created successfully:', response);
-        alert('Blog successfully created!');
-        // Reset form
-        this.blog = { title: '', content: '', authorId: '', date: '' };
-        this.selectedImages = [];
-        this.imagePreviews = [];
-      },
-      error: (err) => {
-        console.error('Error creating blog:', err);
-        alert('Error: ' + (err.error || err.message));
-      }
-    });
+  // Validacija: sva polja osim slika moraju biti popunjena
+  if (!this.blog.title || !this.blog.content || !this.blog.authorId) {
+    alert("Please fill in all required fields!");
+    return;
   }
+
+  const formData = new FormData();
+
+  // Obavezna polja
+  formData.append('title', this.blog.title);
+  formData.append('content', this.blog.content);
+  formData.append('authorId', this.blog.authorId);
+
+  // Datum – automatski postavljen u ISO formatu (npr. 2025-07-22T19:15:00Z)
+  formData.append('date', new Date().toISOString());
+
+  // Slike (opciono)
+  for (let i = 0; i < this.selectedImages.length; i++) {
+    formData.append('images', this.selectedImages[i]);
+  }
+
+  // Loguj pre slanja
+  console.log('📤 Uploading blog with', this.selectedImages.length, 'images');
+  console.log('✅ Sending POST to http://localhost:8081/api/blogs');
+
+  // HTTP poziv
+  this.http.post('http://localhost:8081/api/blogs', formData).subscribe({
+    next: (response) => {
+      console.log('✅ Blog created successfully:', response);
+      alert('Blog successfully created!');
+
+      // Reset forme
+      this.blog = { title: '', content: '', authorId: '', date: '' };
+      this.selectedImages = [];
+      this.imagePreviews = [];
+    },
+    error: (err) => {
+      console.error('❌ Error creating blog:', err);
+      alert('Error: ' + (err.error?.message || err.message || 'Unknown error'));
+    }
+  });
+}
+
 }
