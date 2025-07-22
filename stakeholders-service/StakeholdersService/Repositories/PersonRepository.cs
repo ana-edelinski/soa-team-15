@@ -1,6 +1,7 @@
-﻿using StakeholdersService.Database;
-using StakeholdersService.Domain.RepositoryInterfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using StakeholdersService.Database;
 using StakeholdersService.Domain;
+using StakeholdersService.Domain.RepositoryInterfaces;
 
 namespace StakeholdersService.Repositories
 {
@@ -38,6 +39,12 @@ namespace StakeholdersService.Repositories
                 .ToList();
 
             return new PagedResult<Person>(items, totalCount);
+        }
+
+        public void Update(Person person)
+        {
+            _dbContext.People.Update(person);
+            _dbContext.SaveChanges();
         }
     }
 }
