@@ -110,7 +110,7 @@ namespace StakeholdersService.UseCases
         }
 
 
-        public UserProfileDto GetPersonByUserId(long userId)
+        public Result<UserProfileDto> GetPersonByUserId(long userId)
         {
             var person = _personRepository.GetByUserId(userId);
             if (person == null)
@@ -118,6 +118,7 @@ namespace StakeholdersService.UseCases
 
             return new UserProfileDto
             {
+                UserId = userId,
                 Name = person.Name,
                 Surname = person.Surname,
                 Biography = person.Biography,
@@ -126,9 +127,9 @@ namespace StakeholdersService.UseCases
             };
         }
 
-        public void UpdatePerson(UserProfileDto dto, long userId)
+        public Result<UserProfileDto> UpdatePerson(UserProfileDto dto)
         {
-            var person = _personRepository.GetByUserId(userId);
+            var person = _personRepository.GetByUserId(dto.UserId);
             if (person == null)
                 throw new Exception("Person not found.");
 
@@ -144,6 +145,15 @@ namespace StakeholdersService.UseCases
                 person.ProfileImagePath = dto.ProfileImagePath;
 
             _personRepository.Update(person);
+            return new UserProfileDto
+            {
+                UserId = person.UserId,
+                Name = person.Name,
+                Surname = person.Surname,
+                Biography = person.Biography,
+                Motto = person.Motto,
+                ProfileImagePath = person.ProfileImagePath
+            };
         }
     }
 }

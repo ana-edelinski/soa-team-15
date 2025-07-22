@@ -67,6 +67,19 @@ builder.Services.AddAuthorization(options =>
     {
         policy.RequireRole("Administrator");   
     });
+    options.AddPolicy("touristPolicy", policy =>
+    {
+        policy.RequireRole("Tourist");
+    });
+
+    options.AddPolicy("guidePolicy", policy =>
+    {
+        policy.RequireRole("Guide");
+    });
+    options.AddPolicy("userPolicy", policy =>
+    {
+        policy.RequireRole("Tourist", "Guide");
+    });
 });
 
 // Register AutoMapper
