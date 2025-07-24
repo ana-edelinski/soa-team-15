@@ -123,6 +123,8 @@ var app = builder.Build();
 
 //app.UseHttpsRedirection();
 
+app.UseStaticFiles();
+
 app.UseCors("AllowAngularDevClient");
 
 app.UseAuthentication();

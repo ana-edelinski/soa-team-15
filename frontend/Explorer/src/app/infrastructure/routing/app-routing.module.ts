@@ -8,6 +8,7 @@ import { RegistrationComponent } from '../auth/registration/registration.compone
 import { CreateComponent } from 'src/app/blog/create/create.component';
 import { ListComponent } from 'src/app/blog/list/list.component';
 import { UserListComponent } from 'src/app/feature-modules/administration/user-list/user-list.component';
+import { ProfileInfoComponent } from 'src/app/feature-modules/layout/profile-info/profile-info.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/blogs', pathMatch: 'full' },   
@@ -17,7 +18,8 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'register', component: RegistrationComponent},
   {path: 'equipment', component: EquipmentComponent, canActivate: [AuthGuard],},
-  { path: 'admin/users', component: UserListComponent }
+  { path: 'admin/users', component: UserListComponent },
+  { path: 'profile', component: ProfileInfoComponent }
 ];
 
 @NgModule({

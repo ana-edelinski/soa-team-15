@@ -116,6 +116,8 @@ namespace StakeholdersService.UseCases
             if (person == null)
                 throw new Exception("Person not found.");
 
+            var user = _userRepository.GetById(userId);
+
             return new UserProfileDto
             {
                 UserId = userId,
@@ -123,7 +125,8 @@ namespace StakeholdersService.UseCases
                 Surname = person.Surname,
                 Biography = person.Biography,
                 Motto = person.Motto,
-                ProfileImagePath = person.ProfileImagePath
+                ProfileImagePath = person.ProfileImagePath,
+                UserName = user.Username
             };
         }
 
@@ -133,6 +136,16 @@ namespace StakeholdersService.UseCases
             if (person == null)
                 throw new Exception("Person not found.");
 
+            if (!string.IsNullOrEmpty(dto.ImageBase64))
+            {
+                string fileName = SaveBase64Image(dto.ImageBase64, dto.Name + "_" + dto.Surname);
+                person.ProfileImagePath = fileName;
+            }
+            else if (dto.ProfileImagePath != null)
+            {
+                person.ProfileImagePath = dto.ProfileImagePath;
+            }
+
             if (dto.Name != null)
                 person.Name = dto.Name;
             if (dto.Surname != null)
@@ -141,10 +154,9 @@ namespace StakeholdersService.UseCases
                 person.Biography = dto.Biography;
             if (dto.Motto != null)
                 person.Motto = dto.Motto;
-            if (dto.ProfileImagePath != null)
-                person.ProfileImagePath = dto.ProfileImagePath;
 
             _personRepository.Update(person);
+
             return new UserProfileDto
             {
                 UserId = person.UserId,
@@ -154,6 +166,26 @@ namespace StakeholdersService.UseCases
                 Motto = person.Motto,
                 ProfileImagePath = person.ProfileImagePath
             };
+        }
+
+        private string SaveBase64Image(string base64String, string? namePrefix)
+        {
+            string imagesFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+            if (!Directory.Exists(imagesFolder))
+                Directory.CreateDirectory(imagesFolder);
+
+            var parts = base64String.Split(',');
+            var imageData = parts.Length > 1 ? parts[1] : parts[0];
+
+            byte[] imageBytes = Convert.FromBase64String(imageData);
+
+            string safePrefix = string.IsNullOrWhiteSpace(namePrefix) ? "user" : namePrefix.Replace(" ", "_");
+            string fileName = $"{safePrefix}_{DateTime.UtcNow.Ticks}.jpg";
+            string filePath = Path.Combine(imagesFolder, fileName);
+
+            File.WriteAllBytes(filePath, imageBytes);
+
+            return fileName; // ovo se čuva kao ProfileImagePath
         }
     }
 }

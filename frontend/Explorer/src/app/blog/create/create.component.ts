@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/infrastructure/auth/auth.service';
+import { User } from 'src/app/infrastructure/auth/model/user.model';
 
 @Component({
   selector: 'app-create',
@@ -17,8 +19,16 @@ export class CreateComponent {
 
   selectedImages: File[] = [];
   imagePreviews: string[] = [];
+  user: User;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
+
+
+  ngOnInit(): void {
+    const currentUser = this.authService.user$.getValue();
+    this.user = currentUser;
+    console.log(this.user);
+  }
 
   onImageSelected(event: any) {
   const files: FileList = event.target.files;
@@ -51,6 +61,8 @@ export class CreateComponent {
  createBlog() {
   console.log('🔄 Form submitted');
   console.log('📦 Blog:', this.blog);
+
+  this.blog.authorId = this.user.id.toString();
 
   // Validacija: sva polja osim slika moraju biti popunjena
   if (!this.blog.title || !this.blog.content || !this.blog.authorId) {

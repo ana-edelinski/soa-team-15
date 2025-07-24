@@ -1,1 +1,24 @@
-<p>profile-info works!</p>
+<div class="profile-container" *ngIf="infoPerson">
+
+  <div *ngIf="!editMode">
+    <img [src]="getImage(infoPerson.profileImagePath)" alt="Profile picture" class="profile-image" />
+    <h2>{{ infoPerson.name }} {{ infoPerson.surname }}</h2>
+    <p><strong>Moto:</strong> {{ infoPerson.motto || 'Nema unet moto' }}</p>
+    <p><strong>Biografija:</strong> {{ infoPerson.biography || 'Nema unetu biografiju' }}</p>
+    <button (click)="enableEditMode()">Izmeni profil</button>
+  </div>
+
+  <div *ngIf="editMode">
+    <img [src]="imageBase64 || getImage(infoPerson.profileImagePath)" alt="Profile picture" class="profile-image" />
+    <input type="file" (change)="onFileSelected($event)" />
+
+    <input type="text" [(ngModel)]="editPerson.name" placeholder="Ime" />
+    <input type="text" [(ngModel)]="editPerson.surname" placeholder="Prezime" />
+    <input type="text" [(ngModel)]="editPerson.motto" placeholder="Moto" />
+    <textarea [(ngModel)]="editPerson.biography" placeholder="Biografija"></textarea>
+
+    <button (click)="updateProfile()">Sačuvaj</button>
+    <button (click)="cancelEdit()">Otkaži</button>
+  </div>
+
+</div>

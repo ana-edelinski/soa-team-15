@@ -31,17 +31,7 @@
     <markdown [data]="blog.content"></markdown>
   </div><br><br>
 
-  <label for="authorId">Author ID:</label><br>
-  <input type="text" 
-         [(ngModel)]="blog.authorId" 
-         name="authorId" 
-         placeholder="Author ID" 
-         required 
-         #authorRef="ngModel"
-         (blur)="authorRef.control.markAsTouched()" /><br>
-  <div *ngIf="authorRef.invalid && authorRef.touched" style="color: red; font-size: 13px;">
-    Author ID is required.
-  </div><br>
+  
 
   <label for="images">Images (Multiple selection supported):</label><br>
   <input type="file" (change)="onImageSelected($event)" multiple accept="image/*" /><br><br>
