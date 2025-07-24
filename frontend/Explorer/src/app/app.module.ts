@@ -19,6 +19,7 @@ import { FormsModule } from '@angular/forms';
 import { MarkdownModule } from 'ngx-markdown';
 import { ListComponent } from './blog/list/list.component';
 
+
 @NgModule({
   declarations: [
     AppComponent,

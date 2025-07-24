@@ -7,6 +7,7 @@ import { AuthGuard } from '../auth/auth.guard';
 import { RegistrationComponent } from '../auth/registration/registration.component';
 import { CreateComponent } from 'src/app/blog/create/create.component';
 import { ListComponent } from 'src/app/blog/list/list.component';
+import { UserListComponent } from 'src/app/feature-modules/administration/user-list/user-list.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/blogs', pathMatch: 'full' },   
@@ -15,7 +16,8 @@ const routes: Routes = [
   {path: 'home', component: HomeComponent},
   {path: 'login', component: LoginComponent},
   {path: 'register', component: RegistrationComponent},
-  {path: 'equipment', component: EquipmentComponent, canActivate: [AuthGuard],}
+  {path: 'equipment', component: EquipmentComponent, canActivate: [AuthGuard],},
+  { path: 'admin/users', component: UserListComponent }
 ];
 
 @NgModule({

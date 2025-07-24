@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from './infrastructure/auth/auth.service';
+import { User } from './infrastructure/auth/model/user.model';
 
 @Component({
   selector: 'app-root',
@@ -13,9 +14,14 @@ export class AppComponent implements OnInit {
     private authService: AuthService,
   ) {}
 
+  user: User | undefined;
 
   ngOnInit(): void {
     this.checkIfUserExists();
+    this.authService.user$.subscribe(user => {
+      this.user = user;
+      console.log("Navbar:" +user)
+    });
   }
   
   private checkIfUserExists(): void {
