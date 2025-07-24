@@ -18,12 +18,16 @@ import { JwtInterceptor } from './infrastructure/auth/jwt/jwt.interceptor';
 import { FormsModule } from '@angular/forms';
 import { MarkdownModule } from 'ngx-markdown';
 import { ListComponent } from './blog/list/list.component';
+import { CommentComponent } from './comment/comment.component';
+import { LikeComponent } from './like/like.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     CreateComponent,
-    ListComponent
+    ListComponent,
+    CommentComponent,
+    LikeComponent
   ],
   imports: [
     MarkdownModule.forRoot(),
