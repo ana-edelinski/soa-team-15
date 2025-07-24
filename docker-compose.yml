@@ -74,14 +74,14 @@ services:
         source: blogdb
         target: /var/lib/postgresql/data
 
-  frontend:
-    build:
-      context: ./frontend/Explorer
-    ports:
-      - "4200:80"
-    depends_on:
-      - stakeholders-service
-      - blog-service
+  # frontend:
+  #   build:
+  #     context: ./frontend/Explorer
+  #   ports:
+  #     - "4200:80"
+  #   depends_on:
+  #     - stakeholders-service
+  #     - blog-service
 
 volumes:
   stakeholdersdb:
