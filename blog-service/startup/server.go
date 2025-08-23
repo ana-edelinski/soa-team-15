@@ -41,9 +41,10 @@ func (server *Server) InitializeDb() *gorm.DB {
         log.Fatal(err)
     }
 
-    if err := db.AutoMigrate(&domain.Blog{}); err != nil {
+    if err := db.AutoMigrate(&domain.Blog{},&domain.Comment{}, &domain.Like{}); err != nil {
         log.Fatal(err)
     }
+
 
     return db
 }
@@ -55,12 +56,32 @@ func (server *Server) Start() {
 	blogService := &service.BlogService{BlogRepository: blogRepository}
 	blogHandler := handler.NewBlogHandler(blogService)
 
+	commentRepo := repository.NewCommentRepository(db)
+	commentService := service.NewCommentService(commentRepo)
+	commentHandler := handler.NewCommentHandler(commentService)
+
+	likeRepo := repository.NewLikeRepository(db)
+	likeService := service.NewLikeService(likeRepo)
+	likeHandler := handler.NewLikeHandler(likeService)
+
+
 	router := mux.NewRouter()
 	router.HandleFunc("/api/blogs", blogHandler.CreateBlog).Methods("POST")
 	router.HandleFunc("/api/blogs/{id}", blogHandler.GetBlog).Methods("GET")
 	router.HandleFunc("/api/blogs", blogHandler.GetAllBlogs).Methods("GET")
 	router.HandleFunc("/api/blogs/{id}", blogHandler.UpdateBlog).Methods("PUT")
 	router.HandleFunc("/api/blogs/{id}", blogHandler.DeleteBlog).Methods("DELETE")
+
+	router.HandleFunc("/api/blogs/{blogId}/comments", commentHandler.CreateForBlog).Methods("POST")
+	router.HandleFunc("/api/comments/{id}", commentHandler.Update).Methods("PUT")
+	router.HandleFunc("/api/comments/{id}", commentHandler.Delete).Methods("DELETE")
+	router.HandleFunc("/api/blogs/{blogId}/comments", commentHandler.GetAllForBlog).Methods("GET")
+
+	router.HandleFunc("/api/blogs/{blogId}/like", likeHandler.ToggleLike).Methods("POST")
+	router.HandleFunc("/api/blogs/{blogId}/like", likeHandler.CountLikes).Methods("GET")
+	router.HandleFunc("/api/blogs/{blogId}/likedByMe", likeHandler.IsLikedByUser).Methods("GET") 
+
+
 
 	router.PathPrefix("/uploads/").Handler(http.StripPrefix("/uploads/", http.FileServer(http.Dir("./uploads/"))))
 
