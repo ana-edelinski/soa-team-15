@@ -5,39 +5,41 @@ services:
     build:
       context: ./stakeholders-service
       dockerfile: Dockerfile
-      target: migration
+      target: execute-migration
     depends_on:
-      - database
+      - stakeholders-db
     networks:
       - database
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
-      - DATABASE_HOST=database
+      - DATABASE_HOST=stakeholders-db
       - DATABASE_PORT=5432
       - DATABASE_PASSWORD=super
       - DATABASE_USER=postgres
       - DATABASE_SCHEMA=stakeholdersdb
 
-  database:
-    image: postgres:13
-    restart: always
-    networks:
-      - database
-    environment:
-      POSTGRES_PASSWORD: super
-      POSTGRES_USER: postgres
-      POSTGRES_DB: stakeholdersdb
-    volumes:
-      - type: volume
-        source: stakeholdersdb
-        target: /var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+  # database:
+  #   image: postgres:13
+  #   restart: always
+  #   networks:
+  #     - database
+  #   environment:
+  #     POSTGRES_PASSWORD: super
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_DB: stakeholdersdb
+  #   volumes:
+  #     - type: volume
+  #       source: stakeholdersdb
+  #       target: /var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
 
-volumes:
-  stakeholdersdb:
-    name: stakeholdersdb
+# volumes:
+#   stakeholdersdb:
+#     name: stakeholdersdb
 
 networks:
   database:
-    driver: bridge
+     name: database
+     driver: bridge
+     external: true
