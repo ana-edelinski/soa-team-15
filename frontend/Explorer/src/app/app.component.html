@@ -15,9 +15,10 @@
   </mat-menu>
 
   <!-- Ostala dugmad -->
-  <button mat-raised-button color="accent" routerLink="/login" style="margin-left: 8px;">Login</button>
-  <button mat-raised-button color="primary" routerLink="/home" style="margin-left: 8px;">Home</button>
-  <button mat-raised-button color="primary" routerLink="/admin/users" style="margin-left: 8px;" >Users</button>
+  <button mat-raised-button *ngIf="!isLoggedIn" routerLink="/login" style="margin-left: 8px;" color="accent">Login</button>
+  <button mat-raised-button *ngIf="isLoggedIn" (click)="logout()" style="margin-left: 8px;" color="accent">Logout</button>
+  <button mat-raised-button *ngIf="isLoggedIn &&currentUserRole === 'Tourist'" routerLink="/profile" style="margin-left: 8px;" color="accent">Profile</button>
+  <button mat-raised-button *ngIf="isLoggedIn && currentUserRole === 'Administrator'" color="accent" routerLink="/admin/users" style="margin-left: 8px;" >Users</button>
 </mat-toolbar>
 
 <router-outlet></router-outlet>

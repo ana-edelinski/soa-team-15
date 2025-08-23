@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from './infrastructure/auth/auth.service';
 import { User } from './infrastructure/auth/model/user.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -9,9 +10,11 @@ import { User } from './infrastructure/auth/model/user.model';
 })
 export class AppComponent implements OnInit {
   title = 'Explorer';
+  isLoggedIn = false;
+  currentUserRole: string;
 
   constructor(
-    private authService: AuthService,
+    private authService: AuthService, private router: Router
   ) {}
 
   user: User | undefined;
@@ -20,8 +23,14 @@ export class AppComponent implements OnInit {
     this.checkIfUserExists();
     this.authService.user$.subscribe(user => {
       this.user = user;
-      console.log("Navbar:" +user)
+       this.isLoggedIn = !!user.username;
+       this.currentUserRole = user.role;
     });
+  }
+
+  logout() {
+    this.authService.logout();
+     this.router.navigate(['/login']);
   }
   
   private checkIfUserExists(): void {
