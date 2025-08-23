@@ -6,8 +6,6 @@ services:
       context: ./stakeholders-service
       dockerfile: Dockerfile
       target: execute-migration
-    depends_on:
-      - stakeholders-db
     networks:
       - database
     environment:
@@ -18,25 +16,6 @@ services:
       - DATABASE_USER=postgres
       - DATABASE_SCHEMA=stakeholdersdb
 
-  # database:
-  #   image: postgres:13
-  #   restart: always
-  #   networks:
-  #     - database
-  #   environment:
-  #     POSTGRES_PASSWORD: super
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_DB: stakeholdersdb
-  #   volumes:
-  #     - type: volume
-  #       source: stakeholdersdb
-  #       target: /var/lib/postgresql/data
-  #   ports:
-  #     - "5432:5432"
-
-# volumes:
-#   stakeholdersdb:
-#     name: stakeholdersdb
 
 networks:
   database:

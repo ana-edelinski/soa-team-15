@@ -29,14 +29,15 @@ CMD ["dotnet", "StakeholdersService.dll"]
 
 # ========== MIGRATION STAGE ==========
 
-FROM build AS migration
+FROM build AS migration-base
 WORKDIR /src/StakeholdersService
+ENV PATH="$PATH:/root/.dotnet/tools"
 
 # Install EF CLI
 RUN dotnet tool install --global dotnet-ef --version 8.*
+FROM migration-base AS execute-migration
 
-# Make tools available
-ENV PATH="$PATH:/root/.dotnet/tools"
+
 
 # Default command for migration stage
 CMD ["dotnet-ef", "database", "update"]
