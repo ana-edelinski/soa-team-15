@@ -18,7 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Domain\RepositoryInterfaces\" />
+    <Folder Include="Controllers\" />
+    <Folder Include="Dtos\" />
+    <Folder Include="UseCases\" />
+    <Folder Include="Repositories\" />
   </ItemGroup>
 
 </Project>
