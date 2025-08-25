@@ -78,7 +78,7 @@ builder.Services.AddAuthorization(options =>
     });
     options.AddPolicy("userPolicy", policy =>
     {
-        policy.RequireRole("TourAuthor", "Guide");
+        policy.RequireRole("TourAuthor", "Tourist");
     });
 });
 

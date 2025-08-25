@@ -11,6 +11,7 @@ import { UserListComponent } from 'src/app/feature-modules/administration/user-l
 import { ProfileInfoComponent } from 'src/app/feature-modules/layout/profile-info/profile-info.component';
 import { CreateTourComponent } from 'src/app/feature-modules/tour-authoring/create-tour/create-tour.component';
 import { MyToursComponent } from 'src/app/feature-modules/tour-authoring/my-tours/my-tours.component';
+import { PositionSimulatorComponent } from 'src/app/feature-modules/tour-execution/position-simulator/position-simulator.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/blogs', pathMatch: 'full' },   
@@ -23,7 +24,8 @@ const routes: Routes = [
   { path: 'admin/users', component: UserListComponent },
   { path: 'profile', component: ProfileInfoComponent },
   { path: 'create-tour', component: CreateTourComponent },
-  { path: 'my-tours', component: MyToursComponent }
+  { path: 'my-tours', component: MyToursComponent },
+  { path: 'position-simulator', component: PositionSimulatorComponent}
 ];
 
 @NgModule({

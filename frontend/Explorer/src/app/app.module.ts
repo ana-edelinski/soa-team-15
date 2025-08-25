@@ -20,6 +20,7 @@ import { MarkdownModule } from 'ngx-markdown';
 import { ListComponent } from './blog/list/list.component';
 import { CommentComponent } from './comment/comment.component';
 import { LikeComponent } from './like/like.component';
+import { PositionFabComponent } from './shared/position-fab/position-fab.component';
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import { LikeComponent } from './like/like.component';
     CreateComponent,
     ListComponent,
     CommentComponent,
-    LikeComponent
+    LikeComponent,
+    PositionFabComponent,
   ],
   imports: [
     MarkdownModule.forRoot(),
