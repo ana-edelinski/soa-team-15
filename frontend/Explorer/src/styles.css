@@ -4,6 +4,8 @@ html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 
+
+
 :root {
   --bg-blue: #e9f5ff;
   --bg-pink: #fff0f6;
@@ -17,3 +19,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
   --radius: 16px;
 }
+
+.leaflet-container { height: 100%; width: 100%; }
+.leaflet-div-icon, .leaflet-marker-icon, .leaflet-marker-shadow { pointer-events: auto; }

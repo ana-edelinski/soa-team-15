@@ -1,0 +1,36 @@
+<div class="sim-grid">
+  <aside class="info">
+    <h3>Current location</h3>
+
+    <div class="row">
+      <label>Latitude</label>
+      <div>{{ lastLatLng?.lat | number:'1.6-6' || '—' }}</div>
+    </div>
+
+    <div class="row">
+      <label>Longitude</label>
+      <div>{{ lastLatLng?.lng | number:'1.6-6' || '—' }}</div>
+    </div>
+
+    <div class="row">
+      <label>City</label>
+      <div>{{ address?.city || address?.town || address?.village || '—' }}</div>
+    </div>
+
+    <div class="row">
+      <label>Address</label>
+      <div>
+        {{ address?.road ? (address.road + (address.house_number ? ' ' + address.house_number : '')) : '—' }}
+      </div>
+    </div>
+  </aside>
+
+  <section class="map-wrap">
+    <xp-map
+      [center]="defaultCenter"
+      [zoom]="13"
+      [initialMarker]="initialMarker"
+      (mapClick)="onMapClick($event)">
+    </xp-map>
+  </section>
+</div>

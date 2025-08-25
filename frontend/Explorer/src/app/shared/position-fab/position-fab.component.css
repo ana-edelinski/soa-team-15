@@ -1,0 +1,12 @@
+.fab{
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  width: 56px; height: 56px; border-radius: 50%;
+  display: grid; place-items: center; text-decoration: none;
+  background: linear-gradient(135deg, var(--primary), var(--primary-600));
+  color:#fff; box-shadow: var(--shadow);
+  transition: transform .15s ease, filter .15s ease;
+}
+.fab:hover { transform: translateY(-1px) scale(1.03); filter: brightness(1.03); }
+.material-icons{ font-size:28px; line-height:1; }
