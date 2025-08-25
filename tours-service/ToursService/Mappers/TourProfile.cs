@@ -24,13 +24,13 @@ namespace ToursService.Mappers
                 .ForMember(d => d.Name, o => o.MapFrom(s => s.Name))
                 .ForMember(d => d.Description, o => o.MapFrom(s => s.Description))
                 .ForMember(d => d.Difficulty, o => o.MapFrom(s => s.Difficulty))
-                .ForMember(d => d.Price, o => o.MapFrom(s => s.Price))   // 0
+                .ForMember(d => d.Price, o => o.MapFrom(s => s.Price)) // 0
                 .ForMember(d => d.UserId, o => o.MapFrom(s => s.UserId))
                 .ForMember(d => d.Tags, o => o.MapFrom(s => s.Tags))
-                .ForMember(d => d.Status, o => o.MapFrom(s => s.Status))
-                .ForMember(d => d.LengthInKm, o => o.MapFrom(s => s.LengthInKm))
-                .ForMember(d => d.PublishedTime, o => o.MapFrom(s => s.PublishedTime))
-                .ForMember(d => d.ArchiveTime, o => o.MapFrom(s => s.ArchiveTime));
+                .ForMember(d => d.Status, o => o.MapFrom(s => s.Status));
+            //.ForMember(d => d.LengthInKm, o => o.MapFrom(s => s.LengthInKm))
+            //.ForMember(d => d.PublishedTime, o => o.MapFrom(s => s.PublishedTime))
+            //.ForMember(d => d.ArchiveTime, o => o.MapFrom(s => s.ArchiveTime));
         }
     }
 }

@@ -1,0 +1,55 @@
+h1 {
+  text-align: center;
+}
+
+.container {
+  display: flex;
+  justify-content: space-between; /* Place form and tags side-by-side */
+  align-items: flex-start; /* Align the tops of the items */
+  margin-left: 3vh;
+}
+
+form {
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  width: 50%; /* Ensure the form has a specific width */
+  margin: 0; /* Remove margin offsets */
+  margin-right: 2vh;
+}
+
+#tags-container {
+  width: 25%; /* Set a width for the tags container */
+  padding: 20px;
+  border-radius: 8px;
+  height: 57vh;
+  margin-top: 4vh;
+}
+
+.tour-form-container {
+  display: flex;
+  justify-content: flex-start;
+}
+
+mat-form-field {
+  width: 100%; 
+  margin-bottom: 10px; 
+}
+
+mat-selection-list {
+  max-height: 48vh; 
+  overflow-y: auto; 
+}
+
+.error {
+  color: #d32f2f; /* Red color for error */
+  font-size: 14px;
+  text-align: center;
+  margin-top: 3vh;
+}
+
+button {
+  width: 66vh;
+  font-size: 16px;
+  
+}

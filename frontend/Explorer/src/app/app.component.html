@@ -4,6 +4,16 @@
   <!-- Dropdown meni -->
   <span class="spacer"></span>
 
+  <button mat-button [matMenuTriggerFor]="toursMenu">
+    Ture
+  </button>
+
+  <mat-menu #toursMenu="matMenu">
+    <button mat-menu-item [routerLink]="['/tours']">Moje ture</button>
+    <button mat-menu-item [routerLink]="['create-tour']">Kreiraj turu</button>
+
+  </mat-menu>
+
   <button mat-button [matMenuTriggerFor]="blogMenu">
     Blogovi
   </button>

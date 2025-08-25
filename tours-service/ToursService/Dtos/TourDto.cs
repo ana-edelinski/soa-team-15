@@ -9,15 +9,15 @@
         public List<TourTags> Tags { get; set; }
         public TourStatus Status { get; set; }
         public double Price { get; set; }
-        public double DiscountPrice { get; set; }
+        //public double DiscountPrice { get; set; }
         public long UserId { get; set; }
-        public double LengthInKm { get; set; }
-        public DateTime PublishedTime { get; set; }
-        public DateTime ArchiveTime { get; set; }
+        //public double LengthInKm { get; set; }
+        //public DateTime PublishedTime { get; set; }
+        //public DateTime ArchiveTime { get; set; }
         //public ICollection<KeyPointDto> KeyPoints { get; set; } = new List<KeyPointDto>();
 
         public TourDto() { }
-        public TourDto(long id, string name, string? description, string? difficulty, List<TourTags> tags, long userId, TourStatus status, double price, double lengthInKm, DateTime publishedTime, DateTime archivedTime/*,List<long> keyPointIds*/)
+        public TourDto(long id, string name, string? description, string? difficulty, List<TourTags> tags, long userId, TourStatus status, double price /*double lengthInKm, DateTime publishedTime, DateTime archivedTime,List<long> keyPointIds*/)
 
         {
             Id = id;
@@ -34,14 +34,14 @@
 
             Status = status;
             Price = price;
-            LengthInKm = lengthInKm;
-            PublishedTime = publishedTime;
-            ArchiveTime = archivedTime;
+            //LengthInKm = lengthInKm;
+            //PublishedTime = publishedTime;
+            //ArchiveTime = archivedTime;
 
 
         }
 
-        public TourDto(long id, string name, string? description, string? difficulty, List<TourTags> tags, long userId, TourStatus status, double price, double discountedPrice, double lengthInKm, DateTime publishedTime, DateTime archivedTime/*, List<long> equipmentIds, List<long> keyPointIds*/)
+        public TourDto(long id, string name, string? description, string? difficulty, List<TourTags> tags, long userId, TourStatus status, double price, double discountedPrice, double lengthInKm, DateTime publishedTime, DateTime archivedTime, List<long> equipmentIds, List<long> keyPointIds)
 
         {
             Id = id;
@@ -58,10 +58,10 @@
 
             Status = status;
             Price = price;
-            DiscountPrice = discountedPrice;
-            LengthInKm = lengthInKm;
-            PublishedTime = publishedTime;
-            ArchiveTime = archivedTime;
+            //DiscountPrice = discountedPrice;
+            //LengthInKm = lengthInKm;
+            //PublishedTime = publishedTime;
+            //ArchiveTime = archivedTime;
 
 
         }

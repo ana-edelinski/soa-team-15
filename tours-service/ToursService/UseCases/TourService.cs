@@ -39,7 +39,7 @@ namespace ToursService.UseCases
             }
             catch (Exception ex)
             {
-                return Result.Fail<TourDto>(new Error("Failed to create tour.").CausedBy(ex));
+                return Result.Fail<TourDto>($"EXCEPTION: {ex.Message}");
             }
         }
 
@@ -63,7 +63,7 @@ namespace ToursService.UseCases
                     UserId = t.UserId,
                     Status = (ToursService.Dtos.TourStatus)t.Status,
                     Price = t.Price,
-                    LengthInKm = t.LengthInKm,
+                    //LengthInKm = t.LengthInKm,
                     //KeyPoints = t.KeyPoints.Select(kp => new KeyPointDto
                     //{
                     //    Id = kp.Id,

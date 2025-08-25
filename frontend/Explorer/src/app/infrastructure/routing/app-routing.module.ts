@@ -9,6 +9,7 @@ import { CreateComponent } from 'src/app/blog/create/create.component';
 import { ListComponent } from 'src/app/blog/list/list.component';
 import { UserListComponent } from 'src/app/feature-modules/administration/user-list/user-list.component';
 import { ProfileInfoComponent } from 'src/app/feature-modules/layout/profile-info/profile-info.component';
+import { CreateTourComponent } from 'src/app/feature-modules/tour-authoring/create-tour/create-tour.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/blogs', pathMatch: 'full' },   
@@ -19,7 +20,8 @@ const routes: Routes = [
   {path: 'register', component: RegistrationComponent},
   {path: 'equipment', component: EquipmentComponent, canActivate: [AuthGuard],},
   { path: 'admin/users', component: UserListComponent },
-  { path: 'profile', component: ProfileInfoComponent }
+  { path: 'profile', component: ProfileInfoComponent },
+  { path: 'create-tour', component: CreateTourComponent },
 ];
 
 @NgModule({
