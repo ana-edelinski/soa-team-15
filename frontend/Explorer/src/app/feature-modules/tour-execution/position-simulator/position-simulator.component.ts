@@ -37,6 +37,7 @@ export class PositionSimulatorComponent {
     // 1) backend update (auto-save)
     if (!this.saving) {
       this.saving = true;
+      console.log("id: " + this.user.id)
       this.service.updateMyPosition(ev.lat, ev.lng, this.user.id).subscribe({
         next: () => (this.saving = false),
         error: () => (this.saving = false) // tiho

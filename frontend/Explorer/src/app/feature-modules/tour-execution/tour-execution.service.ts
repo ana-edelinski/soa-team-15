@@ -10,8 +10,9 @@ export class TourExecutionService {
 
   constructor(private http: HttpClient) { }
 
-   updateMyPosition(lat: number, lng: number, userId: number) {
-    return this.http.put(`${this.apiUrl}`, { latitude: lat, longitude: lng, userId});
+   updateMyPosition(lat: number, lng: number, touristId: number) {
+
+    return this.http.put(`${this.apiUrl}`, { latitude: lat, longitude: lng, touristId: touristId});
   }
 
   // ako ti zatreba da učitaš poslednju:

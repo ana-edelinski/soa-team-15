@@ -98,12 +98,17 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<ITourRepository, TourRepository>();
 builder.Services.AddScoped<IKeyPointRepository, KeyPointRepository>();
 builder.Services.AddScoped<ITourReviewRepository, TourReviewRepository>();
+builder.Services.AddScoped<IPositionRepository, PositionRepository>();
+
+
 
 // Services
+builder.Services.AddScoped<IPositionService, PositionService>();
 builder.Services.AddScoped<ITourService, TourService>();
 
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
+
 
 
 

@@ -9,6 +9,7 @@ namespace ToursService.Database
         public DbSet<Tour> Tours { get; set; }
         public DbSet<KeyPoint> KeyPoints { get; set; }
         public DbSet<TourReview> TourReviews { get; set; }
+        public DbSet<Position> Positions { get; set; }
 
         public ToursContext(DbContextOptions<ToursContext> options) : base(options) { }
 
@@ -56,6 +57,17 @@ namespace ToursService.Database
                 e.HasIndex(x => new { x.IdTour, x.IdTourist });
                 // jednostavan check za ocenu 1-5
                 e.ToTable(t => t.HasCheckConstraint("CK_TourReview_Rating_1_5", "\"Rating\" >= 1 AND \"Rating\" <= 5"));
+            });
+
+            //POSITION
+            b.Entity<Position>(e =>
+            {
+                e.HasKey(x => x.Id);
+                e.Property(x => x.Latitude).IsRequired();
+                e.Property(x => x.Longitude).IsRequired();
+
+                // jedan turista = jedna pozicija
+                e.HasIndex(x => x.TouristId).IsUnique();
             });
         }
     }
