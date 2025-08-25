@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-using ToursService.Database;
-using System;
-using System.Text;
-using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System;
+using System.Security.Claims;
+using System.Text;
+using ToursService.Database;
+using ToursService.Domain.RepositoryInterfaces;
+using ToursService.Repositories;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -90,6 +92,12 @@ builder.Services.AddCors(options =>
               .AllowCredentials();
     });
 });
+
+// Repositories
+builder.Services.AddScoped<ITourRepository, TourRepository>();
+builder.Services.AddScoped<IKeyPointRepository, KeyPointRepository>();
+builder.Services.AddScoped<ITourReviewRepository, TourReviewRepository>();
+
 
 var app = builder.Build();
 
