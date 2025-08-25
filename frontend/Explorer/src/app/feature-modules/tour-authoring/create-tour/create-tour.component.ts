@@ -60,16 +60,15 @@ export class CreateTourComponent  implements OnChanges{
     difficulty: new FormControl('', [Validators.required]),
     description: new FormControl('', [Validators.required]),
     tags: new FormControl<number[]>([]),
-    price: new FormControl(0, [
-      Validators.required,
-      Validators.min(0.01) // Optional: Ensure price is greater than 0
-    ])
+    // price: new FormControl(0, [
+    //   Validators.required,
+    //   Validators.min(0.01) // Optional: Ensure price is greater than 0
+    // ])
     
   });
 
   addTour(): void {
-    console.log(this.tourForm.value.price);
-    if(this.user!== null && this.user?.role === 'TourAuthor'&& this.tourForm.value.price!>0 && this.tourForm.value.name!=='' && this.tourForm.value.description!==''&& this.tourForm.value.difficulty!=='')
+    if(this.user!== null && this.user?.role === 'TourAuthor' && this.tourForm.value.name!=='' && this.tourForm.value.description!==''&& this.tourForm.value.difficulty!=='')
     {
       if(this.currentTags.length === 0)
       {
@@ -84,7 +83,7 @@ export class CreateTourComponent  implements OnChanges{
         difficulty: this.tourForm.value.difficulty || "",
         tags: this.tourForm.value.tags || [],
         status: 0,
-        price: Number(this.tourForm.value.price) || 0,
+        price: 0,
         userId: this.user.id
       };
 
@@ -92,7 +91,7 @@ export class CreateTourComponent  implements OnChanges{
 
     this.service.addTour(tour).subscribe({
       next: () => { this.tourUpdated.emit();
-        this.router.navigate(['/blogs']);  // /author/tours
+        this.router.navigate(['/my-tours']);  
        }
     });
   }} }

@@ -23,11 +23,13 @@ import { RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MyToursComponent } from './my-tours/my-tours.component';
 
 
 @NgModule({
   declarations: [
-    CreateTourComponent
+    CreateTourComponent,
+    MyToursComponent
   ],
   imports: [
     MatFormFieldModule,
@@ -44,6 +46,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     MatListModule,
     MatDialogModule,
     MatExpansionModule,
+    MatCardModule
   ]
 })
 export class TourAuthoringModule { }

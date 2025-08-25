@@ -1,0 +1,21 @@
+<header>
+  <h1>My Tours</h1>
+</header>
+
+<div *ngIf="error_message" class="error">{{ error_message }}</div>
+
+<div *ngIf="tours.length > 0; else noTours">
+  <mat-card *ngFor="let tour of tours" class="tour-card">
+    <mat-card-title>{{ tour.name }}</mat-card-title>
+    <mat-card-subtitle>Difficulty: {{ tour.difficulty }}</mat-card-subtitle>
+    <mat-card-content>
+      <p>{{ tour.description }}</p>
+      <p>Price: {{ tour.price }} $</p>
+      <p>Status: {{ getStatusLabel(tour.status) }}</p>
+    </mat-card-content> 
+  </mat-card>
+</div>
+
+<ng-template #noTours>
+  <p>You don't have any tours yet.</p>
+</ng-template>
