@@ -8,6 +8,7 @@ using System.Text;
 using ToursService.Database;
 using ToursService.Domain.RepositoryInterfaces;
 using ToursService.Repositories;
+using ToursService.UseCases;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -77,8 +78,8 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("administratorPolicy", p => p.RequireRole("Administrator"));
     options.AddPolicy("touristPolicy", p => p.RequireRole("Tourist"));
-    options.AddPolicy("guidePolicy", p => p.RequireRole("Guide"));
-    options.AddPolicy("userPolicy", p => p.RequireRole("TourAuthor", "Guide"));
+    options.AddPolicy("authorPolicy", p => p.RequireRole("TourAuthor"));
+    options.AddPolicy("userPolicy", p => p.RequireRole("TourAuthor", "Tourist"));
 });
 
 // CORS
@@ -97,6 +98,13 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<ITourRepository, TourRepository>();
 builder.Services.AddScoped<IKeyPointRepository, KeyPointRepository>();
 builder.Services.AddScoped<ITourReviewRepository, TourReviewRepository>();
+
+// Services
+builder.Services.AddScoped<ITourService, TourService>();
+
+// AutoMapper
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
+
 
 
 var app = builder.Build();
