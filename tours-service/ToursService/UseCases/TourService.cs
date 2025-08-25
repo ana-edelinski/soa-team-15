@@ -4,6 +4,7 @@ using ToursService.Domain;
 using ToursService.Domain.RepositoryInterfaces;
 using ToursService.Dtos;
 
+
 namespace ToursService.UseCases
 {
     public class TourService : ITourService
@@ -42,5 +43,44 @@ namespace ToursService.UseCases
             }
         }
 
+        public Result<List<TourDto>> GetByUserId(long userId)
+        {
+            {
+                var tours = _tourRepository.GetByAuthor(userId);
+
+                if (tours == null || tours.Count == 0)
+                {
+                    return Result.Fail<List<TourDto>>("No tours found for the specified user.");
+                }
+
+                var tourDtos = tours.Select(t => new TourDto
+                {
+                    Id = t.Id,
+                    Name = t.Name,
+                    Description = t.Description,
+                    Difficulty = t.Difficulty,
+                    Tags = t.Tags.Select(tag => (ToursService.Dtos.TourTags)tag).ToList(),
+                    UserId = t.UserId,
+                    Status = (ToursService.Dtos.TourStatus)t.Status,
+                    Price = t.Price,
+                    LengthInKm = t.LengthInKm,
+                    //KeyPoints = t.KeyPoints.Select(kp => new KeyPointDto
+                    //{
+                    //    Id = kp.Id,
+                    //    Name = kp.Name,
+                    //    Longitude = kp.Longitude,
+                    //    Latitude = kp.Latitude,
+                    //    Description = kp.Description,
+                    //    Image = kp.Image,
+                    //    TourId = kp.TourId
+
+
+                    //}).ToList()
+                }).ToList();
+
+                return Result.Ok(tourDtos);
+
+            }
+        }
     }
 }

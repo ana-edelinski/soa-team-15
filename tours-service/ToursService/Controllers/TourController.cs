@@ -24,5 +24,20 @@ namespace ToursService.Controllers
             if (result.IsSuccess) return Ok(result.Value);
             return BadRequest(result.Errors);
         }
+
+        [HttpGet("{id:int}")]
+        public ActionResult<List<TourDto>> GetAllByUserId(int id)
+        {
+            var claimIdStr = User.FindFirst("id")?.Value;
+            if (!long.TryParse(claimIdStr, out var claimId))
+                return Forbid();
+
+            if (!User.IsInRole("Administrator") && id != claimId)
+                return Forbid();
+
+            var result = _tourService.GetByUserId(id);
+            if (result.IsSuccess) return Ok(result.Value);
+            return BadRequest(result.Errors);
+        }
     }
 }
