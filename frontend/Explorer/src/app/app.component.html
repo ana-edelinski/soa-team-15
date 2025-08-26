@@ -4,7 +4,7 @@
   <!-- Dropdown meni -->
   <span class="spacer"></span>
 
-  <button mat-button [matMenuTriggerFor]="toursMenu">
+  <button mat-button [matMenuTriggerFor]="toursMenu" *ngIf="isLoggedIn && currentUserRole === 'TourAuthor'">
     Ture
   </button>
 
