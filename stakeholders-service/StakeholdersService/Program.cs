@@ -1,10 +1,11 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using StakeholdersService.Authentication;
+using StakeholdersService.Controllers;
+using StakeholdersService.Database;
 using StakeholdersService.Domain.RepositoryInterfaces;
 using StakeholdersService.Repositories;
 using StakeholdersService.UseCases;
-using Microsoft.EntityFrameworkCore;
-using StakeholdersService.Authentication;
-using StakeholdersService.Database;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +41,9 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+
+//builder.Services.AddGrpc().AddJsonTranscoding();
+builder.Services.AddGrpc();
 
 
 // Add Authentication
@@ -132,5 +136,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapGrpcService<AuthenticationProtoController>();
 
 app.Run();

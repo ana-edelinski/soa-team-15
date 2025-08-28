@@ -5,6 +5,7 @@ go 1.24.4
 require github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.2
 
 require (
+	github.com/rs/cors v1.11.1 // indirect
 	golang.org/x/net v0.41.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/text v0.28.0 // indirect
