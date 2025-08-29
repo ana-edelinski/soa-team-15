@@ -157,3 +157,143 @@ var ToursService_ServiceDesc = grpc.ServiceDesc{
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "tours/tours.proto",
 }
+
+const (
+	PositionsService_GetByTouristId_FullMethodName = "/tours.PositionsService/GetByTouristId"
+	PositionsService_Update_FullMethodName         = "/tours.PositionsService/Update"
+)
+
+// PositionsServiceClient is the client API for PositionsService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type PositionsServiceClient interface {
+	GetByTouristId(ctx context.Context, in *GetByTouristIdRequest, opts ...grpc.CallOption) (*PositionDto, error)
+	Update(ctx context.Context, in *PositionDto, opts ...grpc.CallOption) (*PositionDto, error)
+}
+
+type positionsServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewPositionsServiceClient(cc grpc.ClientConnInterface) PositionsServiceClient {
+	return &positionsServiceClient{cc}
+}
+
+func (c *positionsServiceClient) GetByTouristId(ctx context.Context, in *GetByTouristIdRequest, opts ...grpc.CallOption) (*PositionDto, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PositionDto)
+	err := c.cc.Invoke(ctx, PositionsService_GetByTouristId_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *positionsServiceClient) Update(ctx context.Context, in *PositionDto, opts ...grpc.CallOption) (*PositionDto, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PositionDto)
+	err := c.cc.Invoke(ctx, PositionsService_Update_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// PositionsServiceServer is the server API for PositionsService service.
+// All implementations must embed UnimplementedPositionsServiceServer
+// for forward compatibility.
+type PositionsServiceServer interface {
+	GetByTouristId(context.Context, *GetByTouristIdRequest) (*PositionDto, error)
+	Update(context.Context, *PositionDto) (*PositionDto, error)
+	mustEmbedUnimplementedPositionsServiceServer()
+}
+
+// UnimplementedPositionsServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedPositionsServiceServer struct{}
+
+func (UnimplementedPositionsServiceServer) GetByTouristId(context.Context, *GetByTouristIdRequest) (*PositionDto, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetByTouristId not implemented")
+}
+func (UnimplementedPositionsServiceServer) Update(context.Context, *PositionDto) (*PositionDto, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
+}
+func (UnimplementedPositionsServiceServer) mustEmbedUnimplementedPositionsServiceServer() {}
+func (UnimplementedPositionsServiceServer) testEmbeddedByValue()                          {}
+
+// UnsafePositionsServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to PositionsServiceServer will
+// result in compilation errors.
+type UnsafePositionsServiceServer interface {
+	mustEmbedUnimplementedPositionsServiceServer()
+}
+
+func RegisterPositionsServiceServer(s grpc.ServiceRegistrar, srv PositionsServiceServer) {
+	// If the following call pancis, it indicates UnimplementedPositionsServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&PositionsService_ServiceDesc, srv)
+}
+
+func _PositionsService_GetByTouristId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetByTouristIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PositionsServiceServer).GetByTouristId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PositionsService_GetByTouristId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PositionsServiceServer).GetByTouristId(ctx, req.(*GetByTouristIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PositionsService_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PositionDto)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PositionsServiceServer).Update(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PositionsService_Update_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PositionsServiceServer).Update(ctx, req.(*PositionDto))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// PositionsService_ServiceDesc is the grpc.ServiceDesc for PositionsService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var PositionsService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "tours.PositionsService",
+	HandlerType: (*PositionsServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetByTouristId",
+			Handler:    _PositionsService_GetByTouristId_Handler,
+		},
+		{
+			MethodName: "Update",
+			Handler:    _PositionsService_Update_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "tours/tours.proto",
+}

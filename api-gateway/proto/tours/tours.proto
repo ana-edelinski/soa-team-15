@@ -22,6 +22,23 @@ service ToursService {
   }
 }
 
+service PositionsService {
+  rpc GetByTouristId (GetByTouristIdRequest) returns (PositionDto) {
+    option (google.api.http) = {
+      get: "/api/position/{touristId}"
+    };
+  }
+
+  rpc Update (PositionDto) returns (PositionDto) {
+    option (google.api.http) = {
+      put: "/api/position"
+      body: "*"
+    };
+  }
+}
+
+// -------------------- Messages --------------------
+
 message TourDto {
   int64 id = 1;
   string name = 2;
@@ -40,6 +57,18 @@ message GetByUserIdRequest {
 message ToursListResponse {
   repeated TourDto tours = 1;
 }
+
+message GetByTouristIdRequest {
+  int64 touristId = 1;
+}
+
+message PositionDto {
+  int64 touristId = 1;
+  double longitude = 2;
+  double latitude = 3;
+}
+
+// -------------------- Enums --------------------
 
 enum TourTags {
   TAG_UNSPECIFIED = 0;

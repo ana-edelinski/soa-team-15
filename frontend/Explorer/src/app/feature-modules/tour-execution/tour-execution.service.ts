@@ -1,12 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { environment } from "src/env/environment";
 
 @Injectable({
   providedIn: 'root'
 })
 export class TourExecutionService {
 
-  private apiUrl = 'http://localhost:5226/api/position/';
+  //private apiUrl = 'http://localhost:5226/api/position/';
+  private apiUrl = environment.apiHost + 'position';
 
   constructor(private http: HttpClient) { }
 

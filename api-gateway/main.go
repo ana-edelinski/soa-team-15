@@ -74,6 +74,17 @@ func main() {
 		log.Fatalln("Failed to register ToursService handler:", err)
 	}
 
+	// Register PositionsService
+	positionsClient := tours.NewPositionsServiceClient(toursConn)
+	err = tours.RegisterPositionsServiceHandlerClient(
+		context.Background(),
+		gwmux,
+		positionsClient,
+	)
+	if err != nil {
+		log.Fatalln("Failed to register PositionsService handler:", err)
+	}
+
 	// CORS
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:4200"}, // Angular frontend

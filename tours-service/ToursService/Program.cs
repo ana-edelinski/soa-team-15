@@ -143,7 +143,7 @@ app.MapControllers()
 app.MapGrpcService<ToursProtoController>()
     .RequireHost("localhost:5002");
 
-//app.MapGrpcService();
-//app.MapGrpcService<ToursProtoController>();
+app.MapGrpcService<PositionsProtoController>()
+    .RequireHost("localhost:5002");
 
 app.Run();

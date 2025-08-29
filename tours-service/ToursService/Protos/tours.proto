@@ -4,9 +4,16 @@ option csharp_namespace = "ToursService.Proto";
 
 package tours;
 
+// -------------------- Services --------------------
+
 service ToursService {
   rpc Create (TourDto) returns (TourDto);
   rpc GetByUserId (GetByUserIdRequest) returns (ToursListResponse);
+}
+
+service PositionsService {
+  rpc GetByTouristId (GetByTouristIdRequest) returns (PositionDto);
+  rpc Update (PositionDto) returns (PositionDto);
 }
 
 // -------------------- Messages --------------------
@@ -28,6 +35,16 @@ message GetByUserIdRequest {
 
 message ToursListResponse {
   repeated TourDto tours = 1;
+}
+
+message GetByTouristIdRequest {
+  int64 touristId = 1;
+}
+
+message PositionDto {
+  int64 touristId = 1;
+  double longitude = 2;
+  double latitude = 3;
 }
 
 // -------------------- Enums --------------------

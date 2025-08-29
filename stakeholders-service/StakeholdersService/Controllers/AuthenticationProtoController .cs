@@ -3,7 +3,6 @@ using StakeholdersService.UseCases;
 
 namespace StakeholdersService.Controllers
 {
-    // Klasa generisana iz .proto fajla:
     public class AuthenticationProtoController : StakeholdersService.StakeholdersServiceBase
     {
         private readonly IAuthenticationService _authenticationService;
@@ -27,7 +26,6 @@ namespace StakeholdersService.Controllers
 
             if (result.IsFailed)
             {
-                // gRPC error response (nije kao REST BadRequest)
                 throw new RpcException(new Status(StatusCode.Unauthenticated, "Invalid username or password"));
             }
 
