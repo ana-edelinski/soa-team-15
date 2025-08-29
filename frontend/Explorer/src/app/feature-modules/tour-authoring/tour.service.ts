@@ -8,8 +8,8 @@ import { environment } from "src/env/environment";
     providedIn: 'root'
   })
   export class TourService {
-    private baseUrl = 'http://localhost:5226/api/';
-
+    private baseUrl = environment.apiHost;
+    
     constructor(private http: HttpClient) { }
   
     getToursForAuthor(id: number): Observable<Tour[]> {

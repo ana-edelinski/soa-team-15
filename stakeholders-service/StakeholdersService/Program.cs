@@ -42,11 +42,10 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-//builder.Services.AddGrpc().AddJsonTranscoding();
+// gRPC
 builder.Services.AddGrpc();
 
-
-// Add Authentication
+// JWT Auth
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
@@ -63,80 +62,55 @@ builder.Services.AddAuthentication("Bearer")
         };
     });
 
-
-// Add Authorization Policy
+// Authorization policies
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("administratorPolicy", policy =>
-    {
-        policy.RequireRole("Administrator");   
-    });
-    options.AddPolicy("touristPolicy", policy =>
-    {
-        policy.RequireRole("Tourist");
-    });
-
-    options.AddPolicy("guidePolicy", policy =>
-    {
-        policy.RequireRole("Guide");
-    });
-    options.AddPolicy("userPolicy", policy =>
-    {
-        policy.RequireRole("TourAuthor", "Tourist");
-    });
+    options.AddPolicy("administratorPolicy", policy => policy.RequireRole("Administrator"));
+    options.AddPolicy("touristPolicy", policy => policy.RequireRole("Tourist"));
+    options.AddPolicy("guidePolicy", policy => policy.RequireRole("Guide"));
+    options.AddPolicy("userPolicy", policy => policy.RequireRole("TourAuthor", "Tourist"));
 });
 
-// Register AutoMapper
+// AutoMapper + repos + services
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-// Add your application services
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddScoped<ITokenGenerator, JwtGenerator>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 
-// Add CORS
+// CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularDevClient", policy =>
     {
         policy.WithOrigins("http://localhost:4200")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
-
-// Add DbContext
+// DB
 builder.Services.AddDbContext<StakeholdersContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
-// if (app.Environment.IsDevelopment())
-// {
-//     app.UseSwagger();
-//     app.UseSwaggerUI();
-// }
-
-    app.UseSwagger();
-    app.UseSwaggerUI();
-
-//app.UseHttpsRedirection();
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseStaticFiles();
-
 app.UseCors("AllowAngularDevClient");
-
 app.UseAuthentication();
-
 app.UseAuthorization();
 
-app.MapControllers();
+// REST endpoint (8080)
+app.MapControllers()
+   .RequireHost("localhost:8080");
 
-app.MapGrpcService<AuthenticationProtoController>();
+// gRPC endpoint (5001, bez Swagger-a)
+app.MapGrpcService<AuthenticationProtoController>()
+   .RequireHost("localhost:5001");
 
 app.Run();

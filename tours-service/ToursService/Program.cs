@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Security.Claims;
 using System.Text;
+using ToursService.Controllers;
 using ToursService.Database;
 using ToursService.Domain.RepositoryInterfaces;
 using ToursService.Repositories;
@@ -47,6 +48,9 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+
+// gRPC
+builder.Services.AddGrpc();
 
 // AuthN (JWT) – koristi iste vrednosti kao stakeholders (Jwt:Issuer/Audience/Key)
 builder.Services.AddAuthentication("Bearer")
@@ -118,6 +122,7 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.UseStaticFiles();
 app.UseCors("AllowAngularDevClient");
 
 app.UseAuthentication();   // 👈 bitno: pre Authorization
@@ -129,5 +134,16 @@ app.MapGet("/health/db", async (ToursContext db) =>
     var ok = await db.Database.CanConnectAsync();
     return ok ? Results.Ok("DB OK") : Results.Problem("DB FAIL");
 });
+
+// REST endpoint (5226)
+app.MapControllers()
+    .RequireHost("localhost:5226");
+
+// gRPC endpoint (5001, bez Swagger-a)
+app.MapGrpcService<ToursProtoController>()
+    .RequireHost("localhost:5002");
+
+//app.MapGrpcService();
+//app.MapGrpcService<ToursProtoController>();
 
 app.Run();

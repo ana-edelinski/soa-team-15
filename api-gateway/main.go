@@ -9,7 +9,8 @@ import (
 	"syscall"
 
 	"api-gateway/config"
-	pb "api-gateway/proto/stakeholders"
+	stk "api-gateway/proto/stakeholders"
+	tours "api-gateway/proto/tours"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/cors"
@@ -20,8 +21,9 @@ import (
 func main() {
 	cfg := config.GetConfig()
 
+	// 1. konekcija prema Stakeholders servisu
 	log.Println("Dialing gRPC server at", cfg.StakeholdersServiceAddress)
-	conn, err := grpc.DialContext(
+	stkConn, err := grpc.DialContext(
 		context.Background(),
 		cfg.StakeholdersServiceAddress,
 		grpc.WithBlock(),
@@ -30,23 +32,49 @@ func main() {
 	if err != nil {
 		log.Fatalln("Failed to dial StakeholdersService:", err)
 	}
+	defer stkConn.Close()
 	log.Println("Connected to StakeholdersService at", cfg.StakeholdersServiceAddress)
 
-	defer conn.Close()
+	// 2. konekcija prema Tours servisu
+	log.Println("Dialing gRPC server at", cfg.ToursServiceAddress)
+	toursConn, err := grpc.DialContext(
+		context.Background(),
+		cfg.ToursServiceAddress,
+		grpc.WithBlock(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Fatalln("Failed to dial ToursService:", err)
+	}
+	defer toursConn.Close()
+	log.Println("Connected to ToursService at", cfg.ToursServiceAddress)
 
 	// gRPC-Gateway mux
 	gwmux := runtime.NewServeMux()
-	client := pb.NewStakeholdersServiceClient(conn)
-	err = pb.RegisterStakeholdersServiceHandlerClient(
+
+	// Register StakeholdersService
+	stkClient := stk.NewStakeholdersServiceClient(stkConn)
+	err = stk.RegisterStakeholdersServiceHandlerClient(
 		context.Background(),
 		gwmux,
-		client,
+		stkClient,
 	)
 	if err != nil {
 		log.Fatalln("Failed to register StakeholdersService handler:", err)
 	}
 
-	// 👉 Dodaj CORS ovde
+	// Register ToursService
+	toursClient := tours.NewToursServiceClient(toursConn)
+	err = tours.RegisterToursServiceHandlerClient(
+		context.Background(),
+		gwmux,
+		toursClient,
+	)
+	if err != nil {
+		log.Fatalln("Failed to register ToursService handler:", err)
+	}
+
+	// CORS
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:4200"}, // Angular frontend
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
