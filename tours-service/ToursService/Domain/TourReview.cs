@@ -8,7 +8,7 @@
         public int Rating { get; private set; }
         public string? Comment { get; private set; }
         public DateTime? DateTour { get; private set; }
-        public DateTime? DateComment { get; private set; }
+        public DateTime? DateComment { get; set; }
         public string Image { get; private set; }
 
         public TourReview(long idTour, long idTourist, int rating, string comment, DateTime? dateTour, DateTime? dateComment, string image)

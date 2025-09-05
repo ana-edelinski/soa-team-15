@@ -1,14 +1,13 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System;
 using System.Security.Claims;
 using System.Text;
 using ToursService.Database;
 using ToursService.Domain.RepositoryInterfaces;
 using ToursService.Repositories;
 using ToursService.UseCases;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -105,6 +104,8 @@ builder.Services.AddScoped<IPositionRepository, PositionRepository>();
 // Services
 builder.Services.AddScoped<IPositionService, PositionService>();
 builder.Services.AddScoped<ITourService, TourService>();
+builder.Services.AddScoped<ITourReviewService, TourReviewService>();
+
 
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
