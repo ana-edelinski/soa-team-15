@@ -1,9 +1,9 @@
 export interface TourReviewCreate {
   idTourist: number;
-  rating: number;          // 1..5
+  rating: number;
   comment?: string;
-  dateTour: string;        // ISO "2025-08-20T00:00:00Z"
-  image?: string;          // URL 
+  dateTour: string;        // ISO
+  images: string[];        // 👈 više slika
 }
 
 export interface TourReview {
@@ -14,5 +14,5 @@ export interface TourReview {
   comment?: string;
   dateTour?: string;
   dateComment?: string;
-  image?: string;
+  images: string[];        // 👈
 }
