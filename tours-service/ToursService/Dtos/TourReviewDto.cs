@@ -9,6 +9,6 @@
         public string? Comment { get; set; }
         public DateTime? DateTour { get; set; }
         public DateTime? DateComment { get; set; }   // serverski setovano
-        public string? Image { get; set; }
+        public List<string> Images { get; set; } = new();
     }
 }

@@ -121,6 +121,8 @@ app.UseSwaggerUI();
 
 app.UseCors("AllowAngularDevClient");
 
+app.UseStaticFiles(); // wwwroot/*
+
 app.UseAuthentication();   // 👈 bitno: pre Authorization
 app.UseAuthorization();
 

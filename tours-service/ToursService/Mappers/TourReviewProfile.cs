@@ -12,7 +12,10 @@ namespace ToursService.Mappers
 
             CreateMap<TourReviewCreateDto, TourReview>()
                 .ForMember(d => d.Id, opt => opt.Ignore())
-                .ForMember(d => d.DateComment, opt => opt.Ignore());
+                .ForMember(d => d.DateComment, opt => opt.Ignore())
+                .ForMember(d => d.Images,
+                    opt => opt.MapFrom(s => s.Images.Select(u => new TourReviewImage { Url = u })));
+
         }
     }
 }
