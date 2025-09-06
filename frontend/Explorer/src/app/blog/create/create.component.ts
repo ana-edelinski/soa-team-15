@@ -90,7 +90,7 @@ export class CreateComponent {
   console.log('✅ Sending POST to http://localhost:8081/api/blogs');
 
   // HTTP poziv
-  this.http.post('http://localhost:8081/api/blogs', formData).subscribe({
+  this.http.post('http://localhost:8090/api/blogs', formData).subscribe({
     next: (response) => {
       console.log('✅ Blog created successfully:', response);
       alert('Blog successfully created!');

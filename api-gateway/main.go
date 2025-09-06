@@ -9,6 +9,7 @@ import (
 	"syscall"
 
 	"api-gateway/config"
+	blogs "api-gateway/proto/blog"
 	stk "api-gateway/proto/stakeholders"
 	tours "api-gateway/proto/tours"
 
@@ -49,6 +50,20 @@ func main() {
 	defer toursConn.Close()
 	log.Println("Connected to ToursService at", cfg.ToursServiceAddress)
 
+	// 3. konekcija prema Blog servisu
+	log.Println("Dialing gRPC server at", cfg.BlogServiceAddress)
+	blogsConn, err := grpc.DialContext(
+		context.Background(),
+		cfg.BlogServiceAddress,
+		grpc.WithBlock(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Fatalln("Failed to dial BlogService:", err)
+	}
+	defer blogsConn.Close()
+	log.Println("Connected to BlogService at", cfg.BlogServiceAddress)
+
 	// gRPC-Gateway mux
 	gwmux := runtime.NewServeMux()
 
@@ -83,6 +98,17 @@ func main() {
 	)
 	if err != nil {
 		log.Fatalln("Failed to register PositionsService handler:", err)
+	}
+
+	// Register BlogService
+	blogsClient := blogs.NewBlogServiceClient(blogsConn)
+	err = blogs.RegisterBlogServiceHandlerClient(
+		context.Background(),
+		gwmux,
+		blogsClient,
+	)
+	if err != nil {
+		log.Fatalln("Failed to register BlogService handler:", err)
 	}
 
 	// CORS

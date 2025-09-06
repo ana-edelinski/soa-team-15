@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package blogs;
+
+option go_package = "api-gateway/proto/blog;blog";
+
+import "google/api/annotations.proto";
+
+service BlogService {
+  rpc CreateBlog (CreateBlogRequest) returns (BlogDto) {
+    option (google.api.http) = {
+      post: "/api/blogs"
+      body: "*"
+    };
+  }
+
+  rpc GetBlog (GetBlogRequest) returns (BlogDto) {
+    option (google.api.http) = {
+      get: "/api/blogs/{id}"
+    };
+  }
+
+  rpc GetAllBlogs (GetAllBlogsRequest) returns (BlogsListResponse) {
+    option (google.api.http) = {
+      get: "/api/blogs"
+    };
+  }
+
+  rpc UpdateBlog (UpdateBlogRequest) returns (BlogDto) {
+    option (google.api.http) = {
+      put: "/api/blogs/{id}"
+      body: "*"
+    };
+  }
+
+  rpc DeleteBlog (DeleteBlogRequest) returns (DeleteBlogResponse) {
+    option (google.api.http) = {
+      delete: "/api/blogs/{id}"
+    };
+  }
+}
+
+message BlogDto {
+  string id = 1;
+  string title = 2;
+  string content = 3;
+  int64 authorId = 4;
+  repeated string images = 5;
+}
+
+message CreateBlogRequest {
+  string title = 1;
+  string content = 2;
+  int64 authorId = 3;
+  repeated string imagePaths = 4;
+}
+
+message GetBlogRequest {
+  string id = 1;
+}
+
+message GetAllBlogsRequest {
+  int32 page = 1;
+  int32 limit = 2;
+}
+
+message BlogsListResponse {
+  repeated BlogDto blogs = 1;
+}
+
+message UpdateBlogRequest {
+  string id = 1;
+  string title = 2;
+  string content = 3;
+}
+
+message DeleteBlogRequest {
+  string id = 1;
+}
+
+message DeleteBlogResponse {
+  bool success = 1;
+}

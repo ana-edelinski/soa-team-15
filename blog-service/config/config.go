@@ -9,6 +9,7 @@ type Config struct {
 	DBName   string
 	DBUser   string
 	DBPass   string
+	GrpcPort string
 }
 
 func NewConfig() *Config {
@@ -19,5 +20,6 @@ func NewConfig() *Config {
 		DBName:   os.Getenv("BLOG_DB_NAME"),
 		DBUser:   os.Getenv("BLOG_DB_USER"),
 		DBPass:   os.Getenv("BLOG_DB_PASS"),
+		GrpcPort: os.Getenv("BLOGS_GRPC_PORT"),
 	}
 }

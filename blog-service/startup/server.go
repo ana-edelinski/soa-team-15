@@ -2,18 +2,23 @@ package startup
 
 import (
 	"blog-service/config"
+	"blog-service/domain"
 	"blog-service/handler"
 	"blog-service/repository"
 	"blog-service/service"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"time"
-	"blog-service/domain"
+
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
+	"google.golang.org/grpc"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+
+	blog "blog-service/proto/blog"
 )
 
 type Server struct {
@@ -27,26 +32,25 @@ func NewServer(config *config.Config) *Server {
 }
 
 func (server *Server) InitializeDb() *gorm.DB {
-    dsn := fmt.Sprintf(
-        "host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
-        server.config.DBHost,
-        server.config.DBUser,
-        server.config.DBPass,
-        server.config.DBName,
-        server.config.DBPort,
-    )
+	dsn := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+		server.config.DBHost,
+		server.config.DBUser,
+		server.config.DBPass,
+		server.config.DBName,
+		server.config.DBPort,
+	)
 
-    db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-    if err != nil {
-        log.Fatal(err)
-    }
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    if err := db.AutoMigrate(&domain.Blog{},&domain.Comment{}, &domain.Like{}); err != nil {
-        log.Fatal(err)
-    }
+	if err := db.AutoMigrate(&domain.Blog{}, &domain.Comment{}, &domain.Like{}); err != nil {
+		log.Fatal(err)
+	}
 
-
-    return db
+	return db
 }
 
 func (server *Server) Start() {
@@ -56,6 +60,21 @@ func (server *Server) Start() {
 	blogService := &service.BlogService{BlogRepository: blogRepository}
 	blogHandler := handler.NewBlogHandler(blogService)
 
+	go func() {
+		lis, err := net.Listen("tcp", fmt.Sprintf(":%s", server.config.GrpcPort))
+		if err != nil {
+			log.Fatalf("failed to listen: %v", err)
+		}
+
+		grpcServer := grpc.NewServer()
+		blog.RegisterBlogServiceServer(grpcServer, blog.NewBlogGrpcServer(blogService))
+
+		log.Printf("gRPC server for BlogService listening on %s", server.config.GrpcPort)
+		if err := grpcServer.Serve(lis); err != nil {
+			log.Fatalf("failed to serve gRPC: %v", err)
+		}
+	}()
+
 	commentRepo := repository.NewCommentRepository(db)
 	commentService := service.NewCommentService(commentRepo)
 	commentHandler := handler.NewCommentHandler(commentService)
@@ -63,7 +82,6 @@ func (server *Server) Start() {
 	likeRepo := repository.NewLikeRepository(db)
 	likeService := service.NewLikeService(likeRepo)
 	likeHandler := handler.NewLikeHandler(likeService)
-
 
 	router := mux.NewRouter()
 	router.HandleFunc("/api/blogs", blogHandler.CreateBlog).Methods("POST")
@@ -79,18 +97,15 @@ func (server *Server) Start() {
 
 	router.HandleFunc("/api/blogs/{blogId}/like", likeHandler.ToggleLike).Methods("POST")
 	router.HandleFunc("/api/blogs/{blogId}/like", likeHandler.CountLikes).Methods("GET")
-	router.HandleFunc("/api/blogs/{blogId}/likedByMe", likeHandler.IsLikedByUser).Methods("GET") 
-
-
+	router.HandleFunc("/api/blogs/{blogId}/likedByMe", likeHandler.IsLikedByUser).Methods("GET")
 
 	router.PathPrefix("/uploads/").Handler(http.StripPrefix("/uploads/", http.FileServer(http.Dir("./uploads/"))))
-
 
 	// Configure CORS
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{
-			"http://localhost:4200",  // Angular dev server
-			"http://frontend:80",     // Docker frontend service
+			"http://localhost:4200", // Angular dev server
+			"http://frontend:80",    // Docker frontend service
 		},
 		AllowedMethods: []string{
 			http.MethodGet,
