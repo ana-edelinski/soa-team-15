@@ -5,6 +5,7 @@ import (
 	"blog-service/service"
 	"context"
 	"os"
+	"time"
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
@@ -13,12 +14,21 @@ import (
 
 type BlogGrpcServer struct {
 	UnimplementedBlogServiceServer
-	BlogService *service.BlogService
-	LikeService *service.LikeService
+	BlogService    *service.BlogService
+	LikeService    *service.LikeService
+	CommentService *service.CommentService
 }
 
-func NewBlogGrpcServer(s *service.BlogService) *BlogGrpcServer {
-	return &BlogGrpcServer{BlogService: s}
+func NewBlogGrpcServer(
+	blogService *service.BlogService,
+	likeService *service.LikeService,
+	commentService *service.CommentService,
+) *BlogGrpcServer {
+	return &BlogGrpcServer{
+		BlogService:    blogService,
+		LikeService:    likeService,
+		CommentService: commentService,
+	}
 }
 
 func (s *BlogGrpcServer) CreateBlog(ctx context.Context, req *CreateBlogRequest) (*BlogDto, error) {
@@ -154,4 +164,69 @@ func (s *BlogGrpcServer) IsLikedByUser(ctx context.Context, req *IsLikedByUserRe
 		return nil, status.Errorf(codes.Internal, "failed to check like: %v", err)
 	}
 	return &IsLikedByUserResponse{Liked: liked}, nil
+}
+
+// CreateComment
+func (s *BlogGrpcServer) CreateComment(ctx context.Context, req *CreateCommentRequest) (*CommentDto, error) {
+	comment := &domain.Comment{
+		BlogID:   uuid.MustParse(req.BlogId),
+		AuthorID: req.AuthorId,
+		Content:  req.Content,
+	}
+
+	if err := s.CommentService.Create(comment); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to create comment: %v", err)
+	}
+
+	return toCommentDto(comment), nil
+}
+
+// GetComments
+func (s *BlogGrpcServer) GetComments(ctx context.Context, req *GetCommentsRequest) (*CommentsListResponse, error) {
+	comments, err := s.CommentService.GetByBlogID(req.BlogId)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get comments: %v", err)
+	}
+
+	resp := &CommentsListResponse{}
+	for _, c := range comments {
+		resp.Comments = append(resp.Comments, toCommentDto(&c))
+	}
+	return resp, nil
+}
+
+// UpdateComment
+func (s *BlogGrpcServer) UpdateComment(ctx context.Context, req *UpdateCommentRequest) (*CommentDto, error) {
+	existing, err := s.CommentService.GetByID(req.Id)
+	if err != nil {
+		return nil, status.Errorf(codes.NotFound, "comment not found: %v", err)
+	}
+
+	existing.Content = req.Content
+	existing.UpdatedAt = time.Now()
+
+	if err := s.CommentService.Update(existing); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to update comment: %v", err)
+	}
+
+	return toCommentDto(existing), nil
+}
+
+// DeleteComment
+func (s *BlogGrpcServer) DeleteComment(ctx context.Context, req *DeleteCommentRequest) (*DeleteCommentResponse, error) {
+	if err := s.CommentService.Delete(req.Id); err != nil {
+		return &DeleteCommentResponse{Success: false}, status.Errorf(codes.Internal, "failed to delete: %v", err)
+	}
+	return &DeleteCommentResponse{Success: true}, nil
+}
+
+func toCommentDto(c *domain.Comment) *CommentDto {
+	return &CommentDto{
+		Id:        c.ID.String(),
+		BlogId:    c.BlogID.String(),
+		AuthorId:  c.AuthorID,
+		Content:   c.Content,
+		CreatedAt: c.CreatedAt.String(),
+		UpdatedAt: c.UpdatedAt.String(),
+	}
 }

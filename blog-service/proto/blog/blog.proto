@@ -48,24 +48,51 @@ rpc UploadImage (UploadImageRequest) returns (UploadImageResponse) {
   }
 
   // Likes
-rpc ToggleLike (ToggleLikeRequest) returns (ToggleLikeResponse) {
-  option (google.api.http) = {
-    post: "/api/blogs/{blogId}/like"
-    body: "*"
-  };
-}
+  rpc ToggleLike (ToggleLikeRequest) returns (ToggleLikeResponse) {
+    option (google.api.http) = {
+      post: "/api/blogs/{blogId}/like"
+      body: "*"
+    };
+  }
 
-rpc CountLikes (CountLikesRequest) returns (CountLikesResponse) {
-  option (google.api.http) = {
-    get: "/api/blogs/{blogId}/like"
-  };
-}
+  rpc CountLikes (CountLikesRequest) returns (CountLikesResponse) {
+    option (google.api.http) = {
+      get: "/api/blogs/{blogId}/like"
+    };
+  }
 
-rpc IsLikedByUser (IsLikedByUserRequest) returns (IsLikedByUserResponse) {
-  option (google.api.http) = {
-    get: "/api/blogs/{blogId}/likedByMe"
-  };
-}
+  rpc IsLikedByUser (IsLikedByUserRequest) returns (IsLikedByUserResponse) {
+    option (google.api.http) = {
+      get: "/api/blogs/{blogId}/likedByMe"
+    };
+  }
+
+  //Comments
+  rpc CreateComment (CreateCommentRequest) returns (CommentDto) {
+    option (google.api.http) = {
+      post: "/api/blogs/{blogId}/comments"
+      body: "*"
+    };
+  }
+
+  rpc GetComments (GetCommentsRequest) returns (CommentsListResponse) {
+    option (google.api.http) = {
+      get: "/api/blogs/{blogId}/comments"
+    };
+  }
+
+  rpc UpdateComment (UpdateCommentRequest) returns (CommentDto) {
+    option (google.api.http) = {
+      put: "/api/comments/{id}"
+      body: "*"
+    };
+  }
+
+  rpc DeleteComment (DeleteCommentRequest) returns (DeleteCommentResponse) {
+    option (google.api.http) = {
+      delete: "/api/comments/{id}"
+    };
+  }
 
 }
 
@@ -142,4 +169,41 @@ message IsLikedByUserRequest {
 }
 message IsLikedByUserResponse {
   bool liked = 1;
+}
+
+//Messages for Comments
+message CommentDto {
+  string id = 1;
+  string blogId = 2;
+  int64 authorId = 3;
+  string content = 4;
+  string createdAt = 5;
+  string updatedAt = 6;
+}
+
+message CreateCommentRequest {
+  string blogId = 1;
+  int64 authorId = 2;
+  string content = 3;
+}
+
+message GetCommentsRequest {
+  string blogId = 1;
+}
+
+message CommentsListResponse {
+  repeated CommentDto comments = 1;
+}
+
+message UpdateCommentRequest {
+  string id = 1;
+  string content = 2;
+}
+
+message DeleteCommentRequest {
+  string id = 1;
+}
+
+message DeleteCommentResponse {
+  bool success = 1;
 }

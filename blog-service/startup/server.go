@@ -57,9 +57,14 @@ func (server *Server) Start() {
 	db := server.InitializeDb()
 
 	blogRepository := &repository.BlogRepository{DatabaseConnection: db}
+
 	likeRepo := repository.NewLikeRepository(db)
 	likeService := service.NewLikeService(likeRepo)
 	likeHandler := handler.NewLikeHandler(likeService)
+
+	commentRepo := repository.NewCommentRepository(db)
+	commentService := service.NewCommentService(commentRepo)
+	commentHandler := handler.NewCommentHandler(commentService)
 
 	blogService := &service.BlogService{BlogRepository: blogRepository, LikeService: likeService}
 	blogHandler := handler.NewBlogHandler(blogService)
@@ -71,17 +76,16 @@ func (server *Server) Start() {
 		}
 
 		grpcServer := grpc.NewServer()
-		blog.RegisterBlogServiceServer(grpcServer, blog.NewBlogGrpcServer(blogService))
+		blog.RegisterBlogServiceServer(
+			grpcServer,
+			blog.NewBlogGrpcServer(blogService, likeService, commentService),
+		)
 
 		log.Printf("gRPC server for BlogService listening on %s", server.config.GrpcPort)
 		if err := grpcServer.Serve(lis); err != nil {
 			log.Fatalf("failed to serve gRPC: %v", err)
 		}
 	}()
-
-	commentRepo := repository.NewCommentRepository(db)
-	commentService := service.NewCommentService(commentRepo)
-	commentHandler := handler.NewCommentHandler(commentService)
 
 	router := mux.NewRouter()
 	router.HandleFunc("/api/blogs", blogHandler.CreateBlog).Methods("POST")

@@ -20,15 +20,20 @@ export class CommentComponent {
     this.loadComments();
   }
 
-  loadComments() {
-    this.http.get<any[]>(`http://localhost:8081/api/blogs/${this.blogId}/comments`)
-      .subscribe({
-        next: (res) => {
-          this.comments = res.reverse(); // Najnoviji prvi
-        },
-        error: (err) => console.error('❌ Greška pri dobavljanju komentara:', err)
-      });
-  }
+loadComments() {
+  this.http.get<{ comments: any[] }>(`http://localhost:8090/api/blogs/${this.blogId}/comments`)
+    .subscribe({
+      next: (res) => {
+        this.comments = (res.comments || []).map(c => ({
+          ...c,
+          createdAt: new Date(c.createdAt),  // ✅ konvertujemo string u Date
+          updatedAt: new Date(c.updatedAt)
+        })).reverse(); // najnoviji prvi
+      },
+      error: (err) => console.error('❌ Greška pri dobavljanju komentara:', err)
+    });
+}
+
 
   postComment() {
 
@@ -43,7 +48,7 @@ export class CommentComponent {
       content: this.commentText
     };
 
-    this.http.post('http://localhost:8081/api/blogs/' + this.blogId + '/comments', body)
+    this.http.post('http://localhost:8090/api/blogs/' + this.blogId + '/comments', body)
       .subscribe({
         next: (res) => {
           console.log('✅ Komentar uspešno poslat!', res);

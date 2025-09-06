@@ -831,6 +831,379 @@ func (x *IsLikedByUserResponse) GetLiked() bool {
 	return false
 }
 
+// Messages for Comments
+type CommentDto struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	BlogId        string                 `protobuf:"bytes,2,opt,name=blogId,proto3" json:"blogId,omitempty"`
+	AuthorId      int64                  `protobuf:"varint,3,opt,name=authorId,proto3" json:"authorId,omitempty"`
+	Content       string                 `protobuf:"bytes,4,opt,name=content,proto3" json:"content,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,5,opt,name=createdAt,proto3" json:"createdAt,omitempty"`
+	UpdatedAt     string                 `protobuf:"bytes,6,opt,name=updatedAt,proto3" json:"updatedAt,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CommentDto) Reset() {
+	*x = CommentDto{}
+	mi := &file_blog_blog_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CommentDto) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CommentDto) ProtoMessage() {}
+
+func (x *CommentDto) ProtoReflect() protoreflect.Message {
+	mi := &file_blog_blog_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CommentDto.ProtoReflect.Descriptor instead.
+func (*CommentDto) Descriptor() ([]byte, []int) {
+	return file_blog_blog_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *CommentDto) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *CommentDto) GetBlogId() string {
+	if x != nil {
+		return x.BlogId
+	}
+	return ""
+}
+
+func (x *CommentDto) GetAuthorId() int64 {
+	if x != nil {
+		return x.AuthorId
+	}
+	return 0
+}
+
+func (x *CommentDto) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
+}
+
+func (x *CommentDto) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+func (x *CommentDto) GetUpdatedAt() string {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return ""
+}
+
+type CreateCommentRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	BlogId        string                 `protobuf:"bytes,1,opt,name=blogId,proto3" json:"blogId,omitempty"`
+	AuthorId      int64                  `protobuf:"varint,2,opt,name=authorId,proto3" json:"authorId,omitempty"`
+	Content       string                 `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateCommentRequest) Reset() {
+	*x = CreateCommentRequest{}
+	mi := &file_blog_blog_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateCommentRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateCommentRequest) ProtoMessage() {}
+
+func (x *CreateCommentRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_blog_blog_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateCommentRequest.ProtoReflect.Descriptor instead.
+func (*CreateCommentRequest) Descriptor() ([]byte, []int) {
+	return file_blog_blog_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *CreateCommentRequest) GetBlogId() string {
+	if x != nil {
+		return x.BlogId
+	}
+	return ""
+}
+
+func (x *CreateCommentRequest) GetAuthorId() int64 {
+	if x != nil {
+		return x.AuthorId
+	}
+	return 0
+}
+
+func (x *CreateCommentRequest) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
+}
+
+type GetCommentsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	BlogId        string                 `protobuf:"bytes,1,opt,name=blogId,proto3" json:"blogId,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCommentsRequest) Reset() {
+	*x = GetCommentsRequest{}
+	mi := &file_blog_blog_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCommentsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCommentsRequest) ProtoMessage() {}
+
+func (x *GetCommentsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_blog_blog_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCommentsRequest.ProtoReflect.Descriptor instead.
+func (*GetCommentsRequest) Descriptor() ([]byte, []int) {
+	return file_blog_blog_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *GetCommentsRequest) GetBlogId() string {
+	if x != nil {
+		return x.BlogId
+	}
+	return ""
+}
+
+type CommentsListResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Comments      []*CommentDto          `protobuf:"bytes,1,rep,name=comments,proto3" json:"comments,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CommentsListResponse) Reset() {
+	*x = CommentsListResponse{}
+	mi := &file_blog_blog_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CommentsListResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CommentsListResponse) ProtoMessage() {}
+
+func (x *CommentsListResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_blog_blog_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CommentsListResponse.ProtoReflect.Descriptor instead.
+func (*CommentsListResponse) Descriptor() ([]byte, []int) {
+	return file_blog_blog_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *CommentsListResponse) GetComments() []*CommentDto {
+	if x != nil {
+		return x.Comments
+	}
+	return nil
+}
+
+type UpdateCommentRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Content       string                 `protobuf:"bytes,2,opt,name=content,proto3" json:"content,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateCommentRequest) Reset() {
+	*x = UpdateCommentRequest{}
+	mi := &file_blog_blog_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateCommentRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateCommentRequest) ProtoMessage() {}
+
+func (x *UpdateCommentRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_blog_blog_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateCommentRequest.ProtoReflect.Descriptor instead.
+func (*UpdateCommentRequest) Descriptor() ([]byte, []int) {
+	return file_blog_blog_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *UpdateCommentRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *UpdateCommentRequest) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
+}
+
+type DeleteCommentRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteCommentRequest) Reset() {
+	*x = DeleteCommentRequest{}
+	mi := &file_blog_blog_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteCommentRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteCommentRequest) ProtoMessage() {}
+
+func (x *DeleteCommentRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_blog_blog_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteCommentRequest.ProtoReflect.Descriptor instead.
+func (*DeleteCommentRequest) Descriptor() ([]byte, []int) {
+	return file_blog_blog_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *DeleteCommentRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type DeleteCommentResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteCommentResponse) Reset() {
+	*x = DeleteCommentResponse{}
+	mi := &file_blog_blog_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteCommentResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteCommentResponse) ProtoMessage() {}
+
+func (x *DeleteCommentResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_blog_blog_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteCommentResponse.ProtoReflect.Descriptor instead.
+func (*DeleteCommentResponse) Descriptor() ([]byte, []int) {
+	return file_blog_blog_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *DeleteCommentResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
 var File_blog_blog_proto protoreflect.FileDescriptor
 
 const file_blog_blog_proto_rawDesc = "" +
@@ -882,7 +1255,30 @@ const file_blog_blog_proto_rawDesc = "" +
 	"\x06blogId\x18\x01 \x01(\tR\x06blogId\x12\x1a\n" +
 	"\bauthorId\x18\x02 \x01(\x03R\bauthorId\"-\n" +
 	"\x15IsLikedByUserResponse\x12\x14\n" +
-	"\x05liked\x18\x01 \x01(\bR\x05liked2\xd3\x06\n" +
+	"\x05liked\x18\x01 \x01(\bR\x05liked\"\xa6\x01\n" +
+	"\n" +
+	"CommentDto\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x16\n" +
+	"\x06blogId\x18\x02 \x01(\tR\x06blogId\x12\x1a\n" +
+	"\bauthorId\x18\x03 \x01(\x03R\bauthorId\x12\x18\n" +
+	"\acontent\x18\x04 \x01(\tR\acontent\x12\x1c\n" +
+	"\tcreatedAt\x18\x05 \x01(\tR\tcreatedAt\x12\x1c\n" +
+	"\tupdatedAt\x18\x06 \x01(\tR\tupdatedAt\"d\n" +
+	"\x14CreateCommentRequest\x12\x16\n" +
+	"\x06blogId\x18\x01 \x01(\tR\x06blogId\x12\x1a\n" +
+	"\bauthorId\x18\x02 \x01(\x03R\bauthorId\x12\x18\n" +
+	"\acontent\x18\x03 \x01(\tR\acontent\",\n" +
+	"\x12GetCommentsRequest\x12\x16\n" +
+	"\x06blogId\x18\x01 \x01(\tR\x06blogId\"E\n" +
+	"\x14CommentsListResponse\x12-\n" +
+	"\bcomments\x18\x01 \x03(\v2\x11.blogs.CommentDtoR\bcomments\"@\n" +
+	"\x14UpdateCommentRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n" +
+	"\acontent\x18\x02 \x01(\tR\acontent\"&\n" +
+	"\x14DeleteCommentRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"1\n" +
+	"\x15DeleteCommentResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess2\xf2\t\n" +
 	"\vBlogService\x12M\n" +
 	"\n" +
 	"CreateBlog\x12\x18.blogs.CreateBlogRequest\x1a\x0e.blogs.BlogDto\"\x15\x82\xd3\xe4\x93\x02\x0f:\x01*\"\n" +
@@ -899,7 +1295,11 @@ const file_blog_blog_proto_rawDesc = "" +
 	"ToggleLike\x12\x18.blogs.ToggleLikeRequest\x1a\x19.blogs.ToggleLikeResponse\"#\x82\xd3\xe4\x93\x02\x1d:\x01*\"\x18/api/blogs/{blogId}/like\x12c\n" +
 	"\n" +
 	"CountLikes\x12\x18.blogs.CountLikesRequest\x1a\x19.blogs.CountLikesResponse\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/api/blogs/{blogId}/like\x12q\n" +
-	"\rIsLikedByUser\x12\x1b.blogs.IsLikedByUserRequest\x1a\x1c.blogs.IsLikedByUserResponse\"%\x82\xd3\xe4\x93\x02\x1f\x12\x1d/api/blogs/{blogId}/likedByMeB\x11Z\x0fproto/blog;blogb\x06proto3"
+	"\rIsLikedByUser\x12\x1b.blogs.IsLikedByUserRequest\x1a\x1c.blogs.IsLikedByUserResponse\"%\x82\xd3\xe4\x93\x02\x1f\x12\x1d/api/blogs/{blogId}/likedByMe\x12h\n" +
+	"\rCreateComment\x12\x1b.blogs.CreateCommentRequest\x1a\x11.blogs.CommentDto\"'\x82\xd3\xe4\x93\x02!:\x01*\"\x1c/api/blogs/{blogId}/comments\x12k\n" +
+	"\vGetComments\x12\x19.blogs.GetCommentsRequest\x1a\x1b.blogs.CommentsListResponse\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/api/blogs/{blogId}/comments\x12^\n" +
+	"\rUpdateComment\x12\x1b.blogs.UpdateCommentRequest\x1a\x11.blogs.CommentDto\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\x1a\x12/api/comments/{id}\x12f\n" +
+	"\rDeleteComment\x12\x1b.blogs.DeleteCommentRequest\x1a\x1c.blogs.DeleteCommentResponse\"\x1a\x82\xd3\xe4\x93\x02\x14*\x12/api/comments/{id}B\x11Z\x0fproto/blog;blogb\x06proto3"
 
 var (
 	file_blog_blog_proto_rawDescOnce sync.Once
@@ -913,7 +1313,7 @@ func file_blog_blog_proto_rawDescGZIP() []byte {
 	return file_blog_blog_proto_rawDescData
 }
 
-var file_blog_blog_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_blog_blog_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
 var file_blog_blog_proto_goTypes = []any{
 	(*BlogDto)(nil),               // 0: blogs.BlogDto
 	(*CreateBlogRequest)(nil),     // 1: blogs.CreateBlogRequest
@@ -931,32 +1331,48 @@ var file_blog_blog_proto_goTypes = []any{
 	(*CountLikesResponse)(nil),    // 13: blogs.CountLikesResponse
 	(*IsLikedByUserRequest)(nil),  // 14: blogs.IsLikedByUserRequest
 	(*IsLikedByUserResponse)(nil), // 15: blogs.IsLikedByUserResponse
+	(*CommentDto)(nil),            // 16: blogs.CommentDto
+	(*CreateCommentRequest)(nil),  // 17: blogs.CreateCommentRequest
+	(*GetCommentsRequest)(nil),    // 18: blogs.GetCommentsRequest
+	(*CommentsListResponse)(nil),  // 19: blogs.CommentsListResponse
+	(*UpdateCommentRequest)(nil),  // 20: blogs.UpdateCommentRequest
+	(*DeleteCommentRequest)(nil),  // 21: blogs.DeleteCommentRequest
+	(*DeleteCommentResponse)(nil), // 22: blogs.DeleteCommentResponse
 }
 var file_blog_blog_proto_depIdxs = []int32{
 	0,  // 0: blogs.BlogsListResponse.blogs:type_name -> blogs.BlogDto
-	1,  // 1: blogs.BlogService.CreateBlog:input_type -> blogs.CreateBlogRequest
-	2,  // 2: blogs.BlogService.GetBlog:input_type -> blogs.GetBlogRequest
-	8,  // 3: blogs.BlogService.UploadImage:input_type -> blogs.UploadImageRequest
-	3,  // 4: blogs.BlogService.GetAllBlogs:input_type -> blogs.GetAllBlogsRequest
-	5,  // 5: blogs.BlogService.UpdateBlog:input_type -> blogs.UpdateBlogRequest
-	6,  // 6: blogs.BlogService.DeleteBlog:input_type -> blogs.DeleteBlogRequest
-	10, // 7: blogs.BlogService.ToggleLike:input_type -> blogs.ToggleLikeRequest
-	12, // 8: blogs.BlogService.CountLikes:input_type -> blogs.CountLikesRequest
-	14, // 9: blogs.BlogService.IsLikedByUser:input_type -> blogs.IsLikedByUserRequest
-	0,  // 10: blogs.BlogService.CreateBlog:output_type -> blogs.BlogDto
-	0,  // 11: blogs.BlogService.GetBlog:output_type -> blogs.BlogDto
-	9,  // 12: blogs.BlogService.UploadImage:output_type -> blogs.UploadImageResponse
-	4,  // 13: blogs.BlogService.GetAllBlogs:output_type -> blogs.BlogsListResponse
-	0,  // 14: blogs.BlogService.UpdateBlog:output_type -> blogs.BlogDto
-	7,  // 15: blogs.BlogService.DeleteBlog:output_type -> blogs.DeleteBlogResponse
-	11, // 16: blogs.BlogService.ToggleLike:output_type -> blogs.ToggleLikeResponse
-	13, // 17: blogs.BlogService.CountLikes:output_type -> blogs.CountLikesResponse
-	15, // 18: blogs.BlogService.IsLikedByUser:output_type -> blogs.IsLikedByUserResponse
-	10, // [10:19] is the sub-list for method output_type
-	1,  // [1:10] is the sub-list for method input_type
-	1,  // [1:1] is the sub-list for extension type_name
-	1,  // [1:1] is the sub-list for extension extendee
-	0,  // [0:1] is the sub-list for field type_name
+	16, // 1: blogs.CommentsListResponse.comments:type_name -> blogs.CommentDto
+	1,  // 2: blogs.BlogService.CreateBlog:input_type -> blogs.CreateBlogRequest
+	2,  // 3: blogs.BlogService.GetBlog:input_type -> blogs.GetBlogRequest
+	8,  // 4: blogs.BlogService.UploadImage:input_type -> blogs.UploadImageRequest
+	3,  // 5: blogs.BlogService.GetAllBlogs:input_type -> blogs.GetAllBlogsRequest
+	5,  // 6: blogs.BlogService.UpdateBlog:input_type -> blogs.UpdateBlogRequest
+	6,  // 7: blogs.BlogService.DeleteBlog:input_type -> blogs.DeleteBlogRequest
+	10, // 8: blogs.BlogService.ToggleLike:input_type -> blogs.ToggleLikeRequest
+	12, // 9: blogs.BlogService.CountLikes:input_type -> blogs.CountLikesRequest
+	14, // 10: blogs.BlogService.IsLikedByUser:input_type -> blogs.IsLikedByUserRequest
+	17, // 11: blogs.BlogService.CreateComment:input_type -> blogs.CreateCommentRequest
+	18, // 12: blogs.BlogService.GetComments:input_type -> blogs.GetCommentsRequest
+	20, // 13: blogs.BlogService.UpdateComment:input_type -> blogs.UpdateCommentRequest
+	21, // 14: blogs.BlogService.DeleteComment:input_type -> blogs.DeleteCommentRequest
+	0,  // 15: blogs.BlogService.CreateBlog:output_type -> blogs.BlogDto
+	0,  // 16: blogs.BlogService.GetBlog:output_type -> blogs.BlogDto
+	9,  // 17: blogs.BlogService.UploadImage:output_type -> blogs.UploadImageResponse
+	4,  // 18: blogs.BlogService.GetAllBlogs:output_type -> blogs.BlogsListResponse
+	0,  // 19: blogs.BlogService.UpdateBlog:output_type -> blogs.BlogDto
+	7,  // 20: blogs.BlogService.DeleteBlog:output_type -> blogs.DeleteBlogResponse
+	11, // 21: blogs.BlogService.ToggleLike:output_type -> blogs.ToggleLikeResponse
+	13, // 22: blogs.BlogService.CountLikes:output_type -> blogs.CountLikesResponse
+	15, // 23: blogs.BlogService.IsLikedByUser:output_type -> blogs.IsLikedByUserResponse
+	16, // 24: blogs.BlogService.CreateComment:output_type -> blogs.CommentDto
+	19, // 25: blogs.BlogService.GetComments:output_type -> blogs.CommentsListResponse
+	16, // 26: blogs.BlogService.UpdateComment:output_type -> blogs.CommentDto
+	22, // 27: blogs.BlogService.DeleteComment:output_type -> blogs.DeleteCommentResponse
+	15, // [15:28] is the sub-list for method output_type
+	2,  // [2:15] is the sub-list for method input_type
+	2,  // [2:2] is the sub-list for extension type_name
+	2,  // [2:2] is the sub-list for extension extendee
+	0,  // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_blog_blog_proto_init() }
@@ -970,7 +1386,7 @@ func file_blog_blog_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_blog_blog_proto_rawDesc), len(file_blog_blog_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   16,
+			NumMessages:   23,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
