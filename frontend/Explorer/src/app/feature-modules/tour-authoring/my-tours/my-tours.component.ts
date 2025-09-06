@@ -23,7 +23,10 @@ export class MyToursComponent implements OnInit {
   ngOnInit(): void {
     if (this.user) {
       this.tourService.getToursForAuthor(this.user.id).subscribe({
-        next: (data) => this.tours = data,
+        next: (data: any) => {
+          console.log("Tours from API:", data);
+          this.tours = data.tours;   
+        },
         error: (err) => {
           console.error(err);
           this.error_message = 'Failed to load tours.';
