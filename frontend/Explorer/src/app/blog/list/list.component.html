@@ -14,17 +14,17 @@
       <markdown [data]="blog.content"></markdown>
     </div>
 
-    <div *ngIf="blog.imagePaths && blog.imagePaths.length > 0">
-      <h4 style="margin-bottom: 10px;">Slike:</h4>
-      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
-        <img *ngFor="let imgPath of blog.imagePaths" 
-             [src]="'http://localhost:8081' + imgPath" 
-             width="150" 
-             style="border-radius: 6px; border: 1px solid #ccc;" 
-             alt="Blog image" />
-      </div>
+  <div *ngIf="blog.images && blog.images.length > 0">
+    <h4 style="margin-bottom: 10px;">Slike:</h4>
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
+      <img *ngFor="let imgPath of blog.images" 
+          [src]="'http://localhost:8090' + imgPath" 
+          width="150" 
+          style="border-radius: 6px; border: 1px solid #ccc;" 
+          alt="Blog image" />
     </div>
-    
+  </div>
+
       <xp-like [blogId]="blog.id"></xp-like>
 
         <!-- 💬 Komentari -->

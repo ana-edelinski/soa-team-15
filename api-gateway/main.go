@@ -111,13 +111,24 @@ func main() {
 		log.Fatalln("Failed to register BlogService handler:", err)
 	}
 
+	// Proxy za /uploads -> preusmerava na blog-service (8081)
+	httpMux := http.NewServeMux()
+
+	httpMux.HandleFunc("/uploads/", func(w http.ResponseWriter, r *http.Request) {
+		target := "http://localhost:8081" + r.URL.Path // gde blog-service sluša
+		http.Redirect(w, r, target, http.StatusTemporaryRedirect)
+	})
+
+	// Sve ostalo ide kroz gRPC-Gateway mux
+	httpMux.Handle("/", gwmux)
+
 	// CORS
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:4200"}, // Angular frontend
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"*"},
 		AllowCredentials: true,
-	}).Handler(gwmux)
+	}).Handler(httpMux)
 
 	// HTTP server koji koristi CORS
 	gwServer := &http.Server{
