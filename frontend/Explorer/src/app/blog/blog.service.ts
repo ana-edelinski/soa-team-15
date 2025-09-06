@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class BlogService {
@@ -8,7 +8,8 @@ export class BlogService {
 
   constructor(private http: HttpClient) {}
 
-  getAllBlogs(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+  getAllBlogs(): Observable<{ blogs: any[] }> {
+    return this.http.get<{ blogs: any[] }>(this.apiUrl);
   }
+
 }

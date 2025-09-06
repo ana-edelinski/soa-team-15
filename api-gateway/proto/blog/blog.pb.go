@@ -454,6 +454,102 @@ func (x *DeleteBlogResponse) GetSuccess() bool {
 	return false
 }
 
+type UploadImageRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	File          []byte                 `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`         // binary file content
+	Filename      string                 `protobuf:"bytes,2,opt,name=filename,proto3" json:"filename,omitempty"` // original filename (opciono)
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UploadImageRequest) Reset() {
+	*x = UploadImageRequest{}
+	mi := &file_blog_blog_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UploadImageRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UploadImageRequest) ProtoMessage() {}
+
+func (x *UploadImageRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_blog_blog_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UploadImageRequest.ProtoReflect.Descriptor instead.
+func (*UploadImageRequest) Descriptor() ([]byte, []int) {
+	return file_blog_blog_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *UploadImageRequest) GetFile() []byte {
+	if x != nil {
+		return x.File
+	}
+	return nil
+}
+
+func (x *UploadImageRequest) GetFilename() string {
+	if x != nil {
+		return x.Filename
+	}
+	return ""
+}
+
+type UploadImageResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Url           string                 `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"` // putanja ili URL do uploadovane slike
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UploadImageResponse) Reset() {
+	*x = UploadImageResponse{}
+	mi := &file_blog_blog_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UploadImageResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UploadImageResponse) ProtoMessage() {}
+
+func (x *UploadImageResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_blog_blog_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UploadImageResponse.ProtoReflect.Descriptor instead.
+func (*UploadImageResponse) Descriptor() ([]byte, []int) {
+	return file_blog_blog_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *UploadImageResponse) GetUrl() string {
+	if x != nil {
+		return x.Url
+	}
+	return ""
+}
+
 var File_blog_blog_proto protoreflect.FileDescriptor
 
 const file_blog_blog_proto_rawDesc = "" +
@@ -486,11 +582,17 @@ const file_blog_blog_proto_rawDesc = "" +
 	"\x11DeleteBlogRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\".\n" +
 	"\x12DeleteBlogResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess2\xaf\x03\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"D\n" +
+	"\x12UploadImageRequest\x12\x12\n" +
+	"\x04file\x18\x01 \x01(\fR\x04file\x12\x1a\n" +
+	"\bfilename\x18\x02 \x01(\tR\bfilename\"'\n" +
+	"\x13UploadImageResponse\x12\x10\n" +
+	"\x03url\x18\x01 \x01(\tR\x03url2\x93\x04\n" +
 	"\vBlogService\x12M\n" +
 	"\n" +
 	"CreateBlog\x12\x18.blogs.CreateBlogRequest\x1a\x0e.blogs.BlogDto\"\x15\x82\xd3\xe4\x93\x02\x0f:\x01*\"\n" +
-	"/api/blogs\x12I\n" +
+	"/api/blogs\x12b\n" +
+	"\vUploadImage\x12\x19.blogs.UploadImageRequest\x1a\x1a.blogs.UploadImageResponse\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/api/blogs/upload\x12I\n" +
 	"\aGetBlog\x12\x15.blogs.GetBlogRequest\x1a\x0e.blogs.BlogDto\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/api/blogs/{id}\x12V\n" +
 	"\vGetAllBlogs\x12\x19.blogs.GetAllBlogsRequest\x1a\x18.blogs.BlogsListResponse\"\x12\x82\xd3\xe4\x93\x02\f\x12\n" +
 	"/api/blogs\x12R\n" +
@@ -511,31 +613,35 @@ func file_blog_blog_proto_rawDescGZIP() []byte {
 	return file_blog_blog_proto_rawDescData
 }
 
-var file_blog_blog_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_blog_blog_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_blog_blog_proto_goTypes = []any{
-	(*BlogDto)(nil),            // 0: blogs.BlogDto
-	(*CreateBlogRequest)(nil),  // 1: blogs.CreateBlogRequest
-	(*GetBlogRequest)(nil),     // 2: blogs.GetBlogRequest
-	(*GetAllBlogsRequest)(nil), // 3: blogs.GetAllBlogsRequest
-	(*BlogsListResponse)(nil),  // 4: blogs.BlogsListResponse
-	(*UpdateBlogRequest)(nil),  // 5: blogs.UpdateBlogRequest
-	(*DeleteBlogRequest)(nil),  // 6: blogs.DeleteBlogRequest
-	(*DeleteBlogResponse)(nil), // 7: blogs.DeleteBlogResponse
+	(*BlogDto)(nil),             // 0: blogs.BlogDto
+	(*CreateBlogRequest)(nil),   // 1: blogs.CreateBlogRequest
+	(*GetBlogRequest)(nil),      // 2: blogs.GetBlogRequest
+	(*GetAllBlogsRequest)(nil),  // 3: blogs.GetAllBlogsRequest
+	(*BlogsListResponse)(nil),   // 4: blogs.BlogsListResponse
+	(*UpdateBlogRequest)(nil),   // 5: blogs.UpdateBlogRequest
+	(*DeleteBlogRequest)(nil),   // 6: blogs.DeleteBlogRequest
+	(*DeleteBlogResponse)(nil),  // 7: blogs.DeleteBlogResponse
+	(*UploadImageRequest)(nil),  // 8: blogs.UploadImageRequest
+	(*UploadImageResponse)(nil), // 9: blogs.UploadImageResponse
 }
 var file_blog_blog_proto_depIdxs = []int32{
 	0, // 0: blogs.BlogsListResponse.blogs:type_name -> blogs.BlogDto
 	1, // 1: blogs.BlogService.CreateBlog:input_type -> blogs.CreateBlogRequest
-	2, // 2: blogs.BlogService.GetBlog:input_type -> blogs.GetBlogRequest
-	3, // 3: blogs.BlogService.GetAllBlogs:input_type -> blogs.GetAllBlogsRequest
-	5, // 4: blogs.BlogService.UpdateBlog:input_type -> blogs.UpdateBlogRequest
-	6, // 5: blogs.BlogService.DeleteBlog:input_type -> blogs.DeleteBlogRequest
-	0, // 6: blogs.BlogService.CreateBlog:output_type -> blogs.BlogDto
-	0, // 7: blogs.BlogService.GetBlog:output_type -> blogs.BlogDto
-	4, // 8: blogs.BlogService.GetAllBlogs:output_type -> blogs.BlogsListResponse
-	0, // 9: blogs.BlogService.UpdateBlog:output_type -> blogs.BlogDto
-	7, // 10: blogs.BlogService.DeleteBlog:output_type -> blogs.DeleteBlogResponse
-	6, // [6:11] is the sub-list for method output_type
-	1, // [1:6] is the sub-list for method input_type
+	8, // 2: blogs.BlogService.UploadImage:input_type -> blogs.UploadImageRequest
+	2, // 3: blogs.BlogService.GetBlog:input_type -> blogs.GetBlogRequest
+	3, // 4: blogs.BlogService.GetAllBlogs:input_type -> blogs.GetAllBlogsRequest
+	5, // 5: blogs.BlogService.UpdateBlog:input_type -> blogs.UpdateBlogRequest
+	6, // 6: blogs.BlogService.DeleteBlog:input_type -> blogs.DeleteBlogRequest
+	0, // 7: blogs.BlogService.CreateBlog:output_type -> blogs.BlogDto
+	9, // 8: blogs.BlogService.UploadImage:output_type -> blogs.UploadImageResponse
+	0, // 9: blogs.BlogService.GetBlog:output_type -> blogs.BlogDto
+	4, // 10: blogs.BlogService.GetAllBlogs:output_type -> blogs.BlogsListResponse
+	0, // 11: blogs.BlogService.UpdateBlog:output_type -> blogs.BlogDto
+	7, // 12: blogs.BlogService.DeleteBlog:output_type -> blogs.DeleteBlogResponse
+	7, // [7:13] is the sub-list for method output_type
+	1, // [1:7] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
 	1, // [1:1] is the sub-list for extension extendee
 	0, // [0:1] is the sub-list for field type_name
@@ -552,7 +658,7 @@ func file_blog_blog_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_blog_blog_proto_rawDesc), len(file_blog_blog_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

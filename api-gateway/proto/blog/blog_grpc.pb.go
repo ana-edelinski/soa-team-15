@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	BlogService_CreateBlog_FullMethodName  = "/blogs.BlogService/CreateBlog"
+	BlogService_UploadImage_FullMethodName = "/blogs.BlogService/UploadImage"
 	BlogService_GetBlog_FullMethodName     = "/blogs.BlogService/GetBlog"
 	BlogService_GetAllBlogs_FullMethodName = "/blogs.BlogService/GetAllBlogs"
 	BlogService_UpdateBlog_FullMethodName  = "/blogs.BlogService/UpdateBlog"
@@ -31,6 +32,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BlogServiceClient interface {
 	CreateBlog(ctx context.Context, in *CreateBlogRequest, opts ...grpc.CallOption) (*BlogDto, error)
+	UploadImage(ctx context.Context, in *UploadImageRequest, opts ...grpc.CallOption) (*UploadImageResponse, error)
 	GetBlog(ctx context.Context, in *GetBlogRequest, opts ...grpc.CallOption) (*BlogDto, error)
 	GetAllBlogs(ctx context.Context, in *GetAllBlogsRequest, opts ...grpc.CallOption) (*BlogsListResponse, error)
 	UpdateBlog(ctx context.Context, in *UpdateBlogRequest, opts ...grpc.CallOption) (*BlogDto, error)
@@ -49,6 +51,16 @@ func (c *blogServiceClient) CreateBlog(ctx context.Context, in *CreateBlogReques
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(BlogDto)
 	err := c.cc.Invoke(ctx, BlogService_CreateBlog_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *blogServiceClient) UploadImage(ctx context.Context, in *UploadImageRequest, opts ...grpc.CallOption) (*UploadImageResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UploadImageResponse)
+	err := c.cc.Invoke(ctx, BlogService_UploadImage_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -100,6 +112,7 @@ func (c *blogServiceClient) DeleteBlog(ctx context.Context, in *DeleteBlogReques
 // for forward compatibility.
 type BlogServiceServer interface {
 	CreateBlog(context.Context, *CreateBlogRequest) (*BlogDto, error)
+	UploadImage(context.Context, *UploadImageRequest) (*UploadImageResponse, error)
 	GetBlog(context.Context, *GetBlogRequest) (*BlogDto, error)
 	GetAllBlogs(context.Context, *GetAllBlogsRequest) (*BlogsListResponse, error)
 	UpdateBlog(context.Context, *UpdateBlogRequest) (*BlogDto, error)
@@ -116,6 +129,9 @@ type UnimplementedBlogServiceServer struct{}
 
 func (UnimplementedBlogServiceServer) CreateBlog(context.Context, *CreateBlogRequest) (*BlogDto, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateBlog not implemented")
+}
+func (UnimplementedBlogServiceServer) UploadImage(context.Context, *UploadImageRequest) (*UploadImageResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UploadImage not implemented")
 }
 func (UnimplementedBlogServiceServer) GetBlog(context.Context, *GetBlogRequest) (*BlogDto, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBlog not implemented")
@@ -164,6 +180,24 @@ func _BlogService_CreateBlog_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(BlogServiceServer).CreateBlog(ctx, req.(*CreateBlogRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BlogService_UploadImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UploadImageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BlogServiceServer).UploadImage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BlogService_UploadImage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BlogServiceServer).UploadImage(ctx, req.(*UploadImageRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -250,6 +284,10 @@ var BlogService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateBlog",
 			Handler:    _BlogService_CreateBlog_Handler,
+		},
+		{
+			MethodName: "UploadImage",
+			Handler:    _BlogService_UploadImage_Handler,
 		},
 		{
 			MethodName: "GetBlog",

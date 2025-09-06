@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/infrastructure/auth/auth.service';
 import { User } from 'src/app/infrastructure/auth/model/user.model';
+import { forkJoin, map, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-create',
@@ -58,53 +59,78 @@ export class CreateComponent {
     this.imagePreviews.splice(index, 1);
   }
 
- createBlog() {
-  console.log('🔄 Form submitted');
-  console.log('📦 Blog:', this.blog);
+uploadImage(file: File): Observable<string> {
+  return new Observable(observer => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (!reader.result) {
+        observer.error("FileReader result is empty");
+        return;
+      }
 
-  this.blog.authorId = this.user.id.toString();
+      const base64 = (reader.result as string).split(',')[1]; // samo base64 deo
+      if (!base64) {
+        observer.error("Base64 encoding failed");
+        return;
+      }
 
-  // Validacija: sva polja osim slika moraju biti popunjena
-  if (!this.blog.title || !this.blog.content || !this.blog.authorId) {
-    alert("Please fill in all required fields!");
-    return;
-  }
+      this.http.post<{ url: string }>(
+        'http://localhost:8090/api/blogs/upload',
+        { file: base64, filename: file.name }
+      ).subscribe({
+        next: res => {
+          observer.next(res.url);
+          observer.complete();
+        },
+        error: err => observer.error(err)
+      });
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
-  const formData = new FormData();
 
-  // Obavezna polja
-  formData.append('title', this.blog.title);
-  formData.append('content', this.blog.content);
-  formData.append('authorId', this.blog.authorId);
 
-  // Datum – automatski postavljen u ISO formatu (npr. 2025-07-22T19:15:00Z)
-  formData.append('date', new Date().toISOString());
 
-  // Slike (opciono)
-  for (let i = 0; i < this.selectedImages.length; i++) {
-    formData.append('images', this.selectedImages[i]);
-  }
+createBlog() {
+  console.log("📤 Starting blog creation...");
 
-  // Loguj pre slanja
-  console.log('📤 Uploading blog with', this.selectedImages.length, 'images');
-  console.log('✅ Sending POST to http://localhost:8081/api/blogs');
+  // 1. Uploaduj sve slike kroz gRPC-Gateway
+  forkJoin(this.selectedImages.map(img => this.uploadImage(img))).subscribe({
+    next: (urls: string[]) => {
+      console.log("✅ Uploaded images, URLs:", urls);
 
-  // HTTP poziv
-  this.http.post('http://localhost:8090/api/blogs', formData).subscribe({
-    next: (response) => {
-      console.log('✅ Blog created successfully:', response);
-      alert('Blog successfully created!');
+      // 2. Kreiraj blog sa dobijenim URL-ovima
+      const blog = {
+        title: this.blog.title,
+        content: this.blog.content,
+        authorId: this.user.id,  // pošto je number, backend ga prima normalno
+        imagePaths: urls
+      };
 
-      // Reset forme
-      this.blog = { title: '', content: '', authorId: '', date: '' };
-      this.selectedImages = [];
-      this.imagePreviews = [];
+      this.http.post('http://localhost:8090/api/blogs', blog).subscribe({
+        next: (res) => {
+          console.log("✅ Blog created successfully:", res);
+          alert("Blog created!");
+
+          // reset forme
+          this.blog = { title: '', content: '', authorId: '', date: '' };
+          this.selectedImages = [];
+          this.imagePreviews = [];
+        },
+        error: (err) => {
+          console.error("❌ Error creating blog:", err);
+          alert("Error creating blog: " + (err.error?.message || err.message));
+        }
+      });
     },
     error: (err) => {
-      console.error('❌ Error creating blog:', err);
-      alert('Error: ' + (err.error?.message || err.message || 'Unknown error'));
+      console.error("❌ Error uploading images:", err);
+      alert("Error uploading images: " + (err.error?.message || err.message));
     }
   });
 }
+
+
 
 }

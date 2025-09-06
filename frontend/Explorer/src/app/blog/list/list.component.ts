@@ -13,13 +13,13 @@ export class ListComponent implements OnInit {
 
   constructor(private blogService: BlogService, private profileService: LayoutService) {}
 
-  ngOnInit(): void {
-    this.blogService.getAllBlogs().subscribe({
+ngOnInit(): void {
+  this.blogService.getAllBlogs().subscribe({
     next: (data) => {
-      this.blogs = data;
+      this.blogs = data.blogs;   // sad zna da postoji blogs[]
 
       const uniqueAuthorIds = [...new Set(this.blogs.map(b => b.authorId))];
-      console.log("idevi"+uniqueAuthorIds);
+      console.log("idevi", uniqueAuthorIds);
 
       uniqueAuthorIds.forEach(id => {
         this.profileService.getProfile(id).subscribe(profile => {
@@ -30,6 +30,6 @@ export class ListComponent implements OnInit {
     },
     error: (err) => console.error('Greška pri dohvaćanju blogova', err)
   });
-  
-  }
+}
+
 }

@@ -14,6 +14,13 @@ service BlogService {
     };
   }
 
+  rpc UploadImage (UploadImageRequest) returns (UploadImageResponse) {
+  option (google.api.http) = {
+    post: "/api/blogs/upload"
+    body: "*"
+  };
+}
+
   rpc GetBlog (GetBlogRequest) returns (BlogDto) {
     option (google.api.http) = {
       get: "/api/blogs/{id}"
@@ -80,4 +87,13 @@ message DeleteBlogRequest {
 
 message DeleteBlogResponse {
   bool success = 1;
+}
+
+message UploadImageRequest {
+  bytes file = 1;       // binary file content
+  string filename = 2;  // original filename (opciono)
+}
+
+message UploadImageResponse {
+  string url = 1;       // putanja ili URL do uploadovane slike
 }
