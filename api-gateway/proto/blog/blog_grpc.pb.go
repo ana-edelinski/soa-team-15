@@ -19,12 +19,15 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	BlogService_CreateBlog_FullMethodName  = "/blogs.BlogService/CreateBlog"
-	BlogService_UploadImage_FullMethodName = "/blogs.BlogService/UploadImage"
-	BlogService_GetBlog_FullMethodName     = "/blogs.BlogService/GetBlog"
-	BlogService_GetAllBlogs_FullMethodName = "/blogs.BlogService/GetAllBlogs"
-	BlogService_UpdateBlog_FullMethodName  = "/blogs.BlogService/UpdateBlog"
-	BlogService_DeleteBlog_FullMethodName  = "/blogs.BlogService/DeleteBlog"
+	BlogService_CreateBlog_FullMethodName    = "/blogs.BlogService/CreateBlog"
+	BlogService_UploadImage_FullMethodName   = "/blogs.BlogService/UploadImage"
+	BlogService_GetBlog_FullMethodName       = "/blogs.BlogService/GetBlog"
+	BlogService_GetAllBlogs_FullMethodName   = "/blogs.BlogService/GetAllBlogs"
+	BlogService_UpdateBlog_FullMethodName    = "/blogs.BlogService/UpdateBlog"
+	BlogService_DeleteBlog_FullMethodName    = "/blogs.BlogService/DeleteBlog"
+	BlogService_ToggleLike_FullMethodName    = "/blogs.BlogService/ToggleLike"
+	BlogService_CountLikes_FullMethodName    = "/blogs.BlogService/CountLikes"
+	BlogService_IsLikedByUser_FullMethodName = "/blogs.BlogService/IsLikedByUser"
 )
 
 // BlogServiceClient is the client API for BlogService service.
@@ -37,6 +40,10 @@ type BlogServiceClient interface {
 	GetAllBlogs(ctx context.Context, in *GetAllBlogsRequest, opts ...grpc.CallOption) (*BlogsListResponse, error)
 	UpdateBlog(ctx context.Context, in *UpdateBlogRequest, opts ...grpc.CallOption) (*BlogDto, error)
 	DeleteBlog(ctx context.Context, in *DeleteBlogRequest, opts ...grpc.CallOption) (*DeleteBlogResponse, error)
+	// Likes
+	ToggleLike(ctx context.Context, in *ToggleLikeRequest, opts ...grpc.CallOption) (*ToggleLikeResponse, error)
+	CountLikes(ctx context.Context, in *CountLikesRequest, opts ...grpc.CallOption) (*CountLikesResponse, error)
+	IsLikedByUser(ctx context.Context, in *IsLikedByUserRequest, opts ...grpc.CallOption) (*IsLikedByUserResponse, error)
 }
 
 type blogServiceClient struct {
@@ -107,6 +114,36 @@ func (c *blogServiceClient) DeleteBlog(ctx context.Context, in *DeleteBlogReques
 	return out, nil
 }
 
+func (c *blogServiceClient) ToggleLike(ctx context.Context, in *ToggleLikeRequest, opts ...grpc.CallOption) (*ToggleLikeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ToggleLikeResponse)
+	err := c.cc.Invoke(ctx, BlogService_ToggleLike_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *blogServiceClient) CountLikes(ctx context.Context, in *CountLikesRequest, opts ...grpc.CallOption) (*CountLikesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CountLikesResponse)
+	err := c.cc.Invoke(ctx, BlogService_CountLikes_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *blogServiceClient) IsLikedByUser(ctx context.Context, in *IsLikedByUserRequest, opts ...grpc.CallOption) (*IsLikedByUserResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(IsLikedByUserResponse)
+	err := c.cc.Invoke(ctx, BlogService_IsLikedByUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BlogServiceServer is the server API for BlogService service.
 // All implementations must embed UnimplementedBlogServiceServer
 // for forward compatibility.
@@ -117,6 +154,10 @@ type BlogServiceServer interface {
 	GetAllBlogs(context.Context, *GetAllBlogsRequest) (*BlogsListResponse, error)
 	UpdateBlog(context.Context, *UpdateBlogRequest) (*BlogDto, error)
 	DeleteBlog(context.Context, *DeleteBlogRequest) (*DeleteBlogResponse, error)
+	// Likes
+	ToggleLike(context.Context, *ToggleLikeRequest) (*ToggleLikeResponse, error)
+	CountLikes(context.Context, *CountLikesRequest) (*CountLikesResponse, error)
+	IsLikedByUser(context.Context, *IsLikedByUserRequest) (*IsLikedByUserResponse, error)
 	mustEmbedUnimplementedBlogServiceServer()
 }
 
@@ -144,6 +185,15 @@ func (UnimplementedBlogServiceServer) UpdateBlog(context.Context, *UpdateBlogReq
 }
 func (UnimplementedBlogServiceServer) DeleteBlog(context.Context, *DeleteBlogRequest) (*DeleteBlogResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteBlog not implemented")
+}
+func (UnimplementedBlogServiceServer) ToggleLike(context.Context, *ToggleLikeRequest) (*ToggleLikeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ToggleLike not implemented")
+}
+func (UnimplementedBlogServiceServer) CountLikes(context.Context, *CountLikesRequest) (*CountLikesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CountLikes not implemented")
+}
+func (UnimplementedBlogServiceServer) IsLikedByUser(context.Context, *IsLikedByUserRequest) (*IsLikedByUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method IsLikedByUser not implemented")
 }
 func (UnimplementedBlogServiceServer) mustEmbedUnimplementedBlogServiceServer() {}
 func (UnimplementedBlogServiceServer) testEmbeddedByValue()                     {}
@@ -274,6 +324,60 @@ func _BlogService_DeleteBlog_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BlogService_ToggleLike_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ToggleLikeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BlogServiceServer).ToggleLike(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BlogService_ToggleLike_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BlogServiceServer).ToggleLike(ctx, req.(*ToggleLikeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BlogService_CountLikes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CountLikesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BlogServiceServer).CountLikes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BlogService_CountLikes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BlogServiceServer).CountLikes(ctx, req.(*CountLikesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BlogService_IsLikedByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IsLikedByUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BlogServiceServer).IsLikedByUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BlogService_IsLikedByUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BlogServiceServer).IsLikedByUser(ctx, req.(*IsLikedByUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // BlogService_ServiceDesc is the grpc.ServiceDesc for BlogService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -304,6 +408,18 @@ var BlogService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteBlog",
 			Handler:    _BlogService_DeleteBlog_Handler,
+		},
+		{
+			MethodName: "ToggleLike",
+			Handler:    _BlogService_ToggleLike_Handler,
+		},
+		{
+			MethodName: "CountLikes",
+			Handler:    _BlogService_CountLikes_Handler,
+		},
+		{
+			MethodName: "IsLikedByUser",
+			Handler:    _BlogService_IsLikedByUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

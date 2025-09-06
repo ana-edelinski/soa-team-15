@@ -57,7 +57,11 @@ func (server *Server) Start() {
 	db := server.InitializeDb()
 
 	blogRepository := &repository.BlogRepository{DatabaseConnection: db}
-	blogService := &service.BlogService{BlogRepository: blogRepository}
+	likeRepo := repository.NewLikeRepository(db)
+	likeService := service.NewLikeService(likeRepo)
+	likeHandler := handler.NewLikeHandler(likeService)
+
+	blogService := &service.BlogService{BlogRepository: blogRepository, LikeService: likeService}
 	blogHandler := handler.NewBlogHandler(blogService)
 
 	go func() {
@@ -78,10 +82,6 @@ func (server *Server) Start() {
 	commentRepo := repository.NewCommentRepository(db)
 	commentService := service.NewCommentService(commentRepo)
 	commentHandler := handler.NewCommentHandler(commentService)
-
-	likeRepo := repository.NewLikeRepository(db)
-	likeService := service.NewLikeService(likeRepo)
-	likeHandler := handler.NewLikeHandler(likeService)
 
 	router := mux.NewRouter()
 	router.HandleFunc("/api/blogs", blogHandler.CreateBlog).Methods("POST")

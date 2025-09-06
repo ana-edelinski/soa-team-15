@@ -14,6 +14,7 @@ import (
 type BlogGrpcServer struct {
 	UnimplementedBlogServiceServer
 	BlogService *service.BlogService
+	LikeService *service.LikeService
 }
 
 func NewBlogGrpcServer(s *service.BlogService) *BlogGrpcServer {
@@ -112,4 +113,45 @@ func (s *BlogGrpcServer) UploadImage(ctx context.Context, req *UploadImageReques
 	return &UploadImageResponse{
 		Url: "/uploads/" + filename,
 	}, nil
+}
+
+func (s *BlogGrpcServer) ToggleLike(ctx context.Context, req *ToggleLikeRequest) (*ToggleLikeResponse, error) {
+	liked, err := s.BlogService.LikeService.HasUserLiked(req.BlogId, req.AuthorId)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to check like: %v", err)
+	}
+
+	if liked {
+		// već lajkovao → unlikujemo
+		if err := s.BlogService.LikeService.UnlikePost(req.BlogId, req.AuthorId); err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to unlike: %v", err)
+		}
+		return &ToggleLikeResponse{Liked: false}, nil
+	} else {
+		// nije lajkovao → dodajemo like
+		like := &domain.Like{
+			BlogID:   uuid.MustParse(req.BlogId),
+			AuthorID: req.AuthorId,
+		}
+		if err := s.BlogService.LikeService.LikePost(like); err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to like: %v", err)
+		}
+		return &ToggleLikeResponse{Liked: true}, nil
+	}
+}
+
+func (s *BlogGrpcServer) CountLikes(ctx context.Context, req *CountLikesRequest) (*CountLikesResponse, error) {
+	count, err := s.BlogService.LikeService.CountLikes(req.BlogId)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to count likes: %v", err)
+	}
+	return &CountLikesResponse{LikeCount: count}, nil
+}
+
+func (s *BlogGrpcServer) IsLikedByUser(ctx context.Context, req *IsLikedByUserRequest) (*IsLikedByUserResponse, error) {
+	liked, err := s.BlogService.LikeService.HasUserLiked(req.BlogId, req.AuthorId)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to check like: %v", err)
+	}
+	return &IsLikedByUserResponse{Liked: liked}, nil
 }

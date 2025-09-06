@@ -8,6 +8,7 @@ import (
 
 type BlogService struct {
 	BlogRepository *repository.BlogRepository
+	LikeService    *LikeService
 }
 
 func (service *BlogService) Create(blog *domain.Blog) (*domain.Blog, error) {

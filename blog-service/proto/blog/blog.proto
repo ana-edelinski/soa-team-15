@@ -46,6 +46,27 @@ rpc UploadImage (UploadImageRequest) returns (UploadImageResponse) {
       delete: "/api/blogs/{id}"
     };
   }
+
+  // Likes
+rpc ToggleLike (ToggleLikeRequest) returns (ToggleLikeResponse) {
+  option (google.api.http) = {
+    post: "/api/blogs/{blogId}/like"
+    body: "*"
+  };
+}
+
+rpc CountLikes (CountLikesRequest) returns (CountLikesResponse) {
+  option (google.api.http) = {
+    get: "/api/blogs/{blogId}/like"
+  };
+}
+
+rpc IsLikedByUser (IsLikedByUserRequest) returns (IsLikedByUserResponse) {
+  option (google.api.http) = {
+    get: "/api/blogs/{blogId}/likedByMe"
+  };
+}
+
 }
 
 message BlogDto {
@@ -97,4 +118,28 @@ message UploadImageRequest {
 
 message UploadImageResponse {
   string url = 1;       // putanja ili URL do uploadovane slike
+}
+
+// Messages for Like
+message ToggleLikeRequest {
+  string blogId = 1;
+  int64 authorId = 2;
+}
+message ToggleLikeResponse {
+  bool liked = 1; // true ako je sada lajkovan, false ako je unlikovan
+}
+
+message CountLikesRequest {
+  string blogId = 1;
+}
+message CountLikesResponse {
+  int64 likeCount = 1;
+}
+
+message IsLikedByUserRequest {
+  string blogId = 1;
+  int64 authorId = 2;
+}
+message IsLikedByUserResponse {
+  bool liked = 1;
 }

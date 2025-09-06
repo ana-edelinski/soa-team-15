@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class LikeService {
-  private API_BASE = 'http://localhost:8081/api/blogs';
+  private API_BASE = 'http://localhost:8090/api/blogs';
 
   constructor(private http: HttpClient) {}
 
