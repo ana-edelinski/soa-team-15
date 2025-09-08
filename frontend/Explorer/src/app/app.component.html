@@ -24,6 +24,15 @@
 
   </mat-menu>
 
+    <button 
+    mat-raised-button 
+    *ngIf="isLoggedIn && currentUserRole === 'Tourist'" 
+    routerLink="/tours" 
+    style="margin-left: 8px;" 
+    color="accent">
+    Objavljene ture
+  </button>
+
   <!-- Ostala dugmad -->
   <button mat-raised-button *ngIf="!isLoggedIn" routerLink="/login" style="margin-left: 8px;" color="accent">Login</button>
   <button mat-raised-button *ngIf="isLoggedIn" (click)="logout()" style="margin-left: 8px;" color="accent">Logout</button>

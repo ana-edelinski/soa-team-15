@@ -11,6 +11,8 @@
 
         void Update(Tour tour);
         void Delete(long id);
+        List<Tour> GetPublished();
+
 
     }
 }

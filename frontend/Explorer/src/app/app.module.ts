@@ -21,7 +21,10 @@ import { ListComponent } from './blog/list/list.component';
 import { CommentComponent } from './comment/comment.component';
 import { LikeComponent } from './like/like.component';
 import { PositionFabComponent } from './shared/position-fab/position-fab.component';
-
+import { BrowseToursComponent } from './feature-modules/tour-browse/browse-tours/browse-tours.component';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -31,6 +34,7 @@ import { PositionFabComponent } from './shared/position-fab/position-fab.compone
     CommentComponent,
     LikeComponent,
     PositionFabComponent,
+    BrowseToursComponent,
   ],
   imports: [
     MarkdownModule.forRoot(),
@@ -44,9 +48,11 @@ import { PositionFabComponent } from './shared/position-fab/position-fab.compone
     BlogModule,
     MarketplaceModule,
     TourAuthoringModule,
-    TourExecutionModule,
     AuthModule,
-    HttpClientModule
+    HttpClientModule,
+    MatCardModule,
+    MatButtonModule,
+    MatTooltipModule,
   ],
   providers: [
     {

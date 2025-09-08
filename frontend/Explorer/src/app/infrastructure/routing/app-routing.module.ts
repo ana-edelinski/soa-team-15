@@ -12,6 +12,7 @@ import { ProfileInfoComponent } from 'src/app/feature-modules/layout/profile-inf
 import { CreateTourComponent } from 'src/app/feature-modules/tour-authoring/create-tour/create-tour.component';
 import { MyToursComponent } from 'src/app/feature-modules/tour-authoring/my-tours/my-tours.component';
 import { PositionSimulatorComponent } from 'src/app/feature-modules/tour-execution/position-simulator/position-simulator.component';
+import { BrowseToursComponent } from 'src/app/feature-modules/tour-browse/browse-tours/browse-tours.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/blogs', pathMatch: 'full' },   
@@ -25,7 +26,10 @@ const routes: Routes = [
   { path: 'profile', component: ProfileInfoComponent },
   { path: 'create-tour', component: CreateTourComponent },
   { path: 'my-tours', component: MyToursComponent },
-  { path: 'position-simulator', component: PositionSimulatorComponent}
+  { path: 'position-simulator', component: PositionSimulatorComponent},
+  { path: 'tours', component: BrowseToursComponent },
+
+
 ];
 
 @NgModule({

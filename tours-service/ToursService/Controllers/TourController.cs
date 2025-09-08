@@ -39,5 +39,15 @@ namespace ToursService.Controllers
             if (result.IsSuccess) return Ok(result.Value);
             return BadRequest(result.Errors);
         }
+
+        [HttpGet("published")]
+        [AllowAnonymous] // ili [Authorize(Roles = "Tourist,Administrator")]
+
+        public ActionResult<List<TourDto>> GetPublished()
+        {
+            var result = _tourService.GetPublished();
+            if (result.IsSuccess) return Ok(result.Value);
+            return BadRequest(result.Errors.FirstOrDefault()?.Message ?? "Failed to fetch published tours.");
+        }
     }
 }
