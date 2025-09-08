@@ -15,7 +15,7 @@ service StakeholdersService {
 
   rpc RegisterTourist (RegisterRequest) returns (LoginResponse) {
     option (google.api.http) = {
-      post: "/api/users"
+      post: "/api/users/register"
       body: "*"
     };
   }

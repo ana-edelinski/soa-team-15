@@ -209,11 +209,10 @@ const file_stakeholders_stakeholders_proto_rawDesc = "" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x14\n" +
 	"\x05email\x18\x03 \x01(\tR\x05email\x12\x12\n" +
-	"\x04role\x18\x04 \x01(\tR\x04role2\xda\x01\n" +
+	"\x04role\x18\x04 \x01(\tR\x04role2\xe3\x01\n" +
 	"\x13StakeholdersService\x12]\n" +
-	"\x05Login\x12\x1a.stakeholders.LoginRequest\x1a\x1b.stakeholders.LoginResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/api/users/login\x12d\n" +
-	"\x0fRegisterTourist\x12\x1d.stakeholders.RegisterRequest\x1a\x1b.stakeholders.LoginResponse\"\x15\x82\xd3\xe4\x93\x02\x0f:\x01*\"\n" +
-	"/api/usersBCZ+api-gateway/proto/stakeholders;stakeholders\xaa\x02\x13StakeholdersServiceb\x06proto3"
+	"\x05Login\x12\x1a.stakeholders.LoginRequest\x1a\x1b.stakeholders.LoginResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/api/users/login\x12m\n" +
+	"\x0fRegisterTourist\x12\x1d.stakeholders.RegisterRequest\x1a\x1b.stakeholders.LoginResponse\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/api/users/registerBCZ+api-gateway/proto/stakeholders;stakeholders\xaa\x02\x13StakeholdersServiceb\x06proto3"
 
 var (
 	file_stakeholders_stakeholders_proto_rawDescOnce sync.Once
