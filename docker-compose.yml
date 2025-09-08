@@ -10,7 +10,8 @@ services:
     networks:
       - database
     ports:
-      - "8080:80"
+      - "5001:5001"
+      - "8080:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - DATABASE_HOST=stakeholders-db
@@ -73,6 +74,19 @@ services:
       - type: volume
         source: blogdb
         target: /var/lib/postgresql/data
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8090:8090"
+    environment:
+      - STAKEHOLDERS_SERVICE_ADDRESS=stakeholders-service:5001
+      - GATEWAY_ADDRESS=:8090
+    depends_on:
+      - stakeholders-service
+      - blog-service
+    networks:
+      - database
 
 
 volumes:

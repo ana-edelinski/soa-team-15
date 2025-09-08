@@ -106,11 +106,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // REST endpoint (8080)
-app.MapControllers()
-   .RequireHost("localhost:8080");
+app.MapControllers();
 
 // gRPC endpoint (5001, bez Swagger-a)
-app.MapGrpcService<AuthenticationProtoController>()
-   .RequireHost("localhost:5001");
+app.MapGrpcService<AuthenticationProtoController>();
 
 app.Run();

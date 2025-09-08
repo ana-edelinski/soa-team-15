@@ -15,7 +15,7 @@ import { Registration } from './model/registration.model';
 })
 export class AuthService {
   user$ = new BehaviorSubject<User>({username: "", id: 0, role: "" });
-  gatawayApi = 'http://localhost:8080/api/';
+  gatawayApi = 'http://localhost:8090/api/';
 
   constructor(private http: HttpClient,
     private tokenStorage: TokenStorage,
