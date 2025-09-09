@@ -1,0 +1,65 @@
+<h2 mat-dialog-title>Leave a review</h2>
+
+<mat-dialog-content class="dialog-content">
+  <div class="content-grid">
+    <!-- LEVO: forma -->
+    <form [formGroup]="form" class="form-col">
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Rating (1–5)</mat-label>
+        <mat-select formControlName="rating">
+          <mat-option *ngFor="let r of [1,2,3,4,5]" [value]="r">{{ r }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Comment</mat-label>
+        <textarea matInput rows="4" formControlName="comment"></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Date visited</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="visited" />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <!-- HIDDEN input + dugme koje ga trigguje -->
+      <input #fileInput type="file" (change)="onFilesSelected($event)" multiple accept="image/*" hidden />
+      <div class="actions-row">
+        <button mat-stroked-button type="button" (click)="openFileDialog()">Add images</button>
+        <button mat-button type="button" color="warn" (click)="clearAll()" [disabled]="!previews.length">Clear</button>
+        <span class="muted" *ngIf="previews.length">{{ previews.length }} selected</span>
+      </div>
+
+      <div class="error" *ngIf="error">{{ error }}</div>
+    </form>
+
+    <!-- DESNO: pregled (carousel + thumbnails) -->
+    <div class="preview-col">
+      <div class="viewer" *ngIf="previews.length; else empty">
+        <button class="nav left" type="button" (click)="prev()">‹</button>
+        <img class="main" [src]="previews[selectedIndex]" alt="preview" />
+        <button class="nav right" type="button" (click)="next()">›</button>
+      </div>
+
+      <ng-template #empty>
+        <div class="empty">No images selected</div>
+      </ng-template>
+
+      <div class="thumbs" *ngIf="previews.length">
+        <div class="thumb" *ngFor="let p of previews; index as i" [class.active]="i === selectedIndex">
+          <img [src]="p" alt="thumb" (click)="select(i)" />
+          <button type="button" class="remove" (click)="removeAt(i)">✕</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button mat-dialog-close [disabled]="loading">Cancel</button>
+  <!-- ✔ biće plavo kad je forma validna (rating + visited popunjeni) -->
+  <button mat-raised-button color="primary" (click)="submit()" [disabled]="loading || form.invalid">
+    {{ loading ? 'Saving…' : 'Submit' }}
+  </button>
+</mat-dialog-actions>

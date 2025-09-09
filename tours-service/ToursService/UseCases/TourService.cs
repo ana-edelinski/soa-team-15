@@ -82,5 +82,37 @@ namespace ToursService.UseCases
 
             }
         }
+
+        public Result<List<TourDto>> GetPublished()
+        {
+            try
+            {
+                var tours = _tourRepository.GetPublished();
+
+                // Za browse stranicu je OK vratiti prazan niz umesto fail-a
+                if (tours == null || tours.Count == 0)
+                    return Result.Ok(new List<TourDto>());
+
+                var dtos = tours.Select(t => new TourDto
+                {
+                    Id = t.Id,
+                    Name = t.Name,
+                    Description = t.Description,
+                    Difficulty = t.Difficulty,
+                    Tags = t.Tags.Select(tag => (ToursService.Dtos.TourTags)tag).ToList(),
+                    UserId = t.UserId,
+                    Status = (ToursService.Dtos.TourStatus)t.Status,
+                    Price = t.Price,
+                    // Ako želiš: LengthInKm, PublishedTime… dodaš u DTO i mapiraš
+                }).ToList();
+
+                return Result.Ok(dtos);
+            }
+            catch (Exception ex)
+            {
+                return Result.Fail<List<TourDto>>($"EXCEPTION: {ex.Message}");
+            }
+        }
     }
+
 }

@@ -1,0 +1,31 @@
+<header><h1>Available Tours</h1></header>
+
+<div *ngIf="loading">Loading…</div>
+<div *ngIf="error" class="error">{{ error }}</div>
+
+<div *ngIf="!loading && !error && tours.length === 0">
+  <p>No published tours yet.</p>
+</div>
+
+<ng-container *ngIf="tours.length > 0">
+  <mat-card *ngFor="let tour of tours" class="tour-card">
+    <mat-card-title>{{ tour.name }}</mat-card-title>
+    <mat-card-subtitle>Difficulty: {{ tour.difficulty }}</mat-card-subtitle>
+
+    <mat-card-content>
+      <p>{{ tour.description }}</p>
+      <p>Price: {{ tour.price }} $</p>
+      <!-- dužinu/vreme -->
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="openReviewDialog(tour)"
+      >
+        Leave a review
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</ng-container>

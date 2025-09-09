@@ -19,5 +19,9 @@ import { environment } from "src/env/environment";
     addTour(tour: Tour): Observable<Tour> {
       return this.http.post<Tour>(`${this.baseUrl}author/tour`, tour);
     }
+      // NOVO: objavljene ture za browse (turista)
+    getPublishedTours(): Observable<Tour[]> {
+      return this.http.get<Tour[]>(`${this.baseUrl}author/tour/published`);
+    }
 
   }

@@ -1,10 +1,11 @@
-﻿using ToursService.Database;
+﻿using Microsoft.EntityFrameworkCore;                  // 👈 dodaj ovo
+using ToursService.Database;
 using ToursService.Domain;
 using ToursService.Domain.RepositoryInterfaces;
 
 namespace ToursService.Repositories
 {
-    public class TourReviewRepository: ITourReviewRepository
+    public class TourReviewRepository : ITourReviewRepository
     {
         private readonly ToursContext _db;
 
@@ -19,28 +20,36 @@ namespace ToursService.Repositories
 
         public TourReview? GetById(int id)
         {
-            return _db.TourReviews.FirstOrDefault(r => r.Id == id);
+            return _db.TourReviews
+                      .Include(r => r.Images)
+                      .FirstOrDefault(r => r.Id == id);
         }
 
         public List<TourReview> GetByTour(long tourId)
         {
             return _db.TourReviews
+                      .Include(r => r.Images)
                       .Where(r => r.IdTour == tourId)
                       .OrderBy(r => r.Id)
+                      .AsNoTracking()
                       .ToList();
         }
 
         public List<TourReview> GetByTourist(long touristId)
         {
             return _db.TourReviews
+                      .Include(r => r.Images)
                       .Where(r => r.IdTourist == touristId)
                       .OrderBy(r => r.Id)
+                      .AsNoTracking()
                       .ToList();
         }
 
         public PagedResult<TourReview> GetPaged(int page, int pageSize)
         {
-            var query = _db.TourReviews.AsQueryable();
+            var query = _db.TourReviews
+                           .Include(r => r.Images)
+                           .AsNoTracking();
 
             var totalCount = query.Count();
 
@@ -69,4 +78,3 @@ namespace ToursService.Repositories
         }
     }
 }
-

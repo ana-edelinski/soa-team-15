@@ -13,6 +13,12 @@
       <p>Price: {{ tour.price }} $</p>
       <p>Status: {{ getStatusLabel(tour.status) }}</p>
     </mat-card-content> 
+      <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="openReviewDialog(tour)">
+        Leave a review
+      </button>
+    </mat-card-actions>
+  
   </mat-card>
 </div>
 

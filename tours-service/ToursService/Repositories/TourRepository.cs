@@ -4,7 +4,7 @@ using ToursService.Domain.RepositoryInterfaces;
 
 namespace ToursService.Repositories
 {
-    public class TourRepository: ITourRepository
+    public class TourRepository : ITourRepository
     {
         private readonly ToursContext _db;
 
@@ -66,6 +66,14 @@ namespace ToursService.Repositories
 
             _db.Tours.Remove(entity);
             _db.SaveChanges();
+        }
+
+        public List<Tour> GetPublished()
+        {
+            return _db.Tours
+                      .Where(t => t.Status == TourStatus.Published)
+                      .OrderByDescending(t => t.PublishedTime)
+                      .ToList();
         }
     }
 }

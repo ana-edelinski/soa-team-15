@@ -7,6 +7,8 @@ namespace ToursService.UseCases
     {
         Result<TourDto> Create(TourDto dto);
         Result<List<TourDto>> GetByUserId(long userId);
+        public Result<List<TourDto>> GetPublished();
+
 
     }
 }

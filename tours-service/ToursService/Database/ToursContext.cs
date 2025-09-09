@@ -1,14 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using ToursService.Domain;
 
 namespace ToursService.Database
 {
-    public class ToursContext: DbContext
+    public class ToursContext : DbContext
     {
         public DbSet<Tour> Tours { get; set; }
         public DbSet<KeyPoint> KeyPoints { get; set; }
         public DbSet<TourReview> TourReviews { get; set; }
+        public DbSet<TourReviewImage> TourReviewImages { get; set; }
+
         public DbSet<Position> Positions { get; set; }
 
         public ToursContext(DbContextOptions<ToursContext> options) : base(options) { }
@@ -53,10 +54,30 @@ namespace ToursService.Database
             b.Entity<TourReview>(e =>
             {
                 e.HasKey(x => x.Id);
-                e.Property(x => x.Image).HasMaxLength(500);
                 e.HasIndex(x => new { x.IdTour, x.IdTourist });
                 // jednostavan check za ocenu 1-5
                 e.ToTable(t => t.HasCheckConstraint("CK_TourReview_Rating_1_5", "\"Rating\" >= 1 AND \"Rating\" <= 5"));
+            });
+
+            b.Entity<TourReviewImage>(e =>
+            {
+                e.HasKey(x => x.Id);
+                e.Property(x => x.Url).IsRequired().HasMaxLength(500);
+                e.HasOne(x => x.Review)
+                 .WithMany(r => r.Images)
+                 .HasForeignKey(x => x.ReviewId)
+                 .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // REVIEW IMAGE
+            b.Entity<TourReviewImage>(e =>
+            {
+                e.HasKey(x => x.Id);
+                e.Property(x => x.Url).IsRequired().HasMaxLength(500);
+                e.HasOne(x => x.Review)
+                 .WithMany(r => r.Images)
+                 .HasForeignKey(x => x.ReviewId)
+                 .OnDelete(DeleteBehavior.Cascade);
             });
 
             //POSITION
