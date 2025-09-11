@@ -5,7 +5,7 @@ import { TourReview, TourReviewCreate } from './model/tour-review.model';
 
 @Injectable({ providedIn: 'root' })
 export class TourReviewService {
-  private baseUrl = 'http://localhost:5226/api';  
+  private baseUrl = 'http://localhost:8082/api';  
 
   constructor(private http: HttpClient) {}
 
