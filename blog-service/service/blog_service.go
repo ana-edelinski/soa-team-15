@@ -3,33 +3,52 @@ package service
 import (
 	"blog-service/domain"
 	"blog-service/repository"
+	"context"
 	"fmt"
+
+	"github.com/google/uuid"
 )
 
 type BlogService struct {
-	BlogRepository *repository.BlogRepository
+	Repo *repository.BlogRepository
 }
 
-func (service *BlogService) Create(blog *domain.Blog) (*domain.Blog, error) {
-	return service.BlogRepository.Create(blog)
+func NewBlogService(r *repository.BlogRepository) *BlogService {
+	return &BlogService{Repo: r}
 }
 
-func (service *BlogService) GetAll(page, limit int) (*[]domain.Blog, error) {
-	return service.BlogRepository.GetAll(page, limit)
+func (s *BlogService) Create(ctx context.Context, blog *domain.Blog) (*domain.Blog, error) {
+	return s.Repo.Create(ctx, blog)
 }
 
-func (service *BlogService) GetById(id string) (*domain.Blog, error) {
-	blog, err := service.BlogRepository.GetById(id)
+func (s *BlogService) GetAll(ctx context.Context, page, limit int) (*[]domain.Blog, error) {
+	return s.Repo.GetAll(ctx, page, limit)
+}
+
+func (s *BlogService) GetById(ctx context.Context, id string) (*domain.Blog, error) {
+	uid, err := uuid.Parse(id)
 	if err != nil {
-		return nil, fmt.Errorf("blog with id %s not found", id)
+		return nil, fmt.Errorf("invalid blog id: %w", err)
+	}
+	blog, err := s.Repo.GetById(ctx, uid)
+	if err != nil {
+		return nil, fmt.Errorf("blog with id %s not found: %w", id, err)
 	}
 	return blog, nil
 }
 
-func (service *BlogService) Update(id string, blog *domain.Blog) (*domain.Blog, error) {
-	return service.BlogRepository.Update(id, blog)
+func (s *BlogService) Update(ctx context.Context, id string, blog *domain.Blog) (*domain.Blog, error) {
+	uid, err := uuid.Parse(id)
+	if err != nil {
+		return nil, fmt.Errorf("invalid blog id: %w", err)
+	}
+	return s.Repo.Update(ctx, uid, blog)
 }
 
-func (service *BlogService) Delete(id string) error {
-	return service.BlogRepository.Delete(id)
+func (s *BlogService) Delete(ctx context.Context, id string) error {
+	uid, err := uuid.Parse(id)
+	if err != nil {
+		return fmt.Errorf("invalid blog id: %w", err)
+	}
+	return s.Repo.Delete(ctx, uid)
 }

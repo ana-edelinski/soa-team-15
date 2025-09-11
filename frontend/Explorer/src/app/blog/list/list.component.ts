@@ -14,22 +14,29 @@ export class ListComponent implements OnInit {
   constructor(private blogService: BlogService, private profileService: LayoutService) {}
 
   ngOnInit(): void {
+    this.loadBlogs();
+  }
+
+  loadBlogs(): void {
     this.blogService.getAllBlogs().subscribe({
-    next: (data) => {
-      this.blogs = data;
+      next: (data) => {
+        this.blogs = data ?? [];
 
-      const uniqueAuthorIds = [...new Set(this.blogs.map(b => b.authorId))];
-      console.log("idevi"+uniqueAuthorIds);
-
-      uniqueAuthorIds.forEach(id => {
-        this.profileService.getProfile(id).subscribe(profile => {
-          console.log(profile);
-          this.authorUsernames[id] = profile.userName;
+        const uniqueAuthorIds = [...new Set(this.blogs.map(b => b.authorId))];
+        uniqueAuthorIds.forEach(id => {
+          this.profileService.getProfile(id).subscribe(profile => {
+            this.authorUsernames[id] = profile.userName;
+          });
         });
-      });
-    },
-    error: (err) => console.error('Greška pri dohvaćanju blogova', err)
-  });
-  
+      },
+      error: (err) => console.error('Greška pri dohvaćanju blogova', err)
+    });
+  }
+
+  onDelete(id: string): void {
+    this.blogService.deleteBlog(id).subscribe({
+      next: () => this.loadBlogs(),
+      error: (err) => console.error('Greška pri brisanju bloga', err)
+    });
   }
 }

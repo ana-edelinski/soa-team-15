@@ -41,6 +41,52 @@ services:
     ports:
       - "5432:5432"
 
+  #blog-service:
+  #  build:
+  #    context: ./blog-service
+  #  restart: on-failure
+  #  networks:
+  #    - database
+  #  ports:
+  #    - "8081:8080"
+  #  environment:
+  #    - BLOG_SERVICE_PORT=8080
+  #    - BLOG_DB_HOST=blog-db
+  #    - BLOG_DB_PORT=5432
+  #    - BLOG_DB_NAME=blogdb
+  #    - BLOG_DB_USER=postgres
+  #    - BLOG_DB_PASS=super
+  #  volumes:
+  #    - blog-uploads:/app/uploads
+  #  depends_on:
+  #    - blog-db
+
+  #blog-db:
+  #  image: postgres:13
+  #  restart: always
+  #  networks:
+  #    - database
+  #  environment:
+  #    POSTGRES_PASSWORD: super
+  #    POSTGRES_USER: postgres
+  #    POSTGRES_DB: blogdb
+  #  volumes:
+  #    - type: volume
+  #      source: blogdb
+  #      target: /var/lib/postgresql/data
+
+
+
+  blog-db:
+    image: mongo:7
+    restart: always
+    networks:
+      - database
+    ports:
+      - "27017:27017"
+    volumes:
+      - blogmongo:/data/db
+
   blog-service:
     build:
       context: ./blog-service
@@ -51,29 +97,12 @@ services:
       - "8081:8080"
     environment:
       - BLOG_SERVICE_PORT=8080
-      - BLOG_DB_HOST=blog-db
-      - BLOG_DB_PORT=5432
-      - BLOG_DB_NAME=blogdb
-      - BLOG_DB_USER=postgres
-      - BLOG_DB_PASS=super
+      - MONGO_URI=mongodb://blog-db:27017
+      - MONGO_DB=blogdb
     volumes:
       - blog-uploads:/app/uploads
     depends_on:
       - blog-db
-
-  blog-db:
-    image: postgres:13
-    restart: always
-    networks:
-      - database
-    environment:
-      POSTGRES_PASSWORD: super
-      POSTGRES_USER: postgres
-      POSTGRES_DB: blogdb
-    volumes:
-      - type: volume
-        source: blogdb
-        target: /var/lib/postgresql/data
 
   api-gateway:
     build: ./api-gateway
@@ -177,6 +206,7 @@ volumes:
   neo4j_logs:
   neo4j_plugins:
   neo4j_import:
+  blogmongo:
 
 networks:
   database:

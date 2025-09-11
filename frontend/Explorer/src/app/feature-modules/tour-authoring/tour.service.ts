@@ -36,7 +36,7 @@ import { KeyPoint } from "./model/keypoint.model";
       formData.append('longitude', keyPoint.longitude.toString());
       formData.append('name', keyPoint.name);
       formData.append('description', keyPoint.description);
-
+      formData.append('image', ' a');
     
       return this.http.post(
         `${this.baseUrl}author/tour/addKeyPoints/${tourId}`,

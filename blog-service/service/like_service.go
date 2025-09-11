@@ -1,8 +1,11 @@
 package service
 
 import (
-	"blog-service/domain"
 	"blog-service/repository"
+	"context"
+	"fmt"
+
+	"github.com/google/uuid"
 )
 
 type LikeService struct {
@@ -13,18 +16,34 @@ func NewLikeService(repo *repository.LikeRepository) *LikeService {
 	return &LikeService{Repo: repo}
 }
 
-func (s *LikeService) LikePost(like *domain.Like) error {
-	return s.Repo.Create(like)
+func (s *LikeService) LikePost(ctx context.Context, blogId string, authorId int64) error {
+	bid, err := uuid.Parse(blogId)
+	if err != nil {
+		return fmt.Errorf("invalid blog id: %w", err)
+	}
+	return s.Repo.Create(ctx, bid, authorId)
 }
 
-func (s *LikeService) UnlikePost(blogId string, authorId int64) error {
-	return s.Repo.Delete(blogId, authorId)
+func (s *LikeService) UnlikePost(ctx context.Context, blogId string, authorId int64) error {
+	bid, err := uuid.Parse(blogId)
+	if err != nil {
+		return fmt.Errorf("invalid blog id: %w", err)
+	}
+	return s.Repo.Delete(ctx, bid, authorId)
 }
 
-func (s *LikeService) HasUserLiked(blogId string, authorId int64) (bool, error) {
-	return s.Repo.Exists(blogId, authorId)
+func (s *LikeService) HasUserLiked(ctx context.Context, blogId string, authorId int64) (bool, error) {
+	bid, err := uuid.Parse(blogId)
+	if err != nil {
+		return false, fmt.Errorf("invalid blog id: %w", err)
+	}
+	return s.Repo.Exists(ctx, bid, authorId)
 }
 
-func (s *LikeService) CountLikes(blogId string) (int64, error) {
-	return s.Repo.CountForBlog(blogId)
+func (s *LikeService) CountLikes(ctx context.Context, blogId string) (int64, error) {
+	bid, err := uuid.Parse(blogId)
+	if err != nil {
+		return 0, fmt.Errorf("invalid blog id: %w", err)
+	}
+	return s.Repo.CountForBlog(ctx, bid)
 }

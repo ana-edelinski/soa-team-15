@@ -1,9 +1,10 @@
 package handler
 
 import (
-	"blog-service/domain"
+	"blog-service/domain"   // <-- add this
 	"blog-service/dto"
 	"blog-service/service"
+	"context"
 	"encoding/json"
 	"net/http"
 	"time"
@@ -22,11 +23,12 @@ func NewCommentHandler(service *service.CommentService) *CommentHandler {
 
 // POST /api/blogs/{blogId}/comments
 func (h *CommentHandler) CreateForBlog(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+
 	vars := mux.Vars(r)
 	blogIDStr := vars["blogId"]
-
-	blogID, err := uuid.Parse(blogIDStr)
-	if err != nil {
+	if _, err := uuid.Parse(blogIDStr); err != nil {
 		http.Error(w, "Invalid blog ID", http.StatusBadRequest)
 		return
 	}
@@ -38,80 +40,85 @@ func (h *CommentHandler) CreateForBlog(w http.ResponseWriter, r *http.Request) {
 	}
 
 	comment := domain.Comment{
-		BlogID:   blogID,
 		AuthorID: req.AuthorID,
 		Content:  req.Content,
 	}
 
-	if err := h.Service.Create(&comment); err != nil {
+	if err := h.Service.Create(ctx, blogIDStr, &comment); err != nil {
 		http.Error(w, "Failed to create comment", http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(comment)
+	// You can return `req` if you want the old shape; returning `comment` includes generated id/timestamps.
+	_ = json.NewEncoder(w).Encode(comment)
 }
 
 // GET /api/blogs/{blogId}/comments
 func (h *CommentHandler) GetAllForBlog(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+
 	vars := mux.Vars(r)
 	blogIDStr := vars["blogId"]
-
-	//Validacija UUID
-	_, err := uuid.Parse(blogIDStr)
-	if err != nil {
+	if _, err := uuid.Parse(blogIDStr); err != nil {
 		http.Error(w, "Invalid blog ID", http.StatusBadRequest)
 		return
 	}
 
-	comments, err := h.Service.GetByBlogID(blogIDStr)
+	comments, err := h.Service.GetByBlogID(ctx, blogIDStr)
 	if err != nil {
 		http.Error(w, "Failed to fetch comments", http.StatusInternalServerError)
 		return
 	}
 
-	// Odgovor
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(comments)
+	_ = json.NewEncoder(w).Encode(comments)
 }
-
 
 // PUT /api/comments/{id}
 func (h *CommentHandler) Update(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+
 	vars := mux.Vars(r)
 	commentID := vars["id"]
-
-	existing, err := h.Service.GetByID(commentID)
-	if err != nil {
-		http.Error(w, "Comment not found", http.StatusNotFound)
-		return
-	}
 
 	var req dto.UpdateCommentRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
+	if req.Content == "" {
+		http.Error(w, "Content must not be empty", http.StatusBadRequest)
+		return
+	}
 
-	existing.Content = req.Content
-	existing.UpdatedAt = time.Now()
-
-	if err := h.Service.Update(existing); err != nil {
+	if err := h.Service.Update(ctx, commentID, req.Content); err != nil {
 		http.Error(w, "Failed to update comment", http.StatusInternalServerError)
 		return
 	}
 
+	updated, err := h.Service.GetByID(ctx, commentID)
+	if err != nil {
+		http.Error(w, "Updated comment not found", http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(existing)
+	_ = json.NewEncoder(w).Encode(updated)
 }
 
 // DELETE /api/comments/{id}
 func (h *CommentHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+
 	vars := mux.Vars(r)
 	commentID := vars["id"]
 
-	if err := h.Service.Delete(commentID); err != nil {
+	if err := h.Service.Delete(ctx, commentID); err != nil {
 		http.Error(w, "Failed to delete comment", http.StatusInternalServerError)
 		return
 	}

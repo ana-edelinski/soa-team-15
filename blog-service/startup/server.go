@@ -5,123 +5,117 @@ import (
 	"blog-service/handler"
 	"blog-service/repository"
 	"blog-service/service"
+	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"time"
-	"blog-service/domain"
+
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+
+	// Mongo
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Server struct {
 	config *config.Config
 }
 
-func NewServer(config *config.Config) *Server {
-	return &Server{
-		config: config,
+func NewServer(cfg *config.Config) *Server {
+	return &Server{config: cfg}
+}
+
+func (s *Server) connectMongo(ctx context.Context) (*mongo.Client, *mongo.Database, *mongo.Collection) {
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(s.config.MongoURI))
+	if err != nil {
+		log.Fatal(err)
 	}
-}
+	if err := client.Ping(ctx, nil); err != nil {
+		log.Fatal(err)
+	}
+	db := client.Database(s.config.MongoDB)
+	blogs := db.Collection("blogs")
 
-func (server *Server) InitializeDb() *gorm.DB {
-    dsn := fmt.Sprintf(
-        "host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
-        server.config.DBHost,
-        server.config.DBUser,
-        server.config.DBPass,
-        server.config.DBName,
-        server.config.DBPort,
-    )
-
-    db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    if err := db.AutoMigrate(&domain.Blog{},&domain.Comment{}, &domain.Like{}); err != nil {
-        log.Fatal(err)
-    }
-
-
-    return db
-}
-
-func (server *Server) Start() {
-	db := server.InitializeDb()
-
-	blogRepository := &repository.BlogRepository{DatabaseConnection: db}
-	blogService := &service.BlogService{BlogRepository: blogRepository}
-	blogHandler := handler.NewBlogHandler(blogService)
-
-	commentRepo := repository.NewCommentRepository(db)
-	commentService := service.NewCommentService(commentRepo)
-	commentHandler := handler.NewCommentHandler(commentService)
-
-	likeRepo := repository.NewLikeRepository(db)
-	likeService := service.NewLikeService(likeRepo)
-	likeHandler := handler.NewLikeHandler(likeService)
-
-
-	router := mux.NewRouter()
-	router.HandleFunc("/api/blogs", blogHandler.CreateBlog).Methods("POST")
-	router.HandleFunc("/api/blogs/{id}", blogHandler.GetBlog).Methods("GET")
-	router.HandleFunc("/api/blogs", blogHandler.GetAllBlogs).Methods("GET")
-	router.HandleFunc("/api/blogs/{id}", blogHandler.UpdateBlog).Methods("PUT")
-	router.HandleFunc("/api/blogs/{id}", blogHandler.DeleteBlog).Methods("DELETE")
-
-	router.HandleFunc("/api/blogs/{blogId}/comments", commentHandler.CreateForBlog).Methods("POST")
-	router.HandleFunc("/api/comments/{id}", commentHandler.Update).Methods("PUT")
-	router.HandleFunc("/api/comments/{id}", commentHandler.Delete).Methods("DELETE")
-	router.HandleFunc("/api/blogs/{blogId}/comments", commentHandler.GetAllForBlog).Methods("GET")
-
-	router.HandleFunc("/api/blogs/{blogId}/like", likeHandler.ToggleLike).Methods("POST")
-	router.HandleFunc("/api/blogs/{blogId}/like", likeHandler.CountLikes).Methods("GET")
-	router.HandleFunc("/api/blogs/{blogId}/likedByMe", likeHandler.IsLikedByUser).Methods("GET") 
-
-
-
-	router.PathPrefix("/uploads/").Handler(http.StripPrefix("/uploads/", http.FileServer(http.Dir("./uploads/"))))
-
-
-	// Configure CORS
-	c := cors.New(cors.Options{
-		AllowedOrigins: []string{
-			"http://localhost:4200",  // Angular dev server
-			"http://frontend:80",     // Docker frontend service
-		},
-		AllowedMethods: []string{
-			http.MethodGet,
-			http.MethodPost,
-			http.MethodPut,
-			http.MethodDelete,
-			http.MethodOptions,
-		},
-		AllowedHeaders: []string{
-			"Accept",
-			"Authorization",
-			"Content-Type",
-			"X-CSRF-Token",
-		},
-		ExposedHeaders: []string{
-			"Link",
-		},
-		AllowCredentials: true,
-		MaxAge:           300,
+	// Recommended indexes
+	_, _ = blogs.Indexes().CreateMany(ctx, []mongo.IndexModel{
+		{Keys: bson.D{{Key: "createdAt", Value: -1}}},
+		{Keys: bson.D{{Key: "likes.authorId", Value: 1}}},
 	})
 
-	// Wrap your router with the CORS middleware
-	handler := c.Handler(router)
+	return client, db, blogs
+}
+
+func (s *Server) Start() {
+	// Mongo init
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, _, blogsColl := s.connectMongo(ctx)
+
+	// Repositories (Mongo-backed, using same routes as before)
+	blogRepo := repository.NewBlogRepository(blogsColl)
+	commentRepo := repository.NewCommentRepository(blogsColl)
+	likeRepo := repository.NewLikeRepository(blogsColl)
+
+	// Services (context-aware)
+	blogService := service.NewBlogService(blogRepo)
+	commentService := service.NewCommentService(commentRepo)
+	likeService := service.NewLikeService(likeRepo)
+
+	// Handlers (the ones I sent adapted for Mongo)
+	blogHandler := handler.NewBlogHandler(blogService)
+	commentHandler := handler.NewCommentHandler(commentService)
+	likeHandler := handler.NewLikeHandler(likeService)
+
+	// Router — KEEP YOUR EXISTING ROUTES (no FE changes)
+	r := mux.NewRouter()
+	r.HandleFunc("/api/blogs", blogHandler.CreateBlog).Methods(http.MethodPost)
+	r.HandleFunc("/api/blogs/{id}", blogHandler.GetBlog).Methods(http.MethodGet)
+	r.HandleFunc("/api/blogs", blogHandler.GetAllBlogs).Methods(http.MethodGet)
+	r.HandleFunc("/api/blogs/{id}", blogHandler.UpdateBlog).Methods(http.MethodPut)
+	r.HandleFunc("/api/blogs/{id}", blogHandler.DeleteBlog).Methods(http.MethodDelete)
+
+	r.HandleFunc("/api/blogs/{blogId}/comments", commentHandler.CreateForBlog).Methods(http.MethodPost)
+	r.HandleFunc("/api/comments/{id}", commentHandler.Update).Methods(http.MethodPut)
+	r.HandleFunc("/api/comments/{id}", commentHandler.Delete).Methods(http.MethodDelete)
+	r.HandleFunc("/api/blogs/{blogId}/comments", commentHandler.GetAllForBlog).Methods(http.MethodGet)
+
+	// You currently use singular "/like" — we're keeping it to avoid FE changes
+	r.HandleFunc("/api/blogs/{blogId}/like", likeHandler.ToggleLike).Methods(http.MethodPost)
+	r.HandleFunc("/api/blogs/{blogId}/like", likeHandler.CountLikes).Methods(http.MethodGet)
+	r.HandleFunc("/api/blogs/{blogId}/likedByMe", likeHandler.IsLikedByUser).Methods(http.MethodGet)
+
+	// Static file serving for uploads (same as before)
+	r.PathPrefix("/uploads/").Handler(http.StripPrefix("/uploads/", http.FileServer(http.Dir(s.config.UploadDir))))
+
+	// CORS (unchanged)
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{
+			"http://localhost:4200",
+			"http://frontend:80",
+		},
+		AllowedMethods: []string{
+			http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodOptions,
+		},
+		AllowedHeaders: []string{
+			"Accept", "Authorization", "Content-Type", "X-CSRF-Token",
+		},
+		ExposedHeaders: []string{"Link"},
+		AllowCredentials: true,
+		MaxAge: 300,
+	})
+	handlerWithCORS := c.Handler(r)
 
 	srv := &http.Server{
-		Handler:      handler,
-		Addr:         fmt.Sprintf(":%s", server.config.Port),
+		Handler:      handlerWithCORS,
+		Addr:         fmt.Sprintf(":%s", s.config.Port),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
 
-	log.Printf("Server starting on port %s", server.config.Port)
+	log.Printf("Blog service (Mongo) starting on port %s", s.config.Port)
 	log.Fatal(srv.ListenAndServe())
 }
