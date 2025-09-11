@@ -1,0 +1,147 @@
+version: '3.9'
+
+services:
+  stakeholders-service:
+    build:
+      dockerfile: Dockerfile
+      context: ./stakeholders-service
+      target: final
+    restart: on-failure
+    networks:
+      - database
+    ports:
+      - "8080:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - DATABASE_HOST=stakeholders-db
+      - DATABASE_PORT=5432
+      - DATABASE_PASSWORD=super
+      - DATABASE_USER=postgres
+      - DATABASE_SCHEMA=stakeholdersdb
+    depends_on:
+      - stakeholders-db
+
+  stakeholders-db:
+    image: postgres:13
+    restart: always
+    networks:
+      - database
+    environment:
+      POSTGRES_PASSWORD: super
+      POSTGRES_USER: postgres
+      POSTGRES_DB: stakeholdersdb
+    volumes:
+      - type: volume
+        source: stakeholdersdb
+        target: /var/lib/postgresql/data
+      - type: bind
+        source: stakeholders-service/stakeholders-init-data.sql
+        target: /docker-entrypoint-initdb.d/stakeholders-init-data.sql
+    ports:
+      - "5432:5432"
+
+  blog-service:
+    build:
+      context: ./blog-service
+    restart: on-failure
+    networks:
+      - database
+    ports:
+      - "8081:8080"
+    environment:
+      - BLOG_SERVICE_PORT=8080
+      - BLOG_DB_HOST=blog-db
+      - BLOG_DB_PORT=5432
+      - BLOG_DB_NAME=blogdb
+      - BLOG_DB_USER=postgres
+      - BLOG_DB_PASS=super
+    volumes:
+      - blog-uploads:/app/uploads
+    depends_on:
+      - blog-db
+
+  blog-db:
+    image: postgres:13
+    restart: always
+    networks:
+      - database
+    environment:
+      POSTGRES_PASSWORD: super
+      POSTGRES_USER: postgres
+      POSTGRES_DB: blogdb
+    volumes:
+      - type: volume
+        source: blogdb
+        target: /var/lib/postgresql/data
+
+  # 🔹 NEW: Tours Service (API)
+  tours-service:
+    build:
+      dockerfile: Dockerfile
+      context: ./tours-service
+      target: final
+    restart: on-failure
+    networks:
+      - database
+    ports:
+      - "8082:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - DATABASE_HOST=tours-db
+      - DATABASE_PORT=5432
+      - DATABASE_PASSWORD=super
+      - DATABASE_USER=postgres
+      - DATABASE_NAME=toursdb
+    depends_on:
+      - tours-db
+      - tours-migration  # wait for migrations to run before starting
+
+  # 🔹 NEW: Tours Database
+  tours-db:
+    image: postgres:13
+    restart: always
+    networks:
+      - database
+    environment:
+      POSTGRES_PASSWORD: super
+      POSTGRES_USER: postgres
+      POSTGRES_DB: toursdb
+    volumes:
+      - type: volume
+        source: toursdb
+        target: /var/lib/postgresql/data
+
+  # 🔹 NEW: Migration Runner for Tours
+  tours-migration:
+    build:
+      context: ./tours-service
+      dockerfile: Dockerfile
+      target: execute-migration
+    networks:
+      - database
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - DATABASE_HOST=tours-db
+      - DATABASE_PORT=5432
+      - DATABASE_PASSWORD=super
+      - DATABASE_USER=postgres
+      - DATABASE_SCHEMA=toursdb
+    depends_on:
+      - tours-db
+    restart: "no"   # run once, then stop
+
+
+volumes:
+  stakeholdersdb:
+    name: stakeholdersdb
+  blogdb:
+    name: blogdb
+  blog-uploads:
+    name: blog-uploads
+  toursdb:
+    name: toursdb
+
+networks:
+  database:
+    name: database
+    driver: bridge

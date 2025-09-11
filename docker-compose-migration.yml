@@ -1,0 +1,24 @@
+version: '3.9'
+
+services:
+  stakeholders-migration:
+    build:
+      context: ./stakeholders-service
+      dockerfile: Dockerfile
+      target: execute-migration
+    networks:
+      - database
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - DATABASE_HOST=stakeholders-db
+      - DATABASE_PORT=5432
+      - DATABASE_PASSWORD=super
+      - DATABASE_USER=postgres
+      - DATABASE_SCHEMA=stakeholdersdb
+
+
+networks:
+  database:
+     name: database
+     driver: bridge
+     external: true

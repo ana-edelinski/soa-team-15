@@ -1,0 +1,76 @@
+<div class="page-wrap">
+  <div class="profile-card" *ngIf="infoPerson" [class.editing]="editMode">
+
+    <!-- HEADER sa pozadinskom slikom -->
+    <div class="profile-header">
+      <div class="overlay"></div>
+      <div class="avatar-wrap">
+        <img
+          [src]="editMode ? (imageBase64 || getImage(infoPerson.profileImagePath)) : getImage(infoPerson.profileImagePath)"
+          alt="Profile"
+          class="profile-image"
+        />
+      </div>
+      <h2 class="name">{{ infoPerson.name }} {{ infoPerson.surname }}</h2>
+    </div>
+
+    <!-- VIEW MODE -->
+    <div *ngIf="!editMode" class="content">
+      <div class="profile-section">
+        <h3>Moto</h3>
+        <p class="section-text" [class.placeholder]="!infoPerson.motto">
+          {{ infoPerson.motto || 'Nema unet moto' }}
+        </p>
+      </div>
+
+      <div class="profile-section">
+        <h3>Biografija</h3>
+        <p class="section-text" [class.placeholder]="!infoPerson.biography">
+          {{ infoPerson.biography || 'Nema unetu biografiju' }}
+        </p>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" (click)="enableEditMode()">Izmeni profil</button>
+      </div>
+    </div>
+
+    <!-- EDIT MODE -->
+    <div *ngIf="editMode" class="content edit-grid">
+      <div class="profile-section editor">
+        <label class="file-label">
+          <input type="file" (change)="onFileSelected($event)" />
+          Promeni fotografiju
+        </label>
+      </div>
+
+      <div class="profile-section">
+        <h3>Osnovni podaci</h3>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Ime</label>
+            <input type="text" [(ngModel)]="editPerson.name" placeholder="Ime" />
+          </div>
+          <div class="form-row">
+            <label>Prezime</label>
+            <input type="text" [(ngModel)]="editPerson.surname" placeholder="Prezime" />
+          </div>
+          <div class="form-row full">
+            <label>Moto</label>
+            <input type="text" [(ngModel)]="editPerson.motto" placeholder="Moto" />
+          </div>
+          <div class="form-row full">
+            <label>Biografija</label>
+            <textarea rows="5" [(ngModel)]="editPerson.biography" placeholder="Biografija"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" (click)="updateProfile()">Sačuvaj</button>
+        <button class="btn btn-ghost" (click)="cancelEdit()">Otkaži</button>
+      </div>
+    </div>
+
+  </div>
+</div>

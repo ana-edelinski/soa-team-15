@@ -1,0 +1,54 @@
+.sim-grid{
+  display:grid;
+  grid-template-columns: 320px 1fr;
+  gap: 16px;
+  padding: 16px 24px;
+  height: calc(100vh - 160px);
+  box-sizing: border-box;
+  /*background-color: var(--bg-blue);*/
+}
+
+.info{
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  display:flex; flex-direction:column; gap:12px;
+  color: var(--text);
+}
+
+.info h3{
+  margin:0 0 8px 0;
+  font-size: 20px;
+  color: var(--primary-600);
+}
+
+.row{
+  display:grid;
+  grid-template-columns: 110px 1fr;
+  gap:10px;
+  align-items:center;
+  padding:10px 0;
+  border-bottom: 1px dashed var(--border);
+}
+.row:last-child{ border-bottom:none; }
+
+.row label{
+  font-weight: 400;       /* boldirano ime polja */
+  color: var(--primary);
+}
+
+.map-wrap{
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow:hidden;
+  min-height: 520px;
+}
+
+/* osveži i map component ako treba */
+:host ::ng-deep .leaflet-container{
+  height:100%;
+}

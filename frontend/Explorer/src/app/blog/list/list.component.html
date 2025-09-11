@@ -1,0 +1,34 @@
+<h2 style="text-align: center; margin: 30px 0; font-size: 32px; color: #333;">Blogovi</h2>
+
+<div *ngIf="blogs.length === 0" style="text-align: center; font-style: italic;">Nema blogova.</div>
+
+<!-- Grid layout -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; padding: 0 20px;">
+  <div *ngFor="let blog of blogs" 
+       style="background: #fafafa; padding: 20px; border: 1px solid #ccc; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; transition: transform 0.2s;">
+    
+    <h3 style="margin-bottom: 15px; color: #2c3e50;">{{ blog.title }}</h3>
+    <h4 style="margin-bottom: 15px; color: #2c3e50;">{{ blog.authorId }}</h4>
+    
+    <div style="margin: 0 auto 15px auto; max-width: 90%;">
+      <markdown [data]="blog.content"></markdown>
+    </div>
+
+    <div *ngIf="blog.imagePaths && blog.imagePaths.length > 0">
+      <h4 style="margin-bottom: 10px;">Slike:</h4>
+      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
+        <img *ngFor="let imgPath of blog.imagePaths" 
+             [src]="'http://localhost:8081' + imgPath" 
+             width="150" 
+             style="border-radius: 6px; border: 1px solid #ccc;" 
+             alt="Blog image" />
+      </div>
+    </div>
+    
+      <xp-like [blogId]="blog.id"></xp-like>
+
+        <!-- 💬 Komentari -->
+      <xp-comment [blogId]="blog.id"></xp-comment>
+      
+  </div>
+</div>

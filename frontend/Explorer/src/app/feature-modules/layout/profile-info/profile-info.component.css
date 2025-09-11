@@ -1,0 +1,139 @@
+/* Ako nisi već, dodaj CSS varijable u globalni styles.css.
+:root {
+  --bg-blue:#e9f5ff; --bg-pink:#fff0f6; --card-bg:#fff; --border:#e5e7eb;
+  --text:#0f172a; --muted:#6b7280; --primary:#3b82f6; --accent:#f472b6;
+} */
+
+* { box-sizing: border-box; }
+
+.page-wrap {
+  min-height: calc(100vh - 64px); /* da ne ide ispod navbar-a ako ga ima */
+  display: grid;
+  place-items: center;
+  padding: 2rem 1rem;
+  background: radial-gradient(1200px 800px at 10% 10%, var(--bg-blue), transparent),
+              radial-gradient(1200px 800px at 90% 90%, var(--bg-pink), transparent),
+              linear-gradient(180deg, #f8fbff, #fff);
+}
+
+.profile-card {
+  width: 100%;
+  max-width: 820px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 12px 28px rgba(15,23,42,0.08);
+}
+
+.profile-card.editing {
+  border-color: color-mix(in srgb, var(--accent) 25%, var(--border));
+  box-shadow: 0 16px 40px rgba(236,72,153,.18);
+}
+
+/* HEADER sa pozadinskom slikom */
+.profile-header {
+  position: relative;
+  padding: 2.5rem 1rem 3.5rem;
+  background: center/cover no-repeat; /* ➜ ubaci sliku u src/assets */
+}
+
+.profile-header .overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom right, rgba(59,130,246,.35), rgba(244,114,182,.35));
+  backdrop-filter: saturate(140%) blur(2px);
+}
+
+.avatar-wrap {
+  position: relative; z-index: 1;
+  width: 128px; height: 128px; margin: 0 auto 1rem;
+  border-radius: 50%;
+  padding: 4px;
+  background: conic-gradient(from 180deg, var(--primary), var(--accent), var(--primary));
+  display: grid; place-items: center;
+}
+
+.profile-image {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #fff; border: 4px solid #fff;
+}
+
+.name {
+  position: relative; z-index: 1;
+  text-align: center; color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,.35);
+  font-size: 1.4rem; font-weight: 700;
+}
+
+/* CONTENT */
+.content { padding: 1.25rem 1.25rem 1.5rem; }
+
+.profile-section {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.profile-section h3 {
+  margin: 0 0 .5rem; font-size: 1rem;
+  color: var(--primary); font-weight: 700;
+  letter-spacing: .2px;
+}
+
+.section-text { margin: 0; line-height: 1.65; color: #374151; }
+.placeholder { color: var(--muted); font-style: italic; }
+
+/* EDIT LAYOUT */
+.edit-grid { display: grid; gap: 1rem; }
+@media (min-width: 760px) {
+  .edit-grid { grid-template-columns: 1fr 2fr; }
+}
+
+.editor { display: flex; flex-direction: column; align-items: center; gap: .5rem; }
+
+.file-label {
+  display: inline-block;
+  margin-top: .5rem;
+  padding: .6rem 1rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  color: #fff; cursor: pointer; font-weight: 600;
+  box-shadow: 0 8px 18px rgba(59,130,246,.25);
+  transition: transform .12s ease;
+}
+.file-label:hover { transform: translateY(-1px); }
+.file-label input[type="file"] { display: none; }
+
+.hint { color: var(--muted); font-size: .85rem; }
+
+.form-grid { display: grid; gap: .75rem; grid-template-columns: 1fr 1fr; }
+.form-row { display: grid; gap: .35rem; }
+.form-row.full { grid-column: 1 / -1; }
+
+.form-row label { font-size: .9rem; color: var(--muted); }
+
+input[type="text"], textarea {
+  width: 100%; padding: .7rem .85rem;
+  border: 1.5px solid var(--border); border-radius: 12px;
+  background: #fff; outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+input[type="text"]:focus, textarea:focus {
+  border-color: color-mix(in srgb, var(--primary) 55%, var(--border));
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 18%, transparent);
+}
+
+/* BUTTONS */
+.actions { display: flex; justify-content: center; gap: .75rem; margin-top: .25rem; }
+.btn { appearance: none; border: none; border-radius: 12px; padding: .7rem 1rem; font-weight: 700; cursor: pointer; }
+.btn-primary {
+  color: #fff;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+  box-shadow: 0 8px 20px rgba(59,130,246,0.25);
+}
+.btn-ghost { background: #fff; border: 1.5px solid var(--border); color: var(--text); }
+.btn-ghost:hover { border-color: color-mix(in srgb, var(--primary) 40%, var(--border)); }

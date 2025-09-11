@@ -1,0 +1,48 @@
+header {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.tour-card {
+  width: 300px;
+  margin: 15px;
+  padding: 10px;
+  display: inline-block;
+  vertical-align: top;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tour-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+}
+
+mat-card-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+mat-card-subtitle {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+mat-card-content p {
+  margin: 5px 0;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  margin: 20px 0;
+}
+
+ng-template p {
+  text-align: center;
+  color: #777;
+  font-style: italic;
+}

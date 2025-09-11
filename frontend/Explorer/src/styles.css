@@ -1,0 +1,24 @@
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+
+
+:root {
+  --bg-blue: #e9f5ff;
+  --bg-pink: #fff0f6;
+  --card-bg: rgba(255,255,255,0.9);
+  --border: #e5e7eb;
+  --text: #0f172a;
+  --muted: #6b7280;
+  --primary: #3b82f6;
+  --primary-600: #2563eb;
+  --accent: #f472b6;
+  --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  --radius: 16px;
+}
+
+.leaflet-container { height: 100%; width: 100%; }
+.leaflet-div-icon, .leaflet-marker-icon, .leaflet-marker-shadow { pointer-events: auto; }

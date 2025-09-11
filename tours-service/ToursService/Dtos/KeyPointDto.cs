@@ -1,0 +1,30 @@
+﻿using ToursService.Domain;
+
+namespace ToursService.Dtos
+{
+    public class KeyPointDto
+    {
+        public long Id { get; set; }
+        public string Name { get; set; }
+        public double Longitude { get; set; }
+        public double Latitude { get; set; }
+        public string Description { get; set; }
+        public long? UserId { get; set; }
+        public long? TourId { get; set; }
+        
+        // For file uploads
+        public IFormFile PictureFile { get; set; }
+        
+        // Keep ImageBase64 for backward compatibility if needed
+        public PublicStatus? PublicStatus { get; set; }
+        
+        public KeyPointDto() { }
+    }
+
+    public enum PublicStatus
+    {
+        PRIVATE = 0,
+        REQUESTED_PUBLIC = 1,
+        PUBLIC = 2
+    }
+}

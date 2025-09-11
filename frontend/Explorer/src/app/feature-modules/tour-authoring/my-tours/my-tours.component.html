@@ -1,0 +1,29 @@
+<header>
+  <h1>My Tours</h1>
+</header>
+
+<!-- Display Error Message -->
+<div *ngIf="error_message" class="error">{{ error_message }}</div>
+
+<!-- Display Tours if available, else show noTours template -->
+<div *ngIf="tours.length > 0; else noTours">
+  <mat-card *ngFor="let tour of tours" class="tour-card">
+    <mat-card-title>{{ tour.name }}</mat-card-title>
+    <mat-card-subtitle>Difficulty: {{ tour.difficulty }}</mat-card-subtitle>
+    <mat-card-content>
+      <p>{{ tour.description }}</p>
+      <p>Price: {{ tour.price }} $</p>
+      <p>Status: {{ getStatusLabel(tour.status) }}</p>
+      
+      <!-- Link to the key points page for the current tour -->
+      <button mat-button [routerLink]="['/tours', tour.id, 'key-points', 'view']">
+        View Key Points
+      </button>
+    </mat-card-content> 
+  </mat-card>
+</div>
+
+<!-- Template for when no tours are available -->
+<ng-template #noTours>
+  <p>You don't have any tours yet.</p>
+</ng-template>

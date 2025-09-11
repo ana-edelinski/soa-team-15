@@ -1,0 +1,56 @@
+<h2>Add a New Blog</h2>
+
+<form (ngSubmit)="createBlog()" #blogForm="ngForm">
+
+  <label for="title">Title:</label><br>
+  <input type="text" 
+         [(ngModel)]="blog.title" 
+         name="title" 
+         placeholder="Blog title" 
+         required 
+         #titleRef="ngModel"
+         (blur)="titleRef.control.markAsTouched()" /><br>
+  <div *ngIf="titleRef.invalid && titleRef.touched" style="color: red; font-size: 13px;">
+    Title is required.
+  </div><br>
+
+  <label for="content">Content (Markdown):</label><br>
+  <textarea [(ngModel)]="blog.content" 
+            name="content" 
+            rows="10" cols="60" 
+            placeholder="Markdown content..." 
+            required 
+            #contentRef="ngModel"
+            (blur)="contentRef.control.markAsTouched()"></textarea><br>
+  <div *ngIf="contentRef.invalid && contentRef.touched" style="color: red; font-size: 13px;">
+    Content is required.
+  </div><br>
+
+  <h3>Live Preview</h3>
+  <div style="border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9;">
+    <markdown [data]="blog.content"></markdown>
+  </div><br><br>
+
+  
+
+  <label for="images">Images (Multiple selection supported):</label><br>
+  <input type="file" (change)="onImageSelected($event)" multiple accept="image/*" /><br><br>
+
+  <!-- Image Previews -->
+  <div *ngIf="imagePreviews.length > 0">
+    <h4>Selected Images ({{ imagePreviews.length }}):</h4>
+    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+      <div *ngFor="let preview of imagePreviews; let i = index" style="position: relative; display: inline-block;">
+        <img [src]="preview" width="150" height="150" style="object-fit: cover; border: 2px solid #ccc; border-radius: 5px;" />
+        <button type="button" 
+                (click)="removeImage(i)" 
+                style="position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer;"
+                title="Remove image">×</button>
+        <p style="margin: 5px 0; text-align: center; font-size: 12px;">{{ selectedImages[i].name }}</p>
+      </div>
+    </div>
+  </div>
+
+  <button type="submit" [disabled]="blogForm.invalid">Add Blog</button>
+
+</form>

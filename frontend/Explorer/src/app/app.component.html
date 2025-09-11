@@ -1,0 +1,37 @@
+<mat-toolbar color="primary">
+  <span style="font-weight: bold;">Explorer</span>
+
+  <!-- Dropdown meni -->
+  <span class="spacer"></span>
+
+  <button mat-button [matMenuTriggerFor]="toursMenu" *ngIf="isLoggedIn && currentUserRole === 'TourAuthor'">
+    Ture
+  </button>
+
+  <mat-menu #toursMenu="matMenu">
+    <button mat-menu-item [routerLink]="['/my-tours']">Moje ture</button>
+    <button mat-menu-item [routerLink]="['create-tour']">Kreiraj turu</button>
+
+  </mat-menu>
+
+  <button mat-button [matMenuTriggerFor]="blogMenu">
+    Blogovi
+  </button>
+
+  <mat-menu #blogMenu="matMenu">
+    <button mat-menu-item [routerLink]="['/blogs']">Svi blogovi</button>
+    <button mat-menu-item [routerLink]="['/blogs/create']">Dodaj blog</button>
+
+  </mat-menu>
+
+  <!-- Ostala dugmad -->
+  <button mat-raised-button *ngIf="!isLoggedIn" routerLink="/login" style="margin-left: 8px;" color="accent">Login</button>
+  <button mat-raised-button *ngIf="isLoggedIn" (click)="logout()" style="margin-left: 8px;" color="accent">Logout</button>
+  <button mat-raised-button *ngIf="isLoggedIn && currentUserRole !== 'Administrator'" routerLink="/profile" style="margin-left: 8px;" color="accent">Profile</button>
+  <button mat-raised-button *ngIf="isLoggedIn && currentUserRole === 'Administrator'" color="accent" routerLink="/admin/users" style="margin-left: 8px;" >Users</button>
+</mat-toolbar>
+
+<router-outlet></router-outlet>
+<xp-position-fab></xp-position-fab>
+
+<router-outlet></router-outlet>

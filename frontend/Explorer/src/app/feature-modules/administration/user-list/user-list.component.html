@@ -1,0 +1,42 @@
+<div>
+    <h2 id="title">Accounts</h2>
+</div>
+<div id="account">
+    <div class="filters-container">
+        <div class="filters">
+            <h2 class="find" style="font-size: 18px;">Find Account</h2>
+            <mat-form-field>
+                <mat-label>Username</mat-label>
+                <input placeholder="Username or email" matInput type="text" [(ngModel)]="searchQuery" (input)="filterAccounts()"/>
+            </mat-form-field>    
+            <mat-form-field appearance="fill">
+                <mat-label>Role</mat-label>
+                <mat-select [(value)]="selectedRole" (selectionChange)="filterAccounts()">
+                    <mat-option value="tourist">Tourist</mat-option>
+                    <mat-option value="tourauthor">Author</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </div>
+    <div id="account-cards">
+        <div *ngFor="let ac of filteredAccounts" class="card">
+            <img src="assets/user.png"> 
+            <h3>{{ ac.username }}</h3>
+            <p><strong>Role:</strong> {{ ac.role }}</p>
+            <p><strong>Email:</strong> {{ ac.email }}</p>
+            <p><strong>Is Active:</strong> {{ ac.isActive ? 'Yes' : 'No' }}</p>
+
+            <div>
+
+            <button 
+                color="accent" [ngClass]="{'deposit': ac.role !== 'Tourist'}"
+                (click)="onBlockClicked(ac)" 
+                [disabled]="!ac.isActive">
+                Deactivate
+            </button>
+        </div>
+        </div>
+    </div>
+</div>
+
+  

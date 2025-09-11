@@ -1,0 +1,27 @@
+.like-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.1s ease;
+}
+
+.like-wrapper:hover {
+  transform: scale(1.05);
+}
+
+.heart-icon {
+  font-size: 22px;
+  color: #aaa;
+  transition: color 0.3s ease;
+}
+
+.heart-icon.filled {
+  color: #e74c3c; /* crveno srce kad je lajkovano */
+}
+
+.like-count {
+  font-size: 16px;
+  color: #333;
+}

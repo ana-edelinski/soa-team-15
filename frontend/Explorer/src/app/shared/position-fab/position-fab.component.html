@@ -1,0 +1,7 @@
+<a *ngIf="show$ | async"
+   class="fab"
+   (click)="toggleSimulator()"
+   [attr.aria-label]="isOnSimulator ? 'Hide position simulator' : 'Show position simulator'"
+   [title]="isOnSimulator ? 'Hide position simulator' : 'Show position simulator'">
+  <span class="material-icons">map</span>
+</a>
