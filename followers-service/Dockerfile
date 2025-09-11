@@ -1,18 +1,27 @@
-FROM golang:1.22 AS build
+# ---------- build ----------
+FROM golang:1.25-alpine AS builder
 WORKDIR /app
+ENV GOTOOLCHAIN=auto
+
 COPY go.mod go.sum ./
 RUN go mod download
-COPY . .
-RUN CGO_ENABLED=0 go build -o followers-service
 
-FROM gcr.io/distroless/base-debian12
-WORKDIR /app
-COPY --from=build /app/followers-service .
-# ENV za Neo4j 
-ENV NEO4J_URI=bolt://neo4j:7687 NEO4J_USER=neo4j NEO4J_PASSWORD=neo4jpass
-# ENV za JWT – moraju se poklopiti sa Stakeholders
-ENV JWT_KEY=explorer_super_secret_key_that_is_long_enough
-ENV JWT_ISSUER=explorer
-ENV JWT_AUDIENCE=explorer-front.com
+COPY . .
+# main.go je u rootu followers-service
+RUN CGO_ENABLED=0 GOOS=linux go build -o followers-service .
+
+# ---------- final ----------
+FROM gcr.io/distroless/static-debian12 AS final
+WORKDIR /
+COPY --from=builder /app/followers-service /followers-service
+
 EXPOSE 8085
-ENTRYPOINT ["/app/followers-service"]
+
+# Env se poklapa sa config/neo4j.go (NEO4J_PASSWORD!)
+ENV NEO4J_URI="bolt://neo4j-db:7687" \
+    NEO4J_USER="neo4j" \
+    NEO4J_PASSWORD="neo4jpass" \
+    CORS_ORIGIN="http://localhost:4200"
+
+USER nonroot:nonroot
+ENTRYPOINT ["/followers-service"]

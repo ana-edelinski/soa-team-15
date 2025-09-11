@@ -12,7 +12,7 @@ var driver neo4j.DriverWithContext
 func Neo4j() neo4j.DriverWithContext { return driver }
 
 func ConnectNeo4j() {
-	uri  := GetEnv("NEO4J_URI", "bolt://localhost:7687")
+	uri  := GetEnv("NEO4J_URI", "bolt://neo4j-db:7687")
 	user := GetEnv("NEO4J_USER", "neo4j")
 	pass := GetEnv("NEO4J_PASSWORD", "neo4jpass")
 
