@@ -163,11 +163,6 @@ namespace ToursService.Migrations
                     b.Property<long>("IdTourist")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("Image")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
                     b.Property<int>("Rating")
                         .HasColumnType("integer");
 

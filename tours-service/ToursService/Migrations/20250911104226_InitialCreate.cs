@@ -13,6 +13,21 @@ namespace ToursService.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Positions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TouristId = table.Column<long>(type: "bigint", nullable: false),
+                    Latitude = table.Column<double>(type: "double precision", nullable: false),
+                    Longitude = table.Column<double>(type: "double precision", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Positions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TourReviews",
                 columns: table => new
                 {
@@ -23,8 +38,7 @@ namespace ToursService.Migrations
                     Rating = table.Column<int>(type: "integer", nullable: false),
                     Comment = table.Column<string>(type: "text", nullable: true),
                     DateTour = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DateComment = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    Image = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false)
+                    DateComment = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -52,6 +66,26 @@ namespace ToursService.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tours", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TourReviewImages",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ReviewId = table.Column<long>(type: "bigint", nullable: false),
+                    Url = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TourReviewImages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TourReviewImages_TourReviews_ReviewId",
+                        column: x => x.ReviewId,
+                        principalTable: "TourReviews",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -85,6 +119,17 @@ namespace ToursService.Migrations
                 column: "TourId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Positions_TouristId",
+                table: "Positions",
+                column: "TouristId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TourReviewImages_ReviewId",
+                table: "TourReviewImages",
+                column: "ReviewId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TourReviews_IdTour_IdTourist",
                 table: "TourReviews",
                 columns: new[] { "IdTour", "IdTourist" });
@@ -107,10 +152,16 @@ namespace ToursService.Migrations
                 name: "KeyPoints");
 
             migrationBuilder.DropTable(
-                name: "TourReviews");
+                name: "Positions");
+
+            migrationBuilder.DropTable(
+                name: "TourReviewImages");
 
             migrationBuilder.DropTable(
                 name: "Tours");
+
+            migrationBuilder.DropTable(
+                name: "TourReviews");
         }
     }
 }

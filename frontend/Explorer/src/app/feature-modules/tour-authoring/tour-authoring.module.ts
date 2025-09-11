@@ -34,13 +34,13 @@ import { ViewKeyPointsComponent } from './view-key-points/view-key-points.compon
 @NgModule({
   declarations: [
     CreateTourComponent,
-    MyToursComponent,
+    MyToursComponent,    
+    CreateKeyPointsComponent,    
+    ViewKeyPointsComponent,
     ReviewDialogComponent
   ],
   imports: [
     MatFormFieldModule,
-    CreateKeyPointsComponent,
-    ViewKeyPointsComponent,
     FormsModule,
     MatInputModule,
     MatSelectModule,

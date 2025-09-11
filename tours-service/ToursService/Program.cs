@@ -16,7 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // DbContext
 builder.Services.AddDbContext<ToursContext>(opt =>
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Controllers
 builder.Services.AddControllers();

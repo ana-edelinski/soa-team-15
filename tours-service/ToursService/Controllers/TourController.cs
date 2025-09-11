@@ -49,7 +49,7 @@ namespace ToursService.Controllers
             if (result.IsSuccess) return Ok(result.Value);
             return BadRequest(result.Errors.FirstOrDefault()?.Message ?? "Failed to fetch published tours.");
         }
-    }
+    
         [HttpGet("getKeyPoints/{tourId:long}")]
         public ActionResult<List<KeyPointDto>> GetKeyPointsForTour(long tourId)
         {

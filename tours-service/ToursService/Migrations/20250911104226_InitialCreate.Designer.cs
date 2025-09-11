@@ -12,8 +12,8 @@ using ToursService.Database;
 namespace ToursService.Migrations
 {
     [DbContext(typeof(ToursContext))]
-    [Migration("20250825194354_AddPosition2")]
-    partial class AddPosition2
+    [Migration("20250911104226_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -166,11 +166,6 @@ namespace ToursService.Migrations
                     b.Property<long>("IdTourist")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("Image")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
                     b.Property<int>("Rating")
                         .HasColumnType("integer");
 
@@ -184,6 +179,29 @@ namespace ToursService.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ToursService.Domain.TourReviewImage", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("ReviewId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReviewId");
+
+                    b.ToTable("TourReviewImages");
+                });
+
             modelBuilder.Entity("ToursService.Domain.KeyPoint", b =>
                 {
                     b.HasOne("ToursService.Domain.Tour", null)
@@ -193,9 +211,25 @@ namespace ToursService.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ToursService.Domain.TourReviewImage", b =>
+                {
+                    b.HasOne("ToursService.Domain.TourReview", "Review")
+                        .WithMany("Images")
+                        .HasForeignKey("ReviewId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Review");
+                });
+
             modelBuilder.Entity("ToursService.Domain.Tour", b =>
                 {
                     b.Navigation("KeyPoints");
+                });
+
+            modelBuilder.Entity("ToursService.Domain.TourReview", b =>
+                {
+                    b.Navigation("Images");
                 });
 #pragma warning restore 612, 618
         }

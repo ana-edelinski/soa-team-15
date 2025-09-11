@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 })
 export class TourExecutionService {
 
-  private apiUrl = 'http://localhost:5226/api/position/';
+  private apiUrl = 'http://localhost:8082/api/position/';
 
   constructor(private http: HttpClient) { }
 

@@ -35,5 +35,5 @@ ENV PATH="$PATH:/root/.dotnet/tools"
 RUN dotnet tool install --global dotnet-ef --version 9.*
 
 FROM migration-base AS execute-migration
-CMD ["dotnet-ef", "database", "update", "--project", "ToursService.csproj", "--startup-project", "ToursService.csproj"]
+CMD ["dotnet-ef", "database", "update"]
 
