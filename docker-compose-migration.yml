@@ -15,20 +15,6 @@ services:
       - DATABASE_PASSWORD=super
       - DATABASE_USER=postgres
       - DATABASE_SCHEMA=stakeholdersdb
-  tours-migration:
-    build:
-      context: ./tours-service
-      dockerfile: Dockerfile
-      target: execute-migration
-    networks:
-      - database
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Docker
-      - DATABASE_HOST=tours-db
-      - DATABASE_PORT=5432
-      - DATABASE_PASSWORD=super
-      - DATABASE_USER=postgres
-      - DATABASE_SCHEMA=toursdb
 
 
 networks:

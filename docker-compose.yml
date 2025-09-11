@@ -75,42 +75,6 @@ services:
         source: blogdb
         target: /var/lib/postgresql/data
 
-  tours-service:
-    build:
-      dockerfile: Dockerfile
-      context: ./tours-service
-      target: final
-    restart: on-failure
-    networks:
-      - database
-    ports:
-      - "5226:8080"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Docker
-      - DATABASE_HOST=tours-db
-      - DATABASE_PORT=5432
-      - DATABASE_PASSWORD=super
-      - DATABASE_USER=postgres
-      - DATABASE_SCHEMA=toursdb
-    depends_on:
-      - tours-db
-
-  tours-db:
-    image: postgres:13
-    restart: always
-    networks:
-      - database
-    environment:
-      POSTGRES_PASSWORD: super
-      POSTGRES_USER: postgres
-      POSTGRES_DB: toursdb
-    volumes:
-      - type: volume
-        source: toursdb
-        target: /var/lib/postgresql/data
-    ports:
-      - "5435:5432"
-
   api-gateway:
     build: ./api-gateway
     ports:
@@ -130,8 +94,6 @@ volumes:
     name: stakeholdersdb
   blogdb:
     name: blogdb
-  toursdb:
-    name: toursdb
   blog-uploads:
     name: blog-uploads
 
