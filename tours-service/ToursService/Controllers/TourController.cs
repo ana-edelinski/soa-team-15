@@ -50,4 +50,28 @@ namespace ToursService.Controllers
             return BadRequest(result.Errors.FirstOrDefault()?.Message ?? "Failed to fetch published tours.");
         }
     }
+        [HttpGet("getKeyPoints/{tourId:long}")]
+        public ActionResult<List<KeyPointDto>> GetKeyPointsForTour(long tourId)
+        {
+           
+
+            var result = _tourService.GetKeyPointsByTour(tourId);
+            if (result.IsSuccess) return Ok(result.Value);
+            return BadRequest(result.Errors);
+        }
+
+        [HttpPost("addKeyPoints/{tourId:long}")]
+        [Consumes("multipart/form-data")]
+        public IActionResult AddKeyPoint([FromRoute] long tourId, [FromForm] KeyPointDto keyPointDto)
+        {
+            
+
+            var result = _tourService.AddKeyPoint(tourId, keyPointDto);
+            if (result.IsSuccess) return Ok(result.Value);
+            return BadRequest(result.Errors);
+        }
+    }
+
+   
+    
 }

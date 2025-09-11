@@ -4,12 +4,12 @@ export interface KeyPoint {
     longitude: number;
     latitude: number;
     description: string;
-    image: string;
-    userId: number;
-    tourId: number;
-    imageBase64?: string;
-    publicStatus: PublicStatus;
+    userId?: number | null;
+    tourId?: number | null;
+    pictureFile?: File | null;
 }
+
+
 export enum PublicStatus {
     PRIVATE = 0,
     REQUESTED_PUBLIC = 1,

@@ -8,6 +8,8 @@ namespace ToursService.UseCases
         Result<TourDto> Create(TourDto dto);
         Result<List<TourDto>> GetByUserId(long userId);
         public Result<List<TourDto>> GetPublished();
+        Result<KeyPointDto> AddKeyPoint(long tourId, KeyPointDto keyPointDto);
+        Result<List<KeyPointDto>> GetKeyPointsByTour(long tourId);
 
 
     }

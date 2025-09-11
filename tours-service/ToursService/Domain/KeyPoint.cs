@@ -3,16 +3,18 @@
     public class KeyPoint
     {
         public long Id { get; set; }
-        public string Name { get; private set; }
-        public double Longitude { get; private set; }
-        public double Latitude { get; private set; }
-        public string Description { get; private set; }
-        public string Image { get; private set; }
+        public string Name { get;  set; }
+        public double Longitude { get;  set; }
+        public double Latitude { get;  set; }
+        public string Description { get;  set; }
+        public string Image { get;  set; }
 
-        public long UserId { get; private set; }
+        public long UserId { get;  set; }
 
 
-        public long TourId { get; private set; }
+        public long TourId { get;  set; }
+        public KeyPoint() { }
+
         public KeyPoint(string name, double longitude, double latitude, string description, string image, long userId, long tourId)
         {
             Validate(name, longitude, latitude, description, image, userId);

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
 using ToursService.Domain;
 
 namespace ToursService.Database
@@ -54,6 +55,7 @@ namespace ToursService.Database
             b.Entity<TourReview>(e =>
             {
                 e.HasKey(x => x.Id);
+                e.Property(x => x.Image).HasMaxLength(500);
                 e.HasIndex(x => new { x.IdTour, x.IdTourist });
                 // jednostavan check za ocenu 1-5
                 e.ToTable(t => t.HasCheckConstraint("CK_TourReview_Rating_1_5", "\"Rating\" >= 1 AND \"Rating\" <= 5"));

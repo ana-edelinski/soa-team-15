@@ -1,0 +1,64 @@
+<div class="form-container">
+  <h1>Create Key Points</h1>
+
+  <!-- Top controls -->
+  <button 
+    type="button" 
+    class="btn btn-primary mb-3"
+    (click)="addMarker()">
+    Add Marker
+  </button>
+
+  <!-- Main layout: map left, form right -->
+  <div class="map-form-wrapper">
+    <!-- Map -->
+    <div id="map"></div>
+
+    <!-- Form -->
+    <div *ngIf="selectedKeyPointIndex !== null && selectedKeyPoint" class="form-panel">
+      <form (ngSubmit)="finishTour()">
+        
+        <!-- Name -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Name</mat-label>
+          <input matInput
+                 [(ngModel)]="selectedKeyPoint.name"
+                 name="name"
+                 required />
+        </mat-form-field>
+
+        <!-- Picture -->
+        <div class="file-upload">
+          <label>Picture</label>
+          <input type="file"
+                 #fileInput
+                 (change)="onFileChange($event)"
+                 required />
+          <span class="file-name">
+            {{ selectedKeyPoint?.pictureFile?.name || 'No file chosen' }}
+          </span>
+        </div>
+
+        <!-- Description -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput
+                    rows="6"
+                    [(ngModel)]="selectedKeyPoint.description"
+                    name="description"
+                    required></textarea>
+        </mat-form-field>
+
+        <!-- Submit -->
+        <div class="text-end">
+          <button mat-raised-button color="primary" type="submit">
+            Finish tour
+          </button>
+        </div>
+
+        <!-- Error -->
+        <mat-error *ngIf="errorMessage">{{ errorMessage }}</mat-error>
+      </form>
+    </div>
+  </div>
+</div>

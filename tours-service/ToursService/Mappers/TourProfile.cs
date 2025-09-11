@@ -31,6 +31,11 @@ namespace ToursService.Mappers
             //.ForMember(d => d.LengthInKm, o => o.MapFrom(s => s.LengthInKm))
             //.ForMember(d => d.PublishedTime, o => o.MapFrom(s => s.PublishedTime))
             //.ForMember(d => d.ArchiveTime, o => o.MapFrom(s => s.ArchiveTime));
+            CreateMap<KeyPointDto, KeyPoint>()
+                .ForMember(k => k.Id, opt => opt.Ignore()) // Id is DB-generated
+                .ForMember(k => k.UserId, opt => opt.Ignore()); // Set from claim if needed
+
+            CreateMap<KeyPoint, KeyPointDto>();
         }
     }
 }

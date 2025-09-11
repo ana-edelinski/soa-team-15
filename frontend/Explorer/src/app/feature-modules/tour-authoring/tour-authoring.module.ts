@@ -27,6 +27,8 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MyToursComponent } from './my-tours/my-tours.component';
 import { ReviewDialogComponent } from './review-dialog/review-dialog.component';
+import { CreateKeyPointsComponent } from './create-key-points/create-key-points.component';
+import { ViewKeyPointsComponent } from './view-key-points/view-key-points.component';
 
 
 @NgModule({
@@ -37,6 +39,9 @@ import { ReviewDialogComponent } from './review-dialog/review-dialog.component';
   ],
   imports: [
     MatFormFieldModule,
+    CreateKeyPointsComponent,
+    ViewKeyPointsComponent,
+    FormsModule,
     MatInputModule,
     MatSelectModule,
     MatButtonModule,

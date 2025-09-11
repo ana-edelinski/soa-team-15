@@ -10,11 +10,13 @@ namespace ToursService.UseCases
     public class TourService : ITourService
     {
         private readonly ITourRepository _tourRepository;
+        private readonly IKeyPointRepository _keyPointRepository;
         private readonly IMapper _mapper;
 
-        public TourService(ITourRepository tourRepository, IMapper mapper)
+        public TourService(ITourRepository tourRepository, IMapper mapper, IKeyPointRepository keyPointRepository)
         {
             _tourRepository = tourRepository;
+            _keyPointRepository = keyPointRepository;
             _mapper = mapper;
         }
 
@@ -40,6 +42,89 @@ namespace ToursService.UseCases
             catch (Exception ex)
             {
                 return Result.Fail<TourDto>($"EXCEPTION: {ex.Message}");
+            }
+        }
+
+         public Result<List<KeyPointDto>> GetKeyPointsByTour(long tourId)
+        {
+            try
+            {
+              
+                List<KeyPoint> keyPoints = _keyPointRepository.GetByTour(tourId);
+                List<KeyPointDto> dtos = keyPoints.Select(kp => new KeyPointDto{
+                    Id = kp.Id,
+                    Name = kp.Name, 
+                    Longitude = kp.Longitude,
+                    Latitude = kp.Latitude,
+                    Description = kp.Description,
+                    UserId = kp.UserId,
+                    TourId = kp.TourId
+                }).ToList();
+
+                
+                return Result.Ok(dtos);
+            }
+            catch (Exception ex)
+            {
+                return Result.Fail<List<KeyPointDto>>($"Error adding key point: {ex.Message}");
+            }
+        }
+
+
+        
+        public Result<KeyPointDto> AddKeyPoint(long tourId, KeyPointDto keyPointDto)
+        {
+            try
+            {
+                KeyPoint keyPoint = _mapper.Map<KeyPoint>(keyPointDto);
+                keyPoint.TourId = tourId;
+
+                // Handle file upload
+                if (keyPointDto.PictureFile != null && keyPointDto.PictureFile.Length > 0)
+                {
+                    // Validate file type (optional but recommended)
+                    var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                    var fileExtension = Path.GetExtension(keyPointDto.PictureFile.FileName).ToLowerInvariant();
+                    
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        return Result.Fail<KeyPointDto>("Invalid file type. Only image files are allowed.");
+                    }
+
+                    // Validate file size (optional - e.g., max 5MB)
+                    if (keyPointDto.PictureFile.Length > 5 * 1024 * 1024)
+                    {
+                        return Result.Fail<KeyPointDto>("File size too large. Maximum size is 5MB.");
+                    }
+
+                    // Create directory if it doesn't exist
+                    var uploadDir = Path.Combine("wwwroot", "images", "keypoints");
+                    if (!Directory.Exists(uploadDir))
+                    {
+                        Directory.CreateDirectory(uploadDir);
+                    }
+
+                    // Generate unique filename
+                    var fileName = $"keypoint_{Guid.NewGuid()}{fileExtension}";
+                    var filePath = Path.Combine(uploadDir, fileName);
+
+                    // Save file
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        keyPointDto.PictureFile.CopyToAsync(stream);
+                    }
+
+                    keyPoint.Image = fileName;
+                }
+                
+
+                var created = _keyPointRepository.Create(keyPoint);
+                var dto = _mapper.Map<KeyPointDto>(created);
+                return Result.Ok(dto);
+            }
+            catch (Exception ex)
+            {
+                return Result.Fail<KeyPointDto>($"Error adding key point: {ex.Message}");
             }
         }
 

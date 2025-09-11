@@ -1,0 +1,16 @@
+<div class="view-container">
+  <h1>Tour Key Points</h1>
+
+  <div id="view-map" style="height: 500px;"></div>  
+
+  <div class="keypoints-list">
+    <h3>Key Points</h3>
+    <ul>
+      <li *ngFor="let kp of keyPoints; let i = index">
+        <strong>{{ i + 1 }}. {{ kp.name }}</strong> <br />
+        <em>{{ kp.description }}</em> <br />
+        <img *ngIf="kp.pictureFile" [src]="kp.pictureFile" width="120" />
+      </li>
+    </ul>
+  </div>
+</div>

@@ -89,12 +89,16 @@ export class CreateTourComponent  implements OnChanges{
 
     console.log(tour);
 
+    
     this.service.addTour(tour).subscribe({
-      next: () => { this.tourUpdated.emit();
-        this.router.navigate(['/my-tours']);  
-       }
+      next: (createdTour) => { 
+        this.tourUpdated.emit();
+        this.router.navigate(['/tours', createdTour.id, 'key-points']);
+      }
     });
   }} }
+
+  
   
   onTagChange(event: MatCheckboxChange, index: number): void {
     this.currentTags = this.tourForm.get('tags')?.value || [];

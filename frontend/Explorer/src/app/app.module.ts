@@ -53,6 +53,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatCardModule,
     MatButtonModule,
     MatTooltipModule,
+    TourExecutionModule,
+    AuthModule,
   ],
   providers: [
     {
