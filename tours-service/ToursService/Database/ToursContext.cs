@@ -12,6 +12,7 @@ namespace ToursService.Database
         public DbSet<TourReviewImage> TourReviewImages { get; set; }
 
         public DbSet<Position> Positions { get; set; }
+        public DbSet<TourExecution> TourExecution { get; set; }
 
         public ToursContext(DbContextOptions<ToursContext> options) : base(options) { }
 
@@ -83,6 +84,25 @@ namespace ToursService.Database
                 // jedan turista = jedna pozicija
                 e.HasIndex(x => x.TouristId).IsUnique();
             });
+
+            // TOUR EXECUTION
+            b.Entity<TourExecution>(e =>
+            {
+                e.HasKey(x => x.Id);
+                e.Property(x => x.TourId).IsRequired();
+                e.Property(x => x.TouristId).IsRequired();
+                e.Property(x => x.LocationId).IsRequired();
+
+                e.Property(x => x.LastActivity);
+                e.Property(x => x.Status)
+                    .HasConversion<string>()   
+                    .IsRequired()
+                    .HasMaxLength(20);
+
+                e.HasIndex(x => x.TouristId);
+                e.HasIndex(x => new { x.TourId, x.TouristId });
+            });
+
         }
     }
 }

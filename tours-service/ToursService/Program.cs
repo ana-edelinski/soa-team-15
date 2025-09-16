@@ -100,13 +100,14 @@ builder.Services.AddScoped<ITourRepository, TourRepository>();
 builder.Services.AddScoped<IKeyPointRepository, KeyPointRepository>();
 builder.Services.AddScoped<ITourReviewRepository, TourReviewRepository>();
 builder.Services.AddScoped<IPositionRepository, PositionRepository>();
-
+builder.Services.AddScoped<ITourExecutionRepository, TourExecutionRepository>();
 
 
 // Services
 builder.Services.AddScoped<IPositionService, PositionService>();
 builder.Services.AddScoped<ITourService, TourService>();
 builder.Services.AddScoped<ITourReviewService, TourReviewService>();
+builder.Services.AddScoped<ITourExecutionService, TourExecutionService>();
 
 
 // AutoMapper

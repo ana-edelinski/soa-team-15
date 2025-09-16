@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ToursService.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitTourExecution : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -25,6 +25,23 @@ namespace ToursService.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Positions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TourExecution",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TourId = table.Column<long>(type: "bigint", nullable: false),
+                    TouristId = table.Column<long>(type: "bigint", nullable: false),
+                    LocationId = table.Column<long>(type: "bigint", nullable: false),
+                    LastActivity = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Status = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TourExecution", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -125,6 +142,16 @@ namespace ToursService.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_TourExecution_TourId_TouristId",
+                table: "TourExecution",
+                columns: new[] { "TourId", "TouristId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TourExecution_TouristId",
+                table: "TourExecution",
+                column: "TouristId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TourReviewImages_ReviewId",
                 table: "TourReviewImages",
                 column: "ReviewId");
@@ -153,6 +180,9 @@ namespace ToursService.Migrations
 
             migrationBuilder.DropTable(
                 name: "Positions");
+
+            migrationBuilder.DropTable(
+                name: "TourExecution");
 
             migrationBuilder.DropTable(
                 name: "TourReviewImages");

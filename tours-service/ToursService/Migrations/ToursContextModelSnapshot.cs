@@ -140,6 +140,40 @@ namespace ToursService.Migrations
                     b.ToTable("Tours");
                 });
 
+            modelBuilder.Entity("ToursService.Domain.TourExecution", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime?>("LastActivity")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("LocationId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<long>("TourId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TouristId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TouristId");
+
+                    b.HasIndex("TourId", "TouristId");
+
+                    b.ToTable("TourExecution");
+                });
+
             modelBuilder.Entity("ToursService.Domain.TourReview", b =>
                 {
                     b.Property<long>("Id")
