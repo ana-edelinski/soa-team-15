@@ -3,6 +3,7 @@ using FluentResults;
 using ToursService.Domain;
 using ToursService.Domain.RepositoryInterfaces;
 using ToursService.Dtos;
+using ToursService.Repositories;
 
 namespace ToursService.UseCases
 {
@@ -85,6 +86,28 @@ namespace ToursService.UseCases
             {
                 return Result.Fail<TourExecutionDto>($"EXCEPTION: {ex.Message}");
             }
+        }
+
+        public Result<TourExecutionDto> GetByTourAndTouristId(long touristId, long tourId)
+        {
+            var ex = _tourExecutionRepository.GetByTourAndTourist(touristId, tourId);
+            if (ex != null)
+            {
+                return Result.Ok(_mapper.Map<TourExecutionDto>(ex));
+            }
+
+            return Result.Fail<TourExecutionDto>("TourExecution not found.");
+        }
+
+        public Result<TourExecutionDto> GetActiveTourByTouristId(long touristId)
+        {
+            var execution = _tourExecutionRepository.GetActiveTourByTourist(touristId);
+            if (execution != null)
+            {
+                return Result.Ok(_mapper.Map<TourExecutionDto>(execution));
+            }
+
+            return Result.Fail<TourExecutionDto>($"No active tour found for tourist with ID {touristId}.");
         }
     }
 }

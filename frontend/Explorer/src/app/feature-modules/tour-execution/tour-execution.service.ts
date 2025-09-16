@@ -35,4 +35,12 @@ export class TourExecutionService {
   abandonTourExecution(id: number): Observable<TourExecution> {
     return this.http.post<TourExecution>(`${this.baseUrl}/abandon/${id}`, {});
   }
+
+  getExecutionByTourAndTourist(touristId: number, tourId: number): Observable<TourExecution> {
+    return this.http.get<TourExecution>(`${this.baseUrl}/by_tour_and_tourist/${touristId}/${tourId}`);
+  }
+
+  getActiveExecutionForTourist(touristId: number): Observable<TourExecution> {
+    return this.http.get<TourExecution>(`${this.baseUrl}/active/${touristId}`);
+  }
 }

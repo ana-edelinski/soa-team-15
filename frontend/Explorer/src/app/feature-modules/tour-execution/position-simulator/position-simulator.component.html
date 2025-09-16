@@ -24,15 +24,12 @@
       </div>
     </div>
 
-    <div class="row" *ngIf="isActive && currentExecution">
-      <label>Tour</label>
-      <button 
-        mat-raised-button 
-        color="warn" 
-        (click)="abandonTour(currentExecution.id!)">
-        Abandon Tour
-      </button>
-    </div>
+  <div class="row" *ngIf="isActive && currentExecution">
+    <button mat-raised-button color="warn" (click)="abandonTour(currentExecution.id!)">
+      Abandon Tour
+    </button>
+  </div>
+
   </aside>
 
   <section class="map-wrap">

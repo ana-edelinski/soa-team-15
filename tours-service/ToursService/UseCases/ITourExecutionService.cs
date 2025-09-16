@@ -10,5 +10,8 @@ namespace ToursService.UseCases
         Result<TourExecutionDto> CompleteTourExecution(long id);
 
         Result<TourExecutionDto> AbandonTourExecution(long id);
+        Result<TourExecutionDto> GetByTourAndTouristId(long touristId, long tourId);
+        public Result<TourExecutionDto> GetActiveTourByTouristId(long touristId);
+
     }
 }

@@ -8,5 +8,9 @@
         TourExecution Update(TourExecution execution);
 
         public void Delete(long id);
+        TourExecution? GetByTourAndTourist(long touristId, long tourId);
+        public TourExecution? GetActiveTourByTourist(long touristId);
+
+
     }
 }

@@ -47,5 +47,32 @@ namespace ToursService.Controllers
             if (result.IsSuccess) return Ok(result.Value);
             return BadRequest(result.Errors);
         }
+
+        [HttpGet("by_tour_and_tourist/{touristId:long}/{tourId:long}")]
+        public ActionResult<TourExecutionDto> GetByTourAndTouristId(long touristId, long tourId)
+        {
+            var result = _executionService.GetByTourAndTouristId(touristId, tourId);
+            if (result == null)
+                return NotFound("Tour execution not found for the specified tourist and tour.");
+
+            if (result.IsSuccess)
+                return Ok(result.Value);
+
+            return BadRequest(result.Errors);
+        }
+
+        [HttpGet("active/{touristId:long}")]
+        public ActionResult<TourExecutionDto> GetActiveTourByTouristId(long touristId)
+        {
+            var result = _executionService.GetActiveTourByTouristId(touristId);
+            if (result == null)
+                return NotFound("Tour execution not found for this tourist.");
+
+            if (result.IsSuccess)
+                return Ok(result.Value);
+
+            return BadRequest(result.Errors);
+        }
+
     }
 }
