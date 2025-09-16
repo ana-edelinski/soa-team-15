@@ -11,9 +11,9 @@
         public DateTime? LastActivity { get; private set; }
         public TourExecutionStatus Status { get; private set; }
 
-        //public List<CompletedKeyPoint> CompletedKeys { get; private set; } //ovde se nalazi endTime za svaku kt
+        public List<CompletedKeyPoint> CompletedKeys { get; private set; } //ovde se nalazi endTime za svaku kt
 
-        public TourExecution(long tourId, long touristId, long locationId, DateTime? lastActivity, TourExecutionStatus status/*, List<CompletedKeyPoint> completedKeys*/)
+        public TourExecution(long tourId, long touristId, long locationId, DateTime? lastActivity, TourExecutionStatus status, List<CompletedKeyPoint> completedKeys)
         {
             TourId = tourId;
             TouristId = touristId;
@@ -22,7 +22,7 @@
             Status = status;
             if (!DateTime.TryParse(LastActivity.ToString(), out _)) lastActivity = DateTime.UtcNow;
 
-            //CompletedKeys = completedKeys;
+            CompletedKeys = completedKeys;
         }
 
         public void StartTourExecution()
@@ -55,26 +55,26 @@
         }
 
 
-        //public CompletedKeyPoint CompleteKeyPoint(long keyPointId)
-        //{
-        //    ValidateTourExecutionActive();
-        //    ValidateKeyPointNotCompleted(keyPointId);
+        public CompletedKeyPoint CompleteKeyPoint(long keyPointId)
+        {
+            ValidateTourExecutionActive();
+            ValidateKeyPointNotCompleted(keyPointId);
 
-        //    var completedKeyPoint = new CompletedKeyPoint(keyPointId, DateTime.UtcNow);
-        //    CompletedKeys.Add(completedKeyPoint);
-        //    LastActivity = DateTime.UtcNow;
-        //    return completedKeyPoint;
-        //}
+            var completedKeyPoint = new CompletedKeyPoint(keyPointId, DateTime.UtcNow);
+            CompletedKeys.Add(completedKeyPoint);
+            LastActivity = DateTime.UtcNow;
+            return completedKeyPoint;
+        }
 
         private void ValidateTourExecutionActive()
         {
             if (Status != TourExecutionStatus.Active) throw new ArgumentException("Tour is not active.");
         }
 
-        //private void ValidateKeyPointNotCompleted(long keyPointId)
-        //{
-        //    if (CompletedKeys.Any(ckp => ckp.KeyPointId == keyPointId)) throw new ArgumentException($"Key point with ID {keyPointId} is already completed.");
-        //}
+        private void ValidateKeyPointNotCompleted(long keyPointId)
+        {
+            if (CompletedKeys.Any(ckp => ckp.KeyPointId == keyPointId)) throw new ArgumentException($"Key point with ID {keyPointId} is already completed.");
+        }
     }
 
     public enum TourExecutionStatus

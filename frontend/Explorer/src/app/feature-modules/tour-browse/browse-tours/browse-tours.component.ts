@@ -7,7 +7,7 @@ import { TourService } from '../../tour-authoring/tour.service';
 import { Tour } from '../../tour-authoring/model/tour.model';
 import { ReviewDialogComponent } from '../../tour-authoring/review-dialog/review-dialog.component';
 import { TourExecutionService } from '../../tour-execution/tour-execution.service'; 
-import { TourExecution } from '../../tour-execution/tour-execution.model';
+import { CompletedKeys, TourExecution } from '../../tour-execution/tour-execution.model';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 
@@ -78,10 +78,15 @@ export class BrowseToursComponent implements OnInit {
     this.snack.open('You must be logged in as Tourist to start a tour.', 'OK', { duration: 3000 });
     return;
   }
+ 
+
 
   const execution: TourExecution = {
     tourId: tourId,
-    touristId: this.user.id
+    touristId: this.user.id,
+    completedKeys: [],
+    locationId: 1 //to do get position id for tourist
+    //completedKeys: [{keyPointId: 1, completionTime: Date()}]
     // locationId i ostalo dodati kasnije kada se poveze sa simulatorom
   };
 

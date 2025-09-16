@@ -11,6 +11,11 @@
         TourExecution? GetByTourAndTourist(long touristId, long tourId);
         public TourExecution? GetActiveTourByTourist(long touristId);
 
+        public bool KeyPointExists(long keyPointId);
+        public ICollection<KeyPoint> GetKeyPointsByTourId(long tourId);
+        bool CheckIfCompleted(long userId, long tourId);
+        List<long> FindAllCompletedForUser(long userId);
+
 
     }
 }

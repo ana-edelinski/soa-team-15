@@ -18,6 +18,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ToursContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+var cs = builder.Configuration.GetConnectionString("DefaultConnection");
+
+var dsb = new Npgsql.NpgsqlDataSourceBuilder(cs);
+dsb.EnableDynamicJson();                 // ili: dsb.UseJsonNet();
+var dataSource = dsb.Build();
+builder.Services.AddDbContext<ToursContext>(opt => opt.UseNpgsql(dataSource));
+
 // Controllers
 builder.Services.AddControllers();
 

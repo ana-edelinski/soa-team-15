@@ -21,8 +21,14 @@ namespace ToursService.Mappers
                     dto.TourId,
                     dto.TouristId,
                     dto.LocationId,
-                    dto.LastActivity,
-                    (Domain.TourExecutionStatus)dto.Status));
+                    dto.LastActivity,                   
+                    (Domain.TourExecutionStatus)dto.Status,
+                   dto.CompletedKeys != null
+                    ? dto.CompletedKeys
+                        .Select(k => new Domain.CompletedKeyPoint(k.KeyPointId, k.CompletedTime))
+                        .ToList()
+                    : new List<Domain.CompletedKeyPoint>()
+           ));
 
             // Domain -> DTO
             CreateMap<TourExecution, TourExecutionDto>();

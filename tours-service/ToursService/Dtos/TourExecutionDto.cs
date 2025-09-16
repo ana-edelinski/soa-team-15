@@ -11,9 +11,11 @@
         public DateTime? LastActivity { get; set; }
         public TourExecutionStatus Status { get; set; }
 
+        public List<CompletedKeyPointDto> CompletedKeys { get; set; }
+
         public TourExecutionDto() { }
 
-        public TourExecutionDto(long id, long tourId, long touristId, long locationId, DateTime? lastActivity, TourExecutionStatus status)
+        public TourExecutionDto(long id, long tourId, long touristId, long locationId, DateTime? lastActivity, TourExecutionStatus status, List<CompletedKeyPointDto> completedKeys)
         {
             Id = id;
             TourId = tourId;
@@ -21,6 +23,7 @@
             LocationId = locationId;
             LastActivity = lastActivity;
             Status = status;
+            CompletedKeys = completedKeys;
         }
     }
 

@@ -74,5 +74,48 @@ namespace ToursService.Controllers
             return BadRequest(result.Errors);
         }
 
+        [HttpPut("completeKeyPoint/{executionId:long}/{keyPointId:long}")]
+        public ActionResult<TourExecutionDto> CompleteKeyPoint(long executionId, long keyPointId)
+        {
+            try
+            {
+                var result = _executionService.CompleteKeyPoint(executionId, keyPointId);
+
+                return result.IsFailed
+                    ? Conflict(new { message = result.Errors.First().Message })
+                    : Ok(result.Value);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+            }
+        }
+
+        [HttpPut("updateLastActivity/{executionId:long}")]
+        public IActionResult UpdateLastActivity(long executionId)
+        {
+            try
+            {
+                _executionService.UpdateLastActivity(executionId);
+
+                return Ok(new { message = "Last activity updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while updating the last activity.", details = ex.Message });
+            }
+        }
+
+        [HttpGet("{tourId}/keypoints")]
+        public IActionResult GetKeyPoints(long tourId)
+        {
+            var keyPoints = _executionService.GetKeyPointsForTour(tourId);
+            return Ok(keyPoints);
+        }
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
+using System.Reflection.Emit;
 using ToursService.Domain;
 
 namespace ToursService.Database
@@ -85,6 +86,8 @@ namespace ToursService.Database
                 e.HasIndex(x => x.TouristId).IsUnique();
             });
 
+
+            b.Entity<TourExecution>().Property(item => item.CompletedKeys).HasColumnType("jsonb"); //value object cuva kao json
             // TOUR EXECUTION
             b.Entity<TourExecution>(e =>
             {
@@ -102,6 +105,12 @@ namespace ToursService.Database
                 e.HasIndex(x => x.TouristId);
                 e.HasIndex(x => new { x.TourId, x.TouristId });
             });
+
+            b.Entity<TourExecution>()
+            .HasOne<Position>()
+            .WithMany()
+            .HasForeignKey(s => s.LocationId);
+
 
         }
     }

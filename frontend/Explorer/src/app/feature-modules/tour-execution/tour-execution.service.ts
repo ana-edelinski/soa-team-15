@@ -9,8 +9,8 @@ import { environment } from 'src/env/environment';
 })
 export class TourExecutionService {
 
-  private apiUrl = 'http://localhost:5226/api/position/'; //8082
-  private baseUrl = 'http://localhost:5226/api/execution';
+  private apiUrl = 'http://localhost:8082/api/position/'; //8082
+  private baseUrl = 'http://localhost:8082/api/execution';
 
   constructor(private http: HttpClient) { }
 
