@@ -23,6 +23,16 @@
         {{ address?.road ? (address.road + (address.house_number ? ' ' + address.house_number : '')) : '—' }}
       </div>
     </div>
+
+    <div class="row" *ngIf="isActive && currentExecution">
+      <label>Tour</label>
+      <button 
+        mat-raised-button 
+        color="warn" 
+        (click)="abandonTour(currentExecution.id!)">
+        Abandon Tour
+      </button>
+    </div>
   </aside>
 
   <section class="map-wrap">

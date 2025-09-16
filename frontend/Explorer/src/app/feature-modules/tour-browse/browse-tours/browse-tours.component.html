@@ -22,6 +22,17 @@
       <button
         mat-raised-button
         color="primary"
+        (click)="startTour(tour.id!)"
+        *ngIf="isTourist"
+        [disabled]="isActive"
+      >
+        Start Tour
+      </button>
+
+
+      <button
+        mat-raised-button
+        color="primary"
         (click)="openReviewDialog(tour)"
       >
         Leave a review

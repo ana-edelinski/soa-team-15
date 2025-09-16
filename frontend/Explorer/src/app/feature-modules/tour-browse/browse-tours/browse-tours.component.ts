@@ -6,6 +6,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TourService } from '../../tour-authoring/tour.service';
 import { Tour } from '../../tour-authoring/model/tour.model';
 import { ReviewDialogComponent } from '../../tour-authoring/review-dialog/review-dialog.component';
+import { TourExecutionService } from '../../tour-execution/tour-execution.service'; 
+import { TourExecution } from '../../tour-execution/tour-execution.model';
+import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'xp-browse-tours',
@@ -17,14 +21,21 @@ export class BrowseToursComponent implements OnInit {
   tours: Tour[] = [];
   loading = false;
   error = '';
+  tourExecution: TourExecution = {} as TourExecution;
+  tourExecutions: Map<number, TourExecution> = new Map();
+  userId: number = -1;
+  isActive: boolean = false;
 
   get isTourist(): boolean {
-    return !!this.user && (this.user.role === 'TOURIST' || this.user.role === 'Turista' || this.user.role ===  'ROLE_TOURIST');
+    return !!this.user && this.user.role === 'Tourist';
   }
+
 
   constructor(
     private tourService: TourService,
+    private tourExecutionService: TourExecutionService,
     private auth: AuthService,
+    private router: Router,
     private dialog: MatDialog,
     private snack: MatSnackBar
   ) {
@@ -61,4 +72,32 @@ export class BrowseToursComponent implements OnInit {
       if (created) this.snack.open('Review submitted ✅', 'OK', { duration: 3000 });
     });
   }
+
+  startTour(tourId: number): void {
+  if (!this.user) {
+    this.snack.open('You must be logged in as Tourist to start a tour.', 'OK', { duration: 3000 });
+    return;
+  }
+
+  const execution: TourExecution = {
+    tourId: tourId,
+    touristId: this.user.id
+    // locationId i ostalo dodati kasnije kada se poveze sa simulatorom
+  };
+
+  this.tourExecutionService.startTourExecution(execution).subscribe({
+    next: (data) => {
+      console.log('Tour execution started', data);
+      this.snack.open(`Tour started`, 'OK', { duration: 3000 });
+      this.isActive = true;
+
+      this.router.navigate(['/position-simulator']); 
+    },
+    error: (err) => {
+      console.error('Failed to start tour', err);
+      this.snack.open('Failed to start tour', 'OK', { duration: 3000 });
+    }
+  });
+}
+
 }

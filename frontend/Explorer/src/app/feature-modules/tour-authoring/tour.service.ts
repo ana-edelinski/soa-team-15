@@ -9,7 +9,8 @@ import { KeyPoint } from "./model/keypoint.model";
     providedIn: 'root'
   })
   export class TourService {
-    private baseUrl = 'http://localhost:8082/api/';
+    // private baseUrl = 'http://localhost:8082/api/';
+    private baseUrl = 'http://localhost:5226/api/';
 
     constructor(private http: HttpClient) { }
   
