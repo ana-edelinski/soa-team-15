@@ -69,9 +69,12 @@
     <xp-map
       *ngIf="showMap"
       [center]="defaultCenter"
+      [markers]="kpMarkers"
       [zoom]="13"
       [initialMarker]="initialMarker"
-      (mapClick)="onMapClick($event)">
+      [routeWaypoints]="routeWaypoints"
+      [routeMode]="routeMode"
+      (mapClick)="onMapClick($event)">      
     </xp-map>
   </section>
 </div>

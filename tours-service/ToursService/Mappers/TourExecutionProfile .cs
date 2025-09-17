@@ -15,6 +15,14 @@ namespace ToursService.Mappers
             CreateMap<ToursService.Domain.TourExecutionStatus, ToursService.Dtos.TourExecutionStatus>()
                 .ConvertUsing(src => (ToursService.Dtos.TourExecutionStatus)src);
 
+            CreateMap<CompletedKeyPoint, CompletedKeyPointDto>()
+            // Ako se svojstvo zove drugačije (npr. CompletedAt), prilagodi:
+            .ForMember(d => d.CompletedTime, o => o.MapFrom(s => s.CompletedTime))
+            .ForMember(d => d.KeyPointId, o => o.MapFrom(s => s.KeyPointId));
+
+            CreateMap<CompletedKeyPointDto, CompletedKeyPoint>()
+                .ConstructUsing(dto => new CompletedKeyPoint(dto.KeyPointId, dto.CompletedTime));
+
             // DTO -> Domain
             CreateMap<TourExecutionDto, TourExecution>()
                 .ConstructUsing(dto => new TourExecution(
@@ -31,7 +39,14 @@ namespace ToursService.Mappers
            ));
 
             // Domain -> DTO
-            CreateMap<TourExecution, TourExecutionDto>();
+            CreateMap<TourExecution, TourExecutionDto>()
+            .ForCtorParam("id", o => o.MapFrom(s => s.Id))
+            .ForCtorParam("tourId", o => o.MapFrom(s => s.TourId))
+            .ForCtorParam("touristId", o => o.MapFrom(s => s.TouristId))
+            .ForCtorParam("locationId", o => o.MapFrom(s => s.LocationId))
+            .ForCtorParam("lastActivity", o => o.MapFrom(s => s.LastActivity))
+            .ForCtorParam("status", o => o.MapFrom(s => (ToursService.Dtos.TourExecutionStatus)s.Status))
+            .ForCtorParam("completedKeys", o => o.MapFrom(s => s.CompletedKeys ?? new List<CompletedKeyPoint>()));
         }
     }
 }

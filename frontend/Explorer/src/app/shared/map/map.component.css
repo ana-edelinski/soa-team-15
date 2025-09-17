@@ -1,2 +1,20 @@
 :host { display:block; height: 100%; }
 .map-root { height: 100%; border-radius: 12px; overflow: hidden; }
+
+/* obojavanje kompletiranih ikona */
+.kp-icon { filter: none; }
+.kp-icon.kp-icon--completed {
+  filter: hue-rotate(85deg) saturate(1.4) brightness(1.1);
+}
+
+/* popup stil */
+.leaflet-popup-content .kp-popup img{
+  width: 180px; height: auto; border-radius: 8px; display:block;
+  margin-bottom: 8px; object-fit: cover;
+}
+.leaflet-popup-content .kp-popup h4{
+  margin: 0 0 6px; font-size: 14px;
+}
+.leaflet-popup-content .kp-popup p{
+  margin: 0; font-size: 13px; line-height: 1.35;
+}

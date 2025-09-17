@@ -58,4 +58,12 @@ export class TourExecutionService {
     return this.http.get<TourForTourist>('http://localhost:8082/api/tour/'+id);
   }
 
+  completeKeyPoint(executionId: number, keyPointId: number) {
+    return this.http.put<TourExecution>(
+      `${this.baseUrl}/completeKeyPoint/${executionId}/${keyPointId}`, {}
+    );
+  }
+
+  
+
 }
