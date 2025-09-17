@@ -10,6 +10,7 @@ namespace ToursService.UseCases
         public Result<List<TourDto>> GetPublished();
         Result<KeyPointDto> AddKeyPoint(long tourId, KeyPointDto keyPointDto);
         Result<List<KeyPointDto>> GetKeyPointsByTour(long tourId);
+        public Result<TourForTouristDto> GetTourWithKeyPoints(long tourId);
 
 
     }

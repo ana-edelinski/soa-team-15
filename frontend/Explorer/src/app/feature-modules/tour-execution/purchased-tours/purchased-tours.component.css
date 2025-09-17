@@ -1,0 +1,61 @@
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.state {
+  padding: 24px;
+  color: #666;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.tour .avatar {
+  background: #e0e0e0;
+  color: #333;
+  font-weight: 600;
+  display: grid;
+  place-items: center;
+}
+
+.tour .desc {
+  min-height: 48px;
+  color: #444;
+}
+
+.tags {
+  margin: 8px 0 4px;
+}
+
+.meta {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.meta > div {
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 8px;
+  display: grid;
+}
+
+.meta span {
+  font-size: 12px;
+  color: #666;
+}
+
+.meta strong {
+  font-size: 14px;
+}
+
+mat-card-actions .btn-label {
+  margin-left: 8px;
+}

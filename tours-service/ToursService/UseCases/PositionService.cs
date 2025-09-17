@@ -28,7 +28,13 @@ namespace ToursService.UseCases
                 if (pos == null)
                     return Result.Fail<PositionDto>("No position found for this tourist.");
 
-                return Result.Ok(_mapper.Map<PositionDto>(pos));
+                return Result.Ok(new PositionDto
+                {
+                    Id = pos.Id,
+                    TouristId = pos.TouristId,
+                    Latitude = pos.Latitude,
+                    Longitude = pos.Longitude
+                });
             }
             catch (Exception ex)
             {

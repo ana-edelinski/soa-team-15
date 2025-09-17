@@ -1,0 +1,42 @@
+<div class="wrap">
+  <h2>My Tours</h2>
+
+  <div *ngIf="loading" class="state">Loading…</div>
+  <div *ngIf="!loading && tours.length === 0" class="state">No tours to show.</div>
+
+  <div class="grid" *ngIf="!loading && tours.length > 0">
+    <mat-card class="tour" *ngFor="let t of tours">
+      <mat-card-header>
+        <div mat-card-avatar class="avatar">{{ t.name[0] || 'T' }}</div>
+        <mat-card-title>{{ t.name }}</mat-card-title>
+        <mat-card-subtitle>
+          {{ t.difficulty || '—' }} •
+          
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <p class="desc">{{ t.description || 'No description.' }}</p>
+
+        <div class="tags" *ngIf="t.tags?.length">
+          <mat-chip-set>
+            <mat-chip *ngFor="let tag of t.tags" disabled>{{ tagLabel(tag) }}</mat-chip>
+          </mat-chip-set>
+        </div>
+
+        
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-raised-button color="primary"
+                [matTooltip]="isDisabled(t) ? 'Finish/abandon current tour first' : ''"
+                [disabled]="isDisabled(t) || isStarting(t)"
+                (click)="onAction(t)">
+          <mat-icon *ngIf="!isStarting(t)">play_arrow</mat-icon>
+          <mat-progress-spinner *ngIf="isStarting(t)" diameter="18" mode="indeterminate"></mat-progress-spinner>
+          <span class="btn-label">{{ buttonLabel(t) }}</span>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

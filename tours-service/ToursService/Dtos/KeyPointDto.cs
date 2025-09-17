@@ -16,6 +16,18 @@ namespace ToursService.Dtos
         public IFormFile PictureFile { get; set;}
         public PublicStatus PublicStatus { get; set; }
         public KeyPointDto() { }
+
+
+        public KeyPointDto(KeyPoint kp)
+        {
+            Id = kp.Id;
+            Name = kp.Name;
+            Description = kp.Description;
+            Image = kp.Image;
+            Latitude = kp.Latitude;
+            Longitude = kp.Longitude;
+            TourId = kp.TourId;
+        }
     }
 
     public enum PublicStatus

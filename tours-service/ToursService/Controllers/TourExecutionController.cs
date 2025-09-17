@@ -65,13 +65,19 @@ namespace ToursService.Controllers
         public ActionResult<TourExecutionDto> GetActiveTourByTouristId(long touristId)
         {
             var result = _executionService.GetActiveTourByTouristId(touristId);
-            if (result == null)
-                return NotFound("Tour execution not found for this tourist.");
 
-            if (result.IsSuccess)
-                return Ok(result.Value);
+            if (result.IsSuccess) return Ok(result.Value);
 
-            return BadRequest(result.Errors);
+            if (result.IsFailed)
+            {
+                var msg = result.Errors.FirstOrDefault()?.Message ?? "Not found";
+                if (msg.Contains("no active tour found", StringComparison.OrdinalIgnoreCase))
+                    return NotFound(new { message = msg });
+
+                return BadRequest(result.Errors);
+            }
+
+            return BadRequest();
         }
 
         [HttpPut("completeKeyPoint/{executionId:long}/{keyPointId:long}")]
