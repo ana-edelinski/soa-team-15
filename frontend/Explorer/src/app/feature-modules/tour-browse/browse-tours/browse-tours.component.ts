@@ -10,6 +10,10 @@ import { TourExecutionService } from '../../tour-execution/tour-execution.servic
 import { TourExecution } from '../../tour-execution/tour-execution.model';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
+import { CartService } from 'src/app/feature-modules/payments/cart.service';
+import { OrderItem } from 'src/app/feature-modules/payments/model/order-item.model';
+import { ShoppingCart } from 'src/app/feature-modules/payments/model/shopping-cart.model';
+
 
 @Component({
   selector: 'xp-browse-tours',
@@ -25,6 +29,7 @@ export class BrowseToursComponent implements OnInit {
   tourExecutions: Map<number, TourExecution> = new Map();
   userId: number = -1;
   isActive: boolean = false;
+  shoppingCart: ShoppingCart | null = null;
 
   get isTourist(): boolean {
     return !!this.user && this.user.role === 'Tourist';
@@ -37,7 +42,8 @@ export class BrowseToursComponent implements OnInit {
     private auth: AuthService,
     private router: Router,
     private dialog: MatDialog,
-    private snack: MatSnackBar
+    private snack: MatSnackBar,
+    private cartService: CartService
   ) {
     this.auth.user$.subscribe(u => (this.user = u));
   }
@@ -48,6 +54,24 @@ export class BrowseToursComponent implements OnInit {
       next: data => { this.tours = data; this.loading = false; },
       error: err => { console.error(err); this.error = 'Failed to load tours.'; this.loading = false; }
     });
+
+    if (this.user && this.isTourist) {
+    this.cartService.getCartsByUser(this.user.id).subscribe({
+      next: (carts) => {
+        if (carts.length === 0) {
+          // ako nema, napravi novu
+          this.createNewCart(this.user!.id);
+        } else {
+          // ako ima, uzmi prvu (ili aktivnu)
+          this.shoppingCart = carts[0];
+          console.log('Loaded cart:', this.shoppingCart);
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load carts for user', err);
+      }
+    });
+  }
   }
 
   // (opciono) lokalna provera – pravo ostavljanja recenzije
@@ -99,5 +123,68 @@ export class BrowseToursComponent implements OnInit {
     }
   });
 }
+
+  createNewCart(userId: number): void {
+    const cart: ShoppingCart = {
+      id: 0, // backend ga kreira
+      userId: userId,
+      items: [],
+      totalPrice: 0
+    };
+
+    this.cartService.createShoppingCart(cart).subscribe({
+      next: (created) => {
+        this.shoppingCart = created;
+        console.log('Cart created:', created);
+      },
+      error: () => {
+        this.snack.open('Error creating cart', 'OK', { duration: 3000 });
+      }
+    });
+  }
+
+  addToCart(tour: Tour): void {
+  if (!this.user) {
+    this.snack.open('You must be logged in as Tourist to add tours to cart.', 'OK', { duration: 3000 });
+    return;
+  }
+
+  if (!this.shoppingCart) {
+    this.snack.open('No active cart. Please refresh or try again.', 'OK', { duration: 3000 });
+    return;
+  }
+
+  const item: OrderItem = {
+    id: 0, // backend kreira
+    tourName: tour.name,
+    price: tour.price,
+    tourId: tour.id!,
+    cartId: this.shoppingCart!.id!   // ✅ sada TS zna da neće biti undefined
+  };
+
+
+  this.cartService.addToCart(item).subscribe({
+    next: (created) => {
+      this.snack.open(`${tour.name} added to cart ✅`, 'OK', { duration: 3000 });
+      console.log('Added to cart', created);
+
+      // ✅ prvo proveri da li postoji ID
+      if (this.shoppingCart?.id) {
+        this.cartService.getCartItems(this.shoppingCart.id).subscribe();
+      } else {
+        console.error('Cart has no valid ID!');
+      }
+    },
+    error: (err) => {
+      console.error('Failed to add to cart', err);
+      this.snack.open('Failed to add to cart', 'OK', { duration: 3000 });
+    }
+  });
+
+}
+
+
+
+
 
 }

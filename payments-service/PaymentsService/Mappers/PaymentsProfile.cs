@@ -28,7 +28,9 @@ namespace PaymentsService.Mappers
             // ShoppingCart
             // --------------------
             CreateMap<ShoppingCartDto, ShoppingCart>()
-                .ForCtorParam("userId", opt => opt.MapFrom(src => src.UserId));
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+                .ForMember(dest => dest.Items, opt => opt.Ignore()); // jer se puni posebno
+
 
             CreateMap<ShoppingCart, ShoppingCartDto>()
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.Id))

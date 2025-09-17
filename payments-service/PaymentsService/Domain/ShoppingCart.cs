@@ -3,7 +3,7 @@
     public class ShoppingCart
     {
         public long Id { get; set; }
-        public long UserId { get; private set; }
+        public long UserId { get; set; }
         public List<OrderItem> Items { get; private set; }
         //public List<TourPurchaseToken> PurchaseTokens { get; private set; }
         public ShoppingCart()

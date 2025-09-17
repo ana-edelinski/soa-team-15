@@ -21,7 +21,11 @@ builder.Services.AddDbContext<PaymentsContext>(opt =>
 // ------------------------
 // Controllers
 // ------------------------
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
 
 // ------------------------
 // Swagger + JWT schema

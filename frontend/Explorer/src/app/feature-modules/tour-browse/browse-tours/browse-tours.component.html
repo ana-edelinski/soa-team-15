@@ -21,6 +21,15 @@
     <mat-card-actions>
       <button
         mat-raised-button
+        color="accent"
+        (click)="addToCart(tour)"
+        *ngIf="isTourist"
+      >
+        Add to Cart
+      </button>
+
+      <button
+        mat-raised-button
         color="primary"
         (click)="startTour(tour.id!)"
         *ngIf="isTourist"
