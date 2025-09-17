@@ -144,42 +144,53 @@ export class BrowseToursComponent implements OnInit {
   }
 
   addToCart(tour: Tour): void {
-  if (!this.user) {
-    this.snack.open('You must be logged in as Tourist to add tours to cart.', 'OK', { duration: 3000 });
-    return;
-  }
-
-  if (!this.shoppingCart) {
-    this.snack.open('No active cart. Please refresh or try again.', 'OK', { duration: 3000 });
-    return;
-  }
-
-  const item: OrderItem = {
-    id: 0, // backend kreira
-    tourName: tour.name,
-    price: tour.price,
-    tourId: tour.id!,
-    cartId: this.shoppingCart!.id!   // ✅ sada TS zna da neće biti undefined
-  };
-
-
-  this.cartService.addToCart(item).subscribe({
-    next: (created) => {
-      this.snack.open(`${tour.name} added to cart ✅`, 'OK', { duration: 3000 });
-      console.log('Added to cart', created);
-
-      // ✅ prvo proveri da li postoji ID
-      if (this.shoppingCart?.id) {
-        this.cartService.getCartItems(this.shoppingCart.id).subscribe();
-      } else {
-        console.error('Cart has no valid ID!');
-      }
-    },
-    error: (err) => {
-      console.error('Failed to add to cart', err);
-      this.snack.open('Failed to add to cart', 'OK', { duration: 3000 });
+    if (!this.user) {
+      this.snack.open('You must be logged in as Tourist to add tours to cart.', 'OK', { duration: 3000 });
+      return;
     }
-  });
+
+    if (!this.shoppingCart) {
+      this.snack.open('No active cart. Please refresh or try again.', 'OK', { duration: 3000 });
+      return;
+    }
+
+    if (!this.user || !this.shoppingCart) return;
+
+    const alreadyInCart = this.cartService['cartItemsSubject'].getValue()
+    .some(item => item.tourId === tour.id);
+
+    if (alreadyInCart) {
+      this.snack.open(`${tour.name} is already in your cart ❌`, 'OK', { duration: 3000 });
+      return;
+    }
+
+
+    const item: OrderItem = {
+      id: 0, // backend kreira
+      tourName: tour.name,
+      price: tour.price,
+      tourId: tour.id!,
+      cartId: this.shoppingCart!.id!   // ✅ sada TS zna da neće biti undefined
+    };
+
+
+    this.cartService.addToCart(item).subscribe({
+      next: (created) => {
+        this.snack.open(`${tour.name} added to cart ✅`, 'OK', { duration: 3000 });
+        console.log('Added to cart', created);
+
+        // ✅ prvo proveri da li postoji ID
+        if (this.shoppingCart?.id) {
+          this.cartService.getCartItems(this.shoppingCart.id).subscribe();
+        } else {
+          console.error('Cart has no valid ID!');
+        }
+      },
+      error: (err) => {
+        console.error('Failed to add to cart', err);
+        this.snack.open('Failed to add to cart', 'OK', { duration: 3000 });
+      }
+    });
 
 }
 

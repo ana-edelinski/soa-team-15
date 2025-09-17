@@ -46,14 +46,17 @@ export class CartService {
     this.cartItemCount.next(currentCount + change);
   }
 
-  // removeFromCart(itemId: number): Observable<void> {
-  //   return this.http.delete<void>(environment.apiHost + 'shopping/item/' + itemId)
-  //   .pipe(
-  //     tap(() => {
-  //       this.updateCartItemCount(-1); // Smanjujemo broj artikala
-  //     })
-  //   );
-  // }
+  removeFromCart(itemId: number, cartId: number): Observable<void> {
+    return this.http.delete<void>(this.apiBase + 'shopping/item/' + itemId).pipe(
+      tap(() => {
+        // osveži broj artikala
+        this.updateCartItemCount(-1);
+
+        // povuci nove stavke iz baze i osveži BehaviorSubject
+        this.getCartItems(cartId).subscribe();
+      })
+    );
+  }
 
   private updateCartItems(items: OrderItem[]): void {
     this.cartItemsSubject.next(items);

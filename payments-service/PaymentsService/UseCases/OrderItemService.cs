@@ -30,6 +30,14 @@ namespace PaymentsService.UseCases
 
             try
             {
+                var existingItems = _orderItemRepository.GetAll(dto.CartId);
+                if (existingItems.Any(i => i.TourId == dto.TourId))
+                {
+                    return Result.Fail<OrderItemDto>(
+                        $"Tour with ID={dto.TourId} is already in the cart."
+                    );
+                }
+
                 var orderItem = _mapper.Map<OrderItem>(dto);
 
                 var created = _orderItemRepository.Create(orderItem);
@@ -43,6 +51,7 @@ namespace PaymentsService.UseCases
                 return Result.Fail<OrderItemDto>($"EXCEPTION: {ex.Message}");
             }
         }
+
 
         public Result Delete(int itemId)
         {
