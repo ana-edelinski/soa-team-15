@@ -49,30 +49,49 @@ export class BrowseToursComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loading = true;
-    this.tourService.getPublishedTours().subscribe({
-      next: data => { this.tours = data; this.loading = false; },
-      error: err => { console.error(err); this.error = 'Failed to load tours.'; this.loading = false; }
-    });
+  this.loading = true;
 
-    if (this.user && this.isTourist) {
-    this.cartService.getCartsByUser(this.user.id).subscribe({
-      next: (carts) => {
-        if (carts.length === 0) {
-          // ako nema, napravi novu
-          this.createNewCart(this.user!.id);
-        } else {
-          // ako ima, uzmi prvu (ili aktivnu)
-          this.shoppingCart = carts[0];
-          console.log('Loaded cart:', this.shoppingCart);
+  // 1. Učitaj ture
+  this.tourService.getPublishedTours().subscribe({
+    next: data => { 
+      this.tours = data; 
+      this.loading = false; 
+    },
+    error: err => { 
+      console.error(err); 
+      this.error = 'Failed to load tours.'; 
+      this.loading = false; 
+    }
+  });
+
+  // 2. Reaguj na promenu usera
+  this.auth.user$.subscribe(u => {
+    this.user = u;
+    this.cartService.resetCartState();   // 🧹 očisti staro stanje
+
+    if (u && u.role === 'Tourist') {
+      this.cartService.getCartsByUser(u.id).subscribe({
+        next: (carts) => {
+          if (carts.length > 0) {
+            this.shoppingCart = carts[0];
+            this.cartService.getCartItems(this.shoppingCart.id!).subscribe({
+              next: () => console.log('Cart items loaded for', u.username),
+              error: err => console.error('Failed to load cart items', err)
+            });
+          } else {
+            this.createNewCart(u.id);
+          }
+        },
+        error: (err) => {
+          console.error('Failed to load carts for user', err);
         }
-      },
-      error: (err) => {
-        console.error('Failed to load carts for user', err);
-      }
-    });
-  }
-  }
+      });
+    } else {
+      this.shoppingCart = null;
+    }
+  });
+}
+
 
   // (opciono) lokalna provera – pravo ostavljanja recenzije
   // Specifikacija kaže da recenzija sadrži "datum kada je posetio turu",
@@ -192,10 +211,6 @@ export class BrowseToursComponent implements OnInit {
       }
     });
 
-}
-
-
-
-
+  }
 
 }

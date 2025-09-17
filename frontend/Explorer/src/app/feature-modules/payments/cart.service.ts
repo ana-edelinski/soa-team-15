@@ -24,6 +24,11 @@ export class CartService {
 
   constructor(private http: HttpClient) {}
 
+  resetCartState(): void {
+    this.cartItemCount.next(0);
+    this.cartItemsSubject.next([]);
+  }
+
   setTours(tours: Tour[]): void {
     this.tours = tours;
   }
