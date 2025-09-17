@@ -15,6 +15,7 @@ import { PositionSimulatorComponent } from 'src/app/feature-modules/tour-executi
 import { BrowseToursComponent } from 'src/app/feature-modules/tour-browse/browse-tours/browse-tours.component';
 import { CreateKeyPointsComponent } from 'src/app/feature-modules/tour-authoring/create-key-points/create-key-points.component';
 import { ViewKeyPointsComponent } from 'src/app/feature-modules/tour-authoring/view-key-points/view-key-points.component';
+import { CartComponent } from 'src/app/feature-modules/payments/cart/cart.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/blogs', pathMatch: 'full' },   
@@ -32,6 +33,7 @@ const routes: Routes = [
   { path: 'tours', component: BrowseToursComponent },
   { path: 'tours/:id/key-points', component: CreateKeyPointsComponent },
   { path: 'tours/:id/key-points/view', component: ViewKeyPointsComponent},
+  { path: 'cart', component: CartComponent }
 ];
 
 @NgModule({
