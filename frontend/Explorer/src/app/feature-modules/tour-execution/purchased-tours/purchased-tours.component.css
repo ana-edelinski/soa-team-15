@@ -1,3 +1,4 @@
+/* Layout kontejner */
 .wrap {
   max-width: 1100px;
   margin: 0 auto;
@@ -9,29 +10,79 @@
   color: #666;
 }
 
+/* Responsive grid za kartice */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 16px;
 }
 
-.tour .avatar {
-  background: #e0e0e0;
-  color: #333;
+/* Kartica ture */
+.tour {
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+/* Gornja slika (iz taga) */
+/* Gornja slika */
+.thumb {
+  position: relative;
+  height: 200px;         /* promeni po ukusu (180/220) */
+  background: #f6f7f9;   /* “letterbox” */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #eee;
+  overflow: hidden;
+}
+
+.thumb-img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;    /* prikaži celu sliku bez kropljenja */
+  object-position: center;
+  display: block;
+}
+
+
+/* (Opciono) bedž, npr. “Continue” */
+.badge {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  background: rgba(25,118,210,.9);
+  color: #fff;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 999px;
+  letter-spacing: .2px;
+}
+
+/* Header i tekst */
+.mat-card-title {
   font-weight: 600;
-  display: grid;
-  place-items: center;
 }
 
 .tour .desc {
   min-height: 48px;
   color: #444;
+  margin: 8px 0 12px;
+  /* (opciono) skrati na 3 reda:
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  */
 }
 
+/* Tagovi */
 .tags {
   margin: 8px 0 4px;
 }
 
+/* Meta box-evi (ostavi ako koristiš) */
 .meta {
   margin-top: 8px;
   display: grid;
@@ -56,6 +107,14 @@
   font-size: 14px;
 }
 
+/* Dugme */
+mat-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 16px 16px 16px;
+}
+
 mat-card-actions .btn-label {
   margin-left: 8px;
 }
+

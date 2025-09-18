@@ -9,6 +9,7 @@ import { User } from 'src/app/infrastructure/auth/model/user.model';
 import { TourExecution, TourForTourist } from '../tour-execution.model';
 import { interval, of } from 'rxjs';
 import { switchMap, filter, tap, catchError } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 type MapMarker = {
   id?: number;
@@ -87,6 +88,7 @@ export class PositionSimulatorComponent implements OnInit, OnDestroy {
   currentExecution: TourExecution | null = null;
 
   constructor(
+    private router: Router,  
     private tourExecutionService: TourExecutionService,
     private mapService: MapService,
     private authService: AuthService,
@@ -94,6 +96,8 @@ export class PositionSimulatorComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.showMap = true;
+
     this.authService.user$.subscribe(user => {
       this.user = user;
 
@@ -295,6 +299,13 @@ export class PositionSimulatorComponent implements OnInit, OnDestroy {
       this.rebuildKeyPointMarkers();
       this.recomputeRouteWaypoints();
 
+      const justCompletedId = updatedExec.completedKeys?.slice(-1)[0]?.keyPointId;
+      const justCompleted = this.currentTour?.keyPoints?.find(k => k.id === justCompletedId);
+
+      if (justCompleted) {
+        this.snack.open(`Completed key point: ${justCompleted.name} ✅`, 'OK', { duration: 2500 });
+      }
+
       // ako su sve KP kompletirane -> završi turu
       const total = this.currentTour!.keyPoints?.length || 0;
       const done = this.currentExecution?.completedKeys?.length || 0;
@@ -312,6 +323,7 @@ export class PositionSimulatorComponent implements OnInit, OnDestroy {
         this.snack.open('Tour completed 🎉', 'OK', { duration: 3000 });
         // opcionalno: ugasi watcher i/ili redirect
         this.proximitySub?.unsubscribe();
+        this.router.navigate(['/purchased-tours']);
       },
       error: err => {
         console.error(err);

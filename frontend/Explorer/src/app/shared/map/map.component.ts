@@ -102,7 +102,9 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnChanges {
 
   private makeKPIcon(completed?: boolean): L.Icon {
     return L.icon({
-      iconUrl: '/assets/images/keypoint-icon.png',
+      iconUrl:  completed
+      ? '/assets/images/keypoint-icon-green.png'   // ✅ zelena za kompletirane
+      : '/assets/images/keypoint-icon.png', 
       iconSize: [28, 28],
       iconAnchor: [14, 28],
       popupAnchor: [0, -28],

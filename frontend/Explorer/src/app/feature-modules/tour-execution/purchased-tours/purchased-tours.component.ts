@@ -165,5 +165,15 @@ export class PurchasedToursComponent implements OnInit {
     return String(t?.name ?? t);
   }
 
+  tagImg(t: any): string {
+    // tag1.jpg, tag2.jpg, ...
+    const idx = ((t?.tags?.[0] ?? 0) + 1);
+    return `assets/images/tags/tag${idx}.jpg`;
+  }
+
+  onImgErr(ev: Event) {
+    (ev.target as HTMLImageElement).src = 'assets/images/tags/default.jpg';
+  }
+
 
 }
