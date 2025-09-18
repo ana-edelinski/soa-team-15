@@ -22,3 +22,21 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .leaflet-container { height: 100%; width: 100%; }
 .leaflet-div-icon, .leaflet-marker-icon, .leaflet-marker-shadow { pointer-events: auto; }
+
+.leaflet-popup-content {
+  margin: 8px 12px;
+}
+
+.leaflet-popup-content .kp-popup img {
+  display: block;
+  max-width: 220px;   /* ⬅ ograniči širinu */
+  max-height: 160px;  /* ⬅ ograniči visinu */
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-bottom: 8px;
+}
+
+.leaflet-popup-content .kp-popup h4 { margin: 0 0 6px; font-size: 14px; }
+.leaflet-popup-content .kp-popup p  { margin: 0;      font-size: 13px; line-height: 1.35; }

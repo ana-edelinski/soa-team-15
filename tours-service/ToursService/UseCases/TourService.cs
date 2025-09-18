@@ -210,6 +210,7 @@ public Result<List<TourDto>> GetPublished()
             catch (Exception ex) { return Result.Fail(ex.Message); }
         }
 
+
         public Result<TourDto> Archive(long tourId, long authorId)
         {
             var tour = _tourRepository.GetById(tourId);
@@ -236,6 +237,21 @@ public Result<List<TourDto>> GetPublished()
                 return Result.Ok(dto);
             }
             catch (Exception ex) { return Result.Fail(ex.Message); }
+        }
+
+
+        public Result<TourForTouristDto> GetTourWithKeyPoints(long tourId)
+        {
+            var tour = _tourRepository.GetById(tourId);
+            if (tour is null)
+                return Result.Fail($"Tour with id {tourId} not found.");
+
+            var keyPoints = _keyPointRepository.GetByTour(tourId) ?? Enumerable.Empty<KeyPoint>();
+
+            // Ako imaš polje redosleda, zameni .OrderBy(k => k.Id) sa .OrderBy(k => k.OrderNo)
+            var dto = new TourForTouristDto(tour, keyPoints.OrderBy(k => k.Id));
+
+            return Result.Ok(dto);
         }
 
     }

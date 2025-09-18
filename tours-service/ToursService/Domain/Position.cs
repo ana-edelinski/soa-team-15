@@ -2,7 +2,7 @@
 {
     public class Position
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public long TouristId { get; private set; }
         public double Latitude { get; private set; }
         public double Longitude { get; private set; }

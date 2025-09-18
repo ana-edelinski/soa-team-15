@@ -14,6 +14,16 @@
 
   </mat-menu>
 
+  <button mat-button [matMenuTriggerFor]="toursMenuForTourist" *ngIf="isLoggedIn && currentUserRole === 'Tourist'">
+    Tours
+  </button>
+
+  <mat-menu #toursMenuForTourist="matMenu">
+    <button mat-menu-item [routerLink]="['/purchased-tours']">Purchased Tours</button>
+    <button mat-menu-item [routerLink]="['/tours']">Browse Tours</button>
+
+  </mat-menu>
+
   <button mat-button [matMenuTriggerFor]="blogMenu">
     Blogovi
   </button>
@@ -43,4 +53,3 @@
 <router-outlet></router-outlet>
 <xp-position-fab></xp-position-fab>
 
-<router-outlet></router-outlet>

@@ -15,6 +15,7 @@ import { PositionSimulatorComponent } from 'src/app/feature-modules/tour-executi
 import { BrowseToursComponent } from 'src/app/feature-modules/tour-browse/browse-tours/browse-tours.component';
 import { CreateKeyPointsComponent } from 'src/app/feature-modules/tour-authoring/create-key-points/create-key-points.component';
 import { ViewKeyPointsComponent } from 'src/app/feature-modules/tour-authoring/view-key-points/view-key-points.component';
+import { PurchasedToursComponent } from 'src/app/feature-modules/tour-execution/purchased-tours/purchased-tours.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/blogs', pathMatch: 'full' },   
@@ -28,6 +29,7 @@ const routes: Routes = [
   { path: 'profile', component: ProfileInfoComponent },
   { path: 'create-tour', component: CreateTourComponent },
   { path: 'my-tours', component: MyToursComponent },
+  { path: 'purchased-tours', component: PurchasedToursComponent },
   { path: 'position-simulator', component: PositionSimulatorComponent},
   { path: 'tours', component: BrowseToursComponent },
   { path: 'tours/:id/key-points', component: CreateKeyPointsComponent },
