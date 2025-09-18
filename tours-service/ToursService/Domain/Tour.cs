@@ -23,6 +23,10 @@ namespace ToursService.Domain
 
 
         public ICollection<KeyPoint> KeyPoints { get; private set; } = new List<KeyPoint>();
+        public ICollection<TourTransportTime> TransportTimes { get; private set; } = new List<TourTransportTime>();
+
+       
+
 
 
         public Tour(string name, string? description, string? difficulty, double price, List<TourTags> tags, long userId)
@@ -39,10 +43,10 @@ namespace ToursService.Domain
             UserId = userId;
             Status = TourStatus.Draft;
             Price = price;
-            LengthInKm = 0;
+            RecalculateLength();
             PublishedTime = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
             ArchiveTime = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
-
+            
 
         }
 
@@ -76,9 +80,53 @@ namespace ToursService.Domain
             return true;
         }
 
+        public void Publish(long authorId)
+            {
+                if (Status != TourStatus.Draft)
+                    throw new ArgumentException("Only draft tours can be published.");
+
+                IsAuthor(authorId);
+
+                Status = TourStatus.Published;
+                PublishedTime = DateTime.UtcNow;
+                ArchiveTime = null;
+            }
+
         public void UpdateLength(double length)
         {
             LengthInKm = length;
+        }
+
+         public void AddOrUpdateTransportTime(long authorId, TransportType type, int minutes)
+        {
+            IsAuthor(authorId);
+            if (minutes <= 0) throw new ArgumentException("Duration must be > 0 minutes.");
+
+            var existing = TransportTimes.FirstOrDefault(t => t.Type == type);
+            if (existing is null) TransportTimes.Add(new TourTransportTime(type, minutes));
+            else existing.Update(minutes);
+        }
+
+        public void RecalculateLength()
+        {
+            if (KeyPoints == null || KeyPoints.Count < 2)
+            {
+                LengthInKm = 0;
+                return;
+            }
+
+            double total = 0;
+
+            var ordered = KeyPoints.OrderBy(kp => kp.Id).ToList();
+
+            for (int i = 1; i < ordered.Count; i++)
+            {
+                var a = ordered[i - 1];
+                var b = ordered[i];
+                total += GeoDistance.HaversineKm(a.Latitude, a.Longitude, b.Latitude, b.Longitude);
+            }
+
+            LengthInKm = Math.Round(total, 3);
         }
 
 

@@ -3,6 +3,7 @@ using FluentResults;
 using ToursService.Domain;
 using ToursService.Domain.RepositoryInterfaces;
 using ToursService.Dtos;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace ToursService.UseCases
@@ -168,36 +169,75 @@ namespace ToursService.UseCases
             }
         }
 
-        public Result<List<TourDto>> GetPublished()
+public Result<List<TourDto>> GetPublished()
+{
+    try
+    {
+        var tours = _tourRepository.GetPublished();
+
+        var dtos = tours?.Select(t => new TourDto
         {
+            Id = t.Id,
+            Name = t.Name,
+            Description = t.Description,
+            Difficulty = t.Difficulty,
+            Tags = t.Tags.Select(tag => (ToursService.Dtos.TourTags)tag).ToList(),
+            UserId = t.UserId,
+            Status = (ToursService.Dtos.TourStatus)t.Status,
+            Price = t.Price,
+        }).ToList() ?? new List<TourDto>();
+
+        return Result.Ok(dtos);
+    }
+    catch (Exception ex)
+    {
+        return Result.Fail<List<TourDto>>($"EXCEPTION: {ex.Message}");
+    }
+}
+
+
+        public Result<TourDto> Publish(long tourId, long authorId)
+        {
+            var tour = _tourRepository.GetById(tourId);
+            if (tour == null) return Result.Fail("Tour not found.");
             try
             {
-                var tours = _tourRepository.GetPublished();
-
-                // Za browse stranicu je OK vratiti prazan niz umesto fail-a
-                if (tours == null || tours.Count == 0)
-                    return Result.Ok(new List<TourDto>());
-
-                var dtos = tours.Select(t => new TourDto
-                {
-                    Id = t.Id,
-                    Name = t.Name,
-                    Description = t.Description,
-                    Difficulty = t.Difficulty,
-                    Tags = t.Tags.Select(tag => (ToursService.Dtos.TourTags)tag).ToList(),
-                    UserId = t.UserId,
-                    Status = (ToursService.Dtos.TourStatus)t.Status,
-                    Price = t.Price,
-                    // Ako želiš: LengthInKm, PublishedTime… dodaš u DTO i mapiraš
-                }).ToList();
-
-                return Result.Ok(dtos);
+                tour.Publish(authorId);
+                _tourRepository.Update(tour);
+                var dto = _mapper.Map<TourDto>(tour);
+                return Result.Ok(dto);
             }
-            catch (Exception ex)
-            {
-                return Result.Fail<List<TourDto>>($"EXCEPTION: {ex.Message}");
-            }
+            catch (Exception ex) { return Result.Fail(ex.Message); }
         }
+
+        public Result<TourDto> Archive(long tourId, long authorId)
+        {
+            var tour = _tourRepository.GetById(tourId);
+            if (tour == null) return Result.Fail("Tour not found.");
+            try
+            {
+                tour.Archive(authorId);
+                _tourRepository.Update(tour);
+                var dto = _mapper.Map<TourDto>(tour);
+                return Result.Ok(dto);
+            }
+            catch (Exception ex) { return Result.Fail(ex.Message); }
+        }
+
+        public Result<TourDto> Reactivate(long tourId, long authorId)
+        {
+            var tour = _tourRepository.GetById(tourId);
+            if (tour == null) return Result.Fail("Tour not found.");
+            try
+            {
+                tour.Reactivate(authorId);
+                _tourRepository.Update(tour);
+                var dto = _mapper.Map<TourDto>(tour);
+                return Result.Ok(dto);
+            }
+            catch (Exception ex) { return Result.Fail(ex.Message); }
+        }
+
     }
 
 }

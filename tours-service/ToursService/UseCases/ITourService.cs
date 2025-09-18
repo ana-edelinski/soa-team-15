@@ -11,6 +11,8 @@ namespace ToursService.UseCases
         Result<KeyPointDto> AddKeyPoint(long tourId, KeyPointDto keyPointDto);
         Result<List<KeyPointDto>> GetKeyPointsByTour(long tourId);
 
-
+        Result<TourDto> Publish(long tourId, long authorId);
+        Result<TourDto> Archive(long tourId, long authorId);
+        Result<TourDto> Reactivate(long tourId, long authorId);
     }
 }

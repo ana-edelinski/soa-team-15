@@ -16,6 +16,11 @@
         //public DateTime ArchiveTime { get; set; }
         //public ICollection<KeyPointDto> KeyPoints { get; set; } = new List<KeyPointDto>();
 
+
+            public List<KeyPointBriefDto>? KeyPoints { get; set; }
+            public double LengthInKm { get; set; } 
+
+
         public TourDto() { }
         public TourDto(long id, string name, string? description, string? difficulty, List<TourTags> tags, long userId, TourStatus status, double price /*double lengthInKm, DateTime publishedTime, DateTime archivedTime,List<long> keyPointIds*/)
 

@@ -58,4 +58,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.map?.remove();
   }
+
+public getDistanceKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const point1 = L.latLng(lat1, lng1);
+  const point2 = L.latLng(lat2, lng2);
+  return point1.distanceTo(point2) / 1000; // u km
+}
+
 }

@@ -43,13 +43,43 @@ namespace ToursService.Controllers
         [HttpGet("published")]
         [AllowAnonymous] // ili [Authorize(Roles = "Tourist,Administrator")]
 
-        public ActionResult<List<TourDto>> GetPublished()
+        [HttpPost("{tourId:long}/publish")]
+        public IActionResult Publish(long tourId)
         {
-            var result = _tourService.GetPublished();
-            if (result.IsSuccess) return Ok(result.Value);
-            return BadRequest(result.Errors.FirstOrDefault()?.Message ?? "Failed to fetch published tours.");
+            var claimIdStr = User.FindFirst("id")?.Value;
+            if (!long.TryParse(claimIdStr, out var authorId)) return Forbid();
+
+            var result = _tourService.Publish(tourId, authorId);
+            if (result.IsSuccess) return Ok();
+            return BadRequest(result.Errors);
         }
-    
+
+        [HttpPost("{tourId:long}/archive")]
+        public IActionResult Archive(long tourId)
+        {
+            var claimIdStr = User.FindFirst("id")?.Value;
+            if (!long.TryParse(claimIdStr, out var authorId)) return Forbid();
+
+            var result = _tourService.Archive(tourId, authorId);
+            if (result.IsSuccess) return Ok();
+            return BadRequest(result.Errors);
+        }
+
+
+
+        [HttpPost("{tourId:long}/reactivate")]
+        public IActionResult Reactivate(long tourId)
+        {
+            var claimIdStr = User.FindFirst("id")?.Value;
+            if (!long.TryParse(claimIdStr, out var authorId)) return Forbid();
+
+            var result = _tourService.Reactivate(tourId, authorId);
+            if (result.IsSuccess) return Ok();
+            return BadRequest(result.Errors);
+        }
+
+
+
         [HttpGet("getKeyPoints/{tourId:long}")]
         public ActionResult<List<KeyPointDto>> GetKeyPointsForTour(long tourId)
         {
