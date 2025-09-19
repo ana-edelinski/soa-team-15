@@ -55,5 +55,14 @@ namespace PaymentsService.Repositories
             //return Result.Ok(result);
 
         }
+
+        public void RemoveByCart(long cartId)
+        {
+            var items = _db.OrderItems.Where(i => i.CartId == cartId).ToList();
+            _db.OrderItems.RemoveRange(items);
+        }
+
+        public void SaveChanges() => _db.SaveChanges();
+
     }
 }

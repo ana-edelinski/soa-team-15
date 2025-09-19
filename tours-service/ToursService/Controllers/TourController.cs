@@ -49,11 +49,12 @@ namespace ToursService.Controllers
             if (result.IsSuccess) return Ok(result.Value);
             return BadRequest(result.Errors.FirstOrDefault()?.Message ?? "Failed to fetch published tours.");
         }
-    
+
         [HttpGet("getKeyPoints/{tourId:long}")]
+        [AllowAnonymous]
         public ActionResult<List<KeyPointDto>> GetKeyPointsForTour(long tourId)
         {
-           
+
 
             var result = _tourService.GetKeyPointsByTour(tourId);
             if (result.IsSuccess) return Ok(result.Value);
@@ -64,7 +65,7 @@ namespace ToursService.Controllers
         [Consumes("multipart/form-data")]
         public IActionResult AddKeyPoint([FromRoute] long tourId, [FromForm] KeyPointDto keyPointDto)
         {
-            
+
 
             var result = _tourService.AddKeyPoint(tourId, keyPointDto);
             if (result.IsSuccess) return Ok(result.Value);
@@ -72,6 +73,6 @@ namespace ToursService.Controllers
         }
     }
 
-   
-    
+
+
 }

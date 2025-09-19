@@ -7,5 +7,9 @@
         OrderItem? Get(int itemId);
         List<OrderItem> GetAll(long cartId);
         decimal CalculateTotalPrice(long itemId);
+
+        void RemoveByCart(long cartId);
+        void SaveChanges();
+
     }
 }

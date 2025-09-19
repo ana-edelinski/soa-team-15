@@ -1,46 +1,43 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PaymentsService.Domain;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 
 namespace PaymentsService.Database
 {
     public class PaymentsContext : DbContext
     {
-        public DbSet<ShoppingCart> ShoppingCarts { get; set; }
-        public DbSet<OrderItem> OrderItems { get; set; }
-
         public PaymentsContext(DbContextOptions<PaymentsContext> options) : base(options) { }
 
-        protected override void OnModelCreating(ModelBuilder b)
+        public DbSet<ShoppingCart> ShoppingCarts => Set<ShoppingCart>();
+        public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+        public DbSet<TourPurchaseToken> TourPurchaseTokens => Set<TourPurchaseToken>();
+
+        protected override void OnModelCreating(ModelBuilder mb)
         {
-            base.OnModelCreating(b);
-
-            b.Entity<ShoppingCart>(e =>
+            mb.Entity<ShoppingCart>(e =>
             {
+                e.ToTable("shopping_carts");
                 e.HasKey(x => x.Id);
-                e.Property(x => x.UserId).IsRequired();
-
+                e.Property(x => x.TotalPrice).HasColumnType("numeric(12,2)");
                 e.HasMany(x => x.Items)
-                    .WithOne()
+                    .WithOne(x => x.Cart)
                     .HasForeignKey(x => x.CartId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
-            b.Entity<OrderItem>(e =>
+            mb.Entity<OrderItem>(e =>
             {
+                e.ToTable("order_items");
                 e.HasKey(x => x.Id);
+                e.Property(x => x.Price).HasColumnType("numeric(12,2)");
+                e.Property(x => x.TourName).HasMaxLength(200);
+            });
 
-                e.Property(x => x.TourName)
-                    .IsRequired()
-                    .HasMaxLength(200);
-
-                e.Property(x => x.Price)
-                    .HasColumnType("numeric(10,2)")  
-                    .IsRequired();
-
-                e.Property(x => x.TourId).IsRequired();
-                e.Property(x => x.CartId).IsRequired();
+            mb.Entity<TourPurchaseToken>(e =>
+            {
+                e.ToTable("tour_purchase_tokens");
+                e.HasKey(x => x.Id);
+                e.Property(x => x.Token).HasMaxLength(128);
+                e.HasIndex(x => new { x.UserId, x.TourId }).IsUnique();
             });
         }
     }

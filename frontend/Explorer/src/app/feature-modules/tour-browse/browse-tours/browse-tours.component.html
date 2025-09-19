@@ -10,42 +10,113 @@
 <ng-container *ngIf="tours.length > 0">
   <mat-card *ngFor="let tour of tours" class="tour-card">
     <mat-card-title>{{ tour.name }}</mat-card-title>
-    <mat-card-subtitle>Difficulty: {{ tour.difficulty }}</mat-card-subtitle>
+    <mat-card-subtitle>
+      Difficulty: {{ tour.difficulty || '—' }}
+    </mat-card-subtitle>
 
     <mat-card-content>
-      <p>{{ tour.description }}</p>
-      <p>Price: {{ tour.price }} $</p>
-      <!-- dužinu/vreme -->
+      <!-- OPIS -->
+      <p class="muted-label">Description</p>
+      <p>{{ tour.description || '—' }}</p>
+
+          <!-- DUŽINA / VREME / START / CENA -->
+      <div class="grid meta">
+        <div>
+          <span class="muted-label">Length</span>
+          <!-- () da bi number pipe važio UVEK -->
+          <div>{{ (tour.lengthInKm ?? 0) | number:'1.2-2' }} km</div>
+        </div>
+        <div>
+          <span class="muted-label">Duration</span>
+          <div>{{ formatDuration(tour.durationMinutes, tour.lengthInKm) }}</div>
+        </div>
+        <div>
+          <span class="muted-label">Start point</span>
+          <div>{{ tour.startPointName || getStartPointName(tour) }}</div>
+        </div>
+        <div>
+          <span class="muted-label">Price</span>
+          <div>{{ tour.price | number:'1.2-2' }} €</div>
+        </div>
+      </div>
+
+        <!-- SLIKE (koristi previewImages ako postoji, fallback na getImages) -->
+        <div class="images" *ngIf="(tour.previewImages?.length || getImages(tour).length) > 0">
+          <img *ngFor="let img of (tour.previewImages?.length ? tour.previewImages : getImages(tour)) | slice:0:4"
+              [src]="img" alt="tour image" />
+        </div>
+
+
+      <!-- RECENZIJE – dostupne svima (link/dugme po tvojoj ruti) -->
+      <div class="reviews-row">
+        <button mat-stroked-button color="primary" (click)="openReviewDialog(tour)">
+          Leave a review
+        </button>
+        <!-- Ako imaš stranu za listu recenzija, stavi routerLink -->
+        <!-- <a mat-button [routerLink]="['/tours', tour.id, 'reviews']">View reviews</a> -->
+      </div>
+
+     
+              
+        <!-- KLJUČNE TAČKE (LOCKED dok nije kupljeno) -->
+<div class="keypoints">
+  <div class="kp-header">
+    <span class="muted-label">Key points</span>
+    <span class="kp-count" *ngIf="isPurchased(tour) && getKeyPoints(tour).length">
+      {{ getKeyPoints(tour).length }}
+    </span>
+  </div>
+
+  <ng-container *ngIf="isPurchased(tour); else lockedKP">
+    <!-- skrolabilna lista -->
+    <div class="kp-scroll" *ngIf="getKeyPoints(tour).length > 0; else noKP">
+      <div class="kp-item" *ngFor="let kp of getKeyPoints(tour); index as i">
+        <div class="kp-num">{{ i + 1 }}</div>
+        <div class="kp-body">
+          <div class="kp-name">{{ kp.name || 'Point' }}</div>
+          <div class="kp-desc" *ngIf="kp.description">{{ kp.description }}</div>
+          <div class="kp-geo" *ngIf="kp.latitude && kp.longitude">
+            <mat-icon inline>place</mat-icon>
+            {{ kp.latitude | number:'1.4-4' }}, {{ kp.longitude | number:'1.4-4' }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #noKP>
+      <div class="muted">No key points available.</div>
+    </ng-template>
+  </ng-container>
+
+  <ng-template #lockedKP>
+    <div class="locked-box">
+      <span class="lock">🔒</span>
+      <div>Purchase required to reveal key points.</div>
+    </div>
+  </ng-template>
+</div>
+
+
     </mat-card-content>
 
     <mat-card-actions>
-      <button
-        mat-raised-button
-        color="accent"
-        (click)="addToCart(tour)"
-        *ngIf="isTourist"
-      >
-        Add to Cart
-      </button>
+       <button
+    mat-raised-button
+    color="accent"
+    *ngIf="isTourist"
+    (click)="addToCart(tour)"
+    [disabled]="isPurchased(tour)">
+    {{ isPurchased(tour) ? 'Purchased' : 'Add to Cart' }}
+  </button>
 
-      <button
-        mat-raised-button
-        color="primary"
-        (click)="startTour(tour.id!)"
-        *ngIf="isTourist"
-        [disabled]="isActive"
-      >
-        Start Tour
-      </button>
-
-
-      <button
-        mat-raised-button
-        color="primary"
-        (click)="openReviewDialog(tour)"
-      >
-        Leave a review
-      </button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="startTour(tour.id!)"
+    *ngIf="isTourist"
+    [disabled]="isActive || !isPurchased(tour)">
+    Start Tour
+  </button>
     </mat-card-actions>
   </mat-card>
 </ng-container>

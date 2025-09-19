@@ -83,5 +83,35 @@ export class CartService {
     return this.http.get<ShoppingCart[]>(this.apiBase + 'shopping/getByUser/' + userId);
   }
 
+ // cart.service.ts
+checkout(cartId: number, userId: number) {
+  return this.http.post<{tourId:number, token:string}[]>(
+    this.apiBase + `shopping/checkout/${cartId}?userId=${userId}`, {}
+  ).pipe(
+    tap(() => {
+      // ✅ posle uspešnog checkout-a osveži/isprazni stanje
+      this.resetCartState();
+      // opcionalno: povuci praznu listu da i UI vidi 0 stavki
+      this.getCartItems(cartId).subscribe();
+    })
+  );
+}
+
+
+// ✅ da li korisnik ima kupovinu za konkretnu turu
+hasPurchase(userId: number, tourId: number) {
+  return this.http.get<boolean>(
+    this.apiBase + `shopping/purchases/has/${userId}/${tourId}`
+  );
+}
+
+// ✅ koje ture je korisnik kupio (IDs)
+getPurchasedTourIds(userId: number) {
+  return this.http.get<number[]>(
+    this.apiBase + `shopping/purchases/${userId}`
+  );
+}
+
+
 
 }

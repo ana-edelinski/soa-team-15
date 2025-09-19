@@ -128,3 +128,4 @@
 }
 
 
+.tokens-panel { margin-top:16px } .token-row { display:flex; gap:8px; align-items:center } code { user-select: all; }

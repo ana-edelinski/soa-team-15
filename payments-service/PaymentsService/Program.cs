@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -111,6 +110,8 @@ builder.Services.AddCors(options =>
 // ------------------------
 builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
 builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
+builder.Services.AddScoped<ITourPurchaseTokenRepository, TourPurchaseTokenRepository>();
+
 // kasnije dodaš i ostale: CouponRepository, PaymentRecordRepository itd.
 
 // ------------------------
@@ -118,6 +119,8 @@ builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
 // ------------------------
 builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
+builder.Services.AddScoped<IPurchaseService, PurchaseService>();
+
 // kasnije dodaš i ostale: CouponService, PaymentService itd.
 
 // ------------------------

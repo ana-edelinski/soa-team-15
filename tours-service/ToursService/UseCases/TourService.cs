@@ -45,15 +45,16 @@ namespace ToursService.UseCases
             }
         }
 
-         public Result<List<KeyPointDto>> GetKeyPointsByTour(long tourId)
+        public Result<List<KeyPointDto>> GetKeyPointsByTour(long tourId)
         {
             try
             {
-              
+
                 List<KeyPoint> keyPoints = _keyPointRepository.GetByTour(tourId);
-                List<KeyPointDto> dtos = keyPoints.Select(kp => new KeyPointDto{
+                List<KeyPointDto> dtos = keyPoints.Select(kp => new KeyPointDto
+                {
                     Id = kp.Id,
-                    Name = kp.Name, 
+                    Name = kp.Name,
                     Longitude = kp.Longitude,
                     Latitude = kp.Latitude,
                     Description = kp.Description,
@@ -61,7 +62,7 @@ namespace ToursService.UseCases
                     TourId = kp.TourId
                 }).ToList();
 
-                
+
                 return Result.Ok(dtos);
             }
             catch (Exception ex)
@@ -71,7 +72,7 @@ namespace ToursService.UseCases
         }
 
 
-        
+
         public Result<KeyPointDto> AddKeyPoint(long tourId, KeyPointDto keyPointDto)
         {
             try
@@ -85,7 +86,7 @@ namespace ToursService.UseCases
                     // Validate file type (optional but recommended)
                     var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
                     var fileExtension = Path.GetExtension(keyPointDto.PictureFile.FileName).ToLowerInvariant();
-                    
+
                     if (!allowedExtensions.Contains(fileExtension))
                     {
                         return Result.Fail<KeyPointDto>("Invalid file type. Only image files are allowed.");
@@ -116,7 +117,7 @@ namespace ToursService.UseCases
 
                     keyPoint.Image = fileName;
                 }
-                
+
 
                 var created = _keyPointRepository.Create(keyPoint);
                 var dto = _mapper.Map<KeyPointDto>(created);
@@ -167,29 +168,55 @@ namespace ToursService.UseCases
 
             }
         }
-
         public Result<List<TourDto>> GetPublished()
         {
             try
             {
                 var tours = _tourRepository.GetPublished();
-
-                // Za browse stranicu je OK vratiti prazan niz umesto fail-a
                 if (tours == null || tours.Count == 0)
                     return Result.Ok(new List<TourDto>());
 
-                var dtos = tours.Select(t => new TourDto
+                var dtos = new List<TourDto>();
+
+                foreach (var t in tours)
                 {
-                    Id = t.Id,
-                    Name = t.Name,
-                    Description = t.Description,
-                    Difficulty = t.Difficulty,
-                    Tags = t.Tags.Select(tag => (ToursService.Dtos.TourTags)tag).ToList(),
-                    UserId = t.UserId,
-                    Status = (ToursService.Dtos.TourStatus)t.Status,
-                    Price = t.Price,
-                    // Ako želiš: LengthInKm, PublishedTime… dodaš u DTO i mapiraš
-                }).ToList();
+                    // Učitamo KeyPoint-ove da izvedemo start i slike (ne vraćamo ih sve klijentu)
+                    var keyPoints = _keyPointRepository.GetByTour(t.Id) ?? new List<KeyPoint>();
+                    var first = keyPoints.OrderBy(kp => kp.Id).FirstOrDefault();
+
+                    // Slike za preview (do 4). Pretpostavka: KeyPoint.Image sadrži naziv fajla/URL.
+                    var previewImages = keyPoints
+                        .Select(kp => kp.Image)
+                        .Where(img => !string.IsNullOrWhiteSpace(img))
+                        .Distinct()
+                        .Take(4)
+                        .ToList();
+
+                    // Trajanje: ako nemaš polje u entitetu, procena po dužini (4 km/h)
+                    int? durationMinutes = null;
+                    if (t.LengthInKm > 0)
+                    {
+                        durationMinutes = (int)Math.Round((t.LengthInKm / 4.0) * 60);
+                    }
+
+                    dtos.Add(new TourDto
+                    {
+                        Id = t.Id,
+                        Name = t.Name,
+                        Description = t.Description,
+                        Difficulty = t.Difficulty,
+                        Tags = t.Tags.Select(tag => (ToursService.Dtos.TourTags)tag).ToList(),
+                        UserId = t.UserId,
+                        Status = (ToursService.Dtos.TourStatus)t.Status,
+                        Price = t.Price,
+
+                        // 👇 NOVO punjenje
+                        LengthInKm = t.LengthInKm,
+                        DurationMinutes = durationMinutes,
+                        StartPointName = first?.Name,
+                        PreviewImages = previewImages
+                    });
+                }
 
                 return Result.Ok(dtos);
             }
@@ -198,6 +225,7 @@ namespace ToursService.UseCases
                 return Result.Fail<List<TourDto>>($"EXCEPTION: {ex.Message}");
             }
         }
+
     }
 
 }

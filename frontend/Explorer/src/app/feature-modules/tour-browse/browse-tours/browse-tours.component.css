@@ -114,3 +114,172 @@ header h1 {
   :host { gap: 16px; padding: 20px 16px 28px; }
   .tour-card { border-radius: 14px; }
 }
+
+.muted-label { font-size: 12px; opacity: 0.7; text-transform: uppercase; }
+.muted { opacity: 0.7; }
+
+.grid.meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(140px,1fr));
+  gap: 12px;
+  margin: 8px 0 12px;
+}
+
+.images { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0 12px; }
+.images img { width: 110px; height: 72px; object-fit: cover; border-radius: 8px; }
+
+.reviews-row { display: flex; gap: 12px; align-items: center; margin: 8px 0 12px; }
+
+/* ---------- KEY POINTS ---------- */
+.keypoints { margin-top: 10px; }
+
+.kp-head {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.kp-count { font-size: 12px; opacity: .6; }
+
+.kp-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.kp-row {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 10px 12px;
+  border: 1px solid rgba(148,163,184,0.35);
+  border-radius: 10px;
+  background: linear-gradient(180deg, #fff, #fbfbfd);
+  box-shadow: 0 1px 0 rgba(255,255,255,.6) inset;
+}
+
+.kp-index {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #eef2ff;             /* svetlo plava */
+  color: #3730a3;                   /* indigo-800 */
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  margin-top: 2px;
+  box-shadow: 0 0 0 2px #eef2ff inset;
+}
+
+.kp-content { display: grid; gap: 4px; }
+
+.kp-name {
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.kp-desc {
+  color: #374151;
+  opacity: .9;
+}
+
+.kp-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #6b7280;
+}
+.kp-pin { line-height: 1; }
+
+/* locked box (ostavi svoj stil, samo blago poliranje) */
+.locked-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px dashed rgba(148,163,184,.7);
+  border-radius: 10px;
+  background: rgba(99,102,241,.04);
+}
+.lock { font-size: 18px; }
+
+
+.locked-box {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px; border: 1px dashed #aaa; border-radius: 8px;
+  background: rgba(0,0,0,0.03);
+}
+.lock { font-size: 18px; }
+/* Key points header */
+.kp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 6px 0 8px;
+}
+
+.kp-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: rgba(37,99,235,.08);
+  color: #1d4ed8;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+/* Scroll container */
+.kp-scroll {
+  max-height: 180px;             /* <-- visina liste, prilagodi po želji (160–220px) */
+  overflow-y: auto;
+  padding-right: 6px;
+  display: grid;
+  gap: 8px;
+}
+
+/* lepi scroll bar (WebKit) */
+.kp-scroll::-webkit-scrollbar { width: 8px; }
+.kp-scroll::-webkit-scrollbar-track { background: #f3f4f6; border-radius: 8px; }
+.kp-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+.kp-scroll:hover::-webkit-scrollbar-thumb { background: #94a3b8; }
+
+/* Item */
+.kp-item {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 10px 12px;
+  border: 1px solid rgba(148,163,184,0.35);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+}
+
+.kp-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 12px;
+  color: #1f2937;
+  background: #e5edff;
+  border: 1px solid #c7d2fe;
+}
+
+.kp-body { display: grid; gap: 4px; }
+.kp-name { font-weight: 700; color: #111827; }
+.kp-desc { font-size: 13px; color: #374151; opacity: .9; }
+.kp-geo { display: inline-flex; gap: 6px; align-items: center; font-size: 12px; color: #6b7280; }
+.kp-geo mat-icon { font-size: 16px; height: 16px; width: 16px; }

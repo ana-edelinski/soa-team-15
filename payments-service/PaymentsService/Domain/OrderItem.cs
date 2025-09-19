@@ -3,10 +3,13 @@
     public class OrderItem
     {
         public long Id { get; set; }
-        public string TourName { get; set; }
-        public decimal Price { get; set; }
-        public long TourId { get; set; }
         public long CartId { get; set; }
+        public ShoppingCart Cart { get; set; } = default!;
+
+        public long TourId { get; set; }
+        public string TourName { get; set; } = string.Empty;
+        public decimal Price { get; set; }
+        public long? AuthorId { get; set; }
         public OrderItem()
         {
 
