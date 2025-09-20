@@ -100,12 +100,12 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnChanges {
     this.map?.remove();
   }
 
-<<<<<<< HEAD
-public getDistanceKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
-  const point1 = L.latLng(lat1, lng1);
-  const point2 = L.latLng(lat2, lng2);
-  return point1.distanceTo(point2) / 1000; // u km
-=======
+
+  public getDistanceKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+    const point1 = L.latLng(lat1, lng1);
+    const point2 = L.latLng(lat2, lng2);
+    return point1.distanceTo(point2) / 1000; // u km
+  }
   private makeKPIcon(completed?: boolean): L.Icon {
     return L.icon({
       iconUrl:  completed
@@ -188,7 +188,7 @@ public getDistanceKm(lat1: number, lng1: number, lat2: number, lng2: number): nu
       styles: [{ color: '#1310c0ff', weight: 5, opacity: 0.9 }]
     }
   }).addTo(this.map);
->>>>>>> origin/feat/start-tour
+
 }
 
 }

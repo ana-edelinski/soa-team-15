@@ -12,8 +12,8 @@ export interface Tour {
     originalPrice?: number; 
     userId: number;
     // lengthInKm: number;
-    // publishedTime?: Date;
-    // archiveTime?: Date;
+    publishedTime?: Date;
+    archiveTime?: Date;
     // equipmentIds: number[] | null; 
     // keyPoints: KeyPoint[];
     selected?: boolean;

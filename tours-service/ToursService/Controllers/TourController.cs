@@ -17,6 +17,31 @@ namespace ToursService.Controllers
             _tourService = tourService;
         }
 
+
+
+
+        [HttpGet("byId/{tourId:long}")]
+        public ActionResult<TourDto> GetById([FromRoute] long tourId)
+        {
+            try
+            {
+                var result = _tourService.GetById(tourId);
+                if (result.IsSuccess && result.Value != null) return Ok(result.Value);
+
+                // 404 sa porukom
+                var msg = result.Errors.FirstOrDefault()?.Message ?? "Tour not found.";
+                return NotFound(new { error = msg });
+            }
+            catch (Exception ex)
+            {
+                // 500 sa porukom (privremeno, dok ne otkloniš uzrok)
+                return Problem(detail: ex.Message, statusCode: 500);
+            }
+        }
+
+
+        
+
         [HttpPost]
         public ActionResult<TourDto> Create([FromBody] TourDto tour)
         {
@@ -40,9 +65,6 @@ namespace ToursService.Controllers
             return BadRequest(result.Errors);
         }
 
-        [HttpGet("published")]
-        [AllowAnonymous] // ili [Authorize(Roles = "Tourist,Administrator")]
-
         [HttpPost("{tourId:long}/publish")]
         public IActionResult Publish(long tourId)
         {
@@ -50,8 +72,8 @@ namespace ToursService.Controllers
             if (!long.TryParse(claimIdStr, out var authorId)) return Forbid();
 
             var result = _tourService.Publish(tourId, authorId);
-            if (result.IsSuccess) return Ok();
-            return BadRequest(result.Errors);
+            if (result.IsSuccess) return NoContent(); // 204, bez tijela
+            return BadRequest(new { errors = result.Errors.Select(e => e.Message).ToList() });
         }
 
         [HttpPost("{tourId:long}/archive")]
@@ -61,11 +83,9 @@ namespace ToursService.Controllers
             if (!long.TryParse(claimIdStr, out var authorId)) return Forbid();
 
             var result = _tourService.Archive(tourId, authorId);
-            if (result.IsSuccess) return Ok();
-            return BadRequest(result.Errors);
+            if (result.IsSuccess) return NoContent();
+            return BadRequest(new { errors = result.Errors.Select(e => e.Message).ToList() });
         }
-
-
 
         [HttpPost("{tourId:long}/reactivate")]
         public IActionResult Reactivate(long tourId)
@@ -74,9 +94,10 @@ namespace ToursService.Controllers
             if (!long.TryParse(claimIdStr, out var authorId)) return Forbid();
 
             var result = _tourService.Reactivate(tourId, authorId);
-            if (result.IsSuccess) return Ok();
-            return BadRequest(result.Errors);
+            if (result.IsSuccess) return NoContent();
+            return BadRequest(new { errors = result.Errors.Select(e => e.Message).ToList() });
         }
+
 
 
 
@@ -100,7 +121,20 @@ namespace ToursService.Controllers
             if (result.IsSuccess) return Ok(result.Value);
             return BadRequest(result.Errors);
         }
+
+
+        [HttpPost("updateTourKm/{tourId:long}")]
+        public ActionResult<double> UpdateTourKM([FromRoute] long tourId)
+        {
+            var result = _tourService.UpdateTourKM(tourId, new List<KeyPointDto>());
+            if (result.IsFailed) return BadRequest(result.Errors.Select(e => e.Message));
+            return Ok(result.Value);
+        }
+        
+        
     }
+
+
 
    
     

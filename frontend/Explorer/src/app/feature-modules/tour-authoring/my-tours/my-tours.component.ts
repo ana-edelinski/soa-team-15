@@ -51,4 +51,8 @@ export class MyToursComponent implements OnInit {
       if (created) this.snack.open('Review submitted ✅', 'OK', { duration: 3000 });
     });
   }
+
+
+    
+  
 }

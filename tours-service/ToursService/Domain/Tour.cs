@@ -1,5 +1,5 @@
 ﻿using System.Security.Cryptography;
-
+using System.Linq;   
 namespace ToursService.Domain
 {
     public class Tour
@@ -43,7 +43,6 @@ namespace ToursService.Domain
             UserId = userId;
             Status = TourStatus.Draft;
             Price = price;
-            RecalculateLength();
             PublishedTime = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
             ArchiveTime = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
             
@@ -107,31 +106,32 @@ namespace ToursService.Domain
             else existing.Update(minutes);
         }
 
-        public void RecalculateLength()
-        {
-            if (KeyPoints == null || KeyPoints.Count < 2)
+            public double RecalculateLength(List<KeyPoint> keyPoints)
             {
-                LengthInKm = 0;
-                return;
+                if (keyPoints == null || keyPoints.Count < 2)
+                {
+                    return 20;
+                }
+
+                double total = 0;
+
+                var ordered = keyPoints.OrderBy(kp => kp.Id).ToList();
+
+                for (int i = 1; i < ordered.Count; i++)
+                {
+                    var a = ordered[i - 1];
+                    var b = ordered[i];
+                    total += GeoDistance.HaversineKm(a.Latitude, a.Longitude, b.Latitude, b.Longitude);
+                }
+
+                return Math.Round(total, 3);
             }
 
-            double total = 0;
-
-            var ordered = KeyPoints.OrderBy(kp => kp.Id).ToList();
-
-            for (int i = 1; i < ordered.Count; i++)
-            {
-                var a = ordered[i - 1];
-                var b = ordered[i];
-                total += GeoDistance.HaversineKm(a.Latitude, a.Longitude, b.Latitude, b.Longitude);
-            }
-
-            LengthInKm = Math.Round(total, 3);
-        }
 
 
     }
 
+    
     public enum TourStatus
     {
         Draft,

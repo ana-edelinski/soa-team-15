@@ -10,9 +10,7 @@
         PagedResult<Tour> GetPaged(int page, int pageSize);
 
         void Update(Tour tour);
-        void Delete(long id);
         List<Tour> GetPublished();
-
 
     }
 }

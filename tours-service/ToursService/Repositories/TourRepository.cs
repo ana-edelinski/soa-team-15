@@ -22,7 +22,7 @@ namespace ToursService.Repositories
         {
             return _db.Tours
               .Include(t => t.KeyPoints)
-              .Include(t => t.TransportTimes)
+              //.Include(t => t.TransportTimes)
               .FirstOrDefault(t => t.Id == id);
         }
 
@@ -62,14 +62,10 @@ namespace ToursService.Repositories
             _db.SaveChanges();
         }
 
-        public void Delete(long id)
-        {
-            var entity = _db.Tours.FirstOrDefault(t => t.Id == id);
-            if (entity == null) return;
+        
 
-            _db.Tours.Remove(entity);
-            _db.SaveChanges();
-        }
+        
+
 
         public List<Tour> GetPublished()
         {

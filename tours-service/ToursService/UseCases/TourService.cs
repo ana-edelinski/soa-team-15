@@ -21,6 +21,66 @@ namespace ToursService.UseCases
             _mapper = mapper;
         }
 
+        public Result<TourDto> GetById(long tourId)
+        {
+            var t = _tourRepository.GetById(tourId);
+            if (t == null) return Result.Fail($"Tour {tourId} not found");
+
+            // Ako su ti domain enumi drugačiji, zamijeni nazive ispod po potrebi
+            // Pretpostavka: Domain: TourStatus, TourTag; DTO: ToursService.Dtos.TourStatus, ToursService.Dtos.TourTags
+            var dtoStatus = Enum.IsDefined(typeof(ToursService.Dtos.TourStatus), (int)t.Status)
+                ? (ToursService.Dtos.TourStatus)(int)t.Status
+                : default; // ili neki podrazumijevani status
+
+            var safeTags = new List<ToursService.Dtos.TourTags>();
+            if (t.Tags != null)
+            {
+                foreach (var tag in t.Tags)
+                {
+                    var intVal = Convert.ToInt32(tag); // pokriva slučaj da EF vrati int
+                    if (Enum.IsDefined(typeof(ToursService.Dtos.TourTags), intVal))
+                        safeTags.Add((ToursService.Dtos.TourTags)intVal);
+                    // inače preskoči nepoznate tagove
+                }
+            }
+
+            var dto = new TourDto
+            {
+                Id          = t.Id,
+                Name        = t.Name,
+                Description = t.Description,
+                Difficulty  = t.Difficulty,
+                Tags        = safeTags,
+                UserId      = t.UserId,
+                Status      = dtoStatus,
+                Price       = t.Price,
+                LengthInKm  = t.LengthInKm
+            };
+
+            return Result.Ok(dto);
+        }
+
+       public Result<double> UpdateTourKM(long tourId, List<KeyPointDto> _)
+        {
+            try
+            {
+                var tour = _tourRepository.GetById(tourId);
+                if (tour == null) return Result.Fail<double>("Tour not found.");
+
+                var domainKeyPoints = _keyPointRepository.GetByTour(tourId) ?? new List<KeyPoint>();
+
+                var km = tour.RecalculateLength(domainKeyPoints.ToList());
+                tour.UpdateLength(km);
+
+                _tourRepository.Update(tour);
+                return Result.Ok(tour.LengthInKm);
+            }
+            catch (Exception ex)
+            {
+                return Result.Fail<double>($"Error updating tour length: {ex.Message}");
+            }
+        }
+
         public Result<TourDto> Create(TourDto dto)
         {
             if (dto is null)
@@ -33,9 +93,7 @@ namespace ToursService.UseCases
             try
             {
                 var tour = _mapper.Map<Tour>(dto);
-
                 var created = _tourRepository.Create(tour);
-
                 var createdDto = _mapper.Map<TourDto>(created);
 
                 return Result.Ok(createdDto);
@@ -129,6 +187,9 @@ namespace ToursService.UseCases
             }
         }
 
+
+        
+
         public Result<List<TourDto>> GetByUserId(long userId)
         {
             {
@@ -149,7 +210,7 @@ namespace ToursService.UseCases
                     UserId = t.UserId,
                     Status = (ToursService.Dtos.TourStatus)t.Status,
                     Price = t.Price,
-                    //LengthInKm = t.LengthInKm,
+                    LengthInKm = t.LengthInKm,
                     //KeyPoints = t.KeyPoints.Select(kp => new KeyPointDto
                     //{
                     //    Id = kp.Id,
@@ -169,76 +230,83 @@ namespace ToursService.UseCases
             }
         }
 
-public Result<List<TourDto>> GetPublished()
-{
-    try
-    {
-        var tours = _tourRepository.GetPublished();
-
-        var dtos = tours?.Select(t => new TourDto
+        public Result<List<TourDto>> GetPublished()
         {
-            Id = t.Id,
-            Name = t.Name,
-            Description = t.Description,
-            Difficulty = t.Difficulty,
-            Tags = t.Tags.Select(tag => (ToursService.Dtos.TourTags)tag).ToList(),
-            UserId = t.UserId,
-            Status = (ToursService.Dtos.TourStatus)t.Status,
-            Price = t.Price,
-        }).ToList() ?? new List<TourDto>();
-
-        return Result.Ok(dtos);
-    }
-    catch (Exception ex)
-    {
-        return Result.Fail<List<TourDto>>($"EXCEPTION: {ex.Message}");
-    }
-}
-
-
-        public Result<TourDto> Publish(long tourId, long authorId)
-        {
-            var tour = _tourRepository.GetById(tourId);
-            if (tour == null) return Result.Fail("Tour not found.");
             try
             {
-                tour.Publish(authorId);
-                _tourRepository.Update(tour);
-                var dto = _mapper.Map<TourDto>(tour);
-                return Result.Ok(dto);
+                var tours = _tourRepository.GetPublished();
+
+                var dtos = tours?.Select(t => new TourDto
+                {
+                    Id = t.Id,
+                    Name = t.Name,
+                    Description = t.Description,
+                    Difficulty = t.Difficulty,
+                    Tags = t.Tags.Select(tag => (ToursService.Dtos.TourTags)tag).ToList(),
+                    UserId = t.UserId,
+                    Status = (ToursService.Dtos.TourStatus)t.Status,
+                    Price = t.Price,
+                }).ToList() ?? new List<TourDto>();
+
+                return Result.Ok(dtos);
             }
-            catch (Exception ex) { return Result.Fail(ex.Message); }
+            catch (Exception ex)
+            {
+                return Result.Fail<List<TourDto>>($"EXCEPTION: {ex.Message}");
+            }
         }
 
 
-        public Result<TourDto> Archive(long tourId, long authorId)
+        public Result Publish(long tourId, long authorId)
         {
             var tour = _tourRepository.GetById(tourId);
-            if (tour == null) return Result.Fail("Tour not found.");
+            if (tour is null) return Result.Fail("Tour not found.");
+
+            try
+            {
+                tour.Publish(authorId);   // domen validacije i promjena statusa
+                _tourRepository.Update(tour);
+                return Result.Ok();
+            }
+            catch (Exception ex)
+            {
+                return Result.Fail(ex.Message);
+            }
+        }
+
+        public Result Archive(long tourId, long authorId)
+        {
+            var tour = _tourRepository.GetById(tourId);
+            if (tour is null) return Result.Fail("Tour not found.");
+
             try
             {
                 tour.Archive(authorId);
                 _tourRepository.Update(tour);
-                var dto = _mapper.Map<TourDto>(tour);
-                return Result.Ok(dto);
+                return Result.Ok();
             }
-            catch (Exception ex) { return Result.Fail(ex.Message); }
+            catch (Exception ex)
+            {
+                return Result.Fail(ex.Message);
+            }
         }
 
-        public Result<TourDto> Reactivate(long tourId, long authorId)
+        public Result Reactivate(long tourId, long authorId)
         {
             var tour = _tourRepository.GetById(tourId);
-            if (tour == null) return Result.Fail("Tour not found.");
+            if (tour is null) return Result.Fail("Tour not found.");
+
             try
             {
                 tour.Reactivate(authorId);
                 _tourRepository.Update(tour);
-                var dto = _mapper.Map<TourDto>(tour);
-                return Result.Ok(dto);
+                return Result.Ok();
             }
-            catch (Exception ex) { return Result.Fail(ex.Message); }
+            catch (Exception ex)
+            {
+                return Result.Fail(ex.Message);
+            }
         }
-
 
         public Result<TourForTouristDto> GetTourWithKeyPoints(long tourId)
         {
@@ -253,6 +321,10 @@ public Result<List<TourDto>> GetPublished()
 
             return Result.Ok(dto);
         }
+
+        
+
+        
 
     }
 

@@ -11,24 +11,24 @@
         public double Price { get; set; }
         //public double DiscountPrice { get; set; }
         public long UserId { get; set; }
-        //public double LengthInKm { get; set; }
+        public double LengthInKm { get; set; }
         //public DateTime PublishedTime { get; set; }
         //public DateTime ArchiveTime { get; set; }
         //public ICollection<KeyPointDto> KeyPoints { get; set; } = new List<KeyPointDto>();
 
-
-            public List<KeyPointBriefDto>? KeyPoints { get; set; }
-            public double LengthInKm { get; set; } 
+        public List<KeyPointBriefDto>? KeyPoints { get; set; }
 
 
         public TourDto() { }
-        public TourDto(long id, string name, string? description, string? difficulty, List<TourTags> tags, long userId, TourStatus status, double price /*double lengthInKm, DateTime publishedTime, DateTime archivedTime,List<long> keyPointIds*/)
+        public TourDto(long id, string name, string description, string difficulty, List<TourTags> tags, long userId, TourStatus status, double price, double lengthInKm, DateTime publishedTime, DateTime archivedTime,List<long> keyPointIds)
 
         {
             Id = id;
             if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Invalid Name.");
             Name = name;
+            if (string.IsNullOrWhiteSpace(description)) throw new ArgumentException("Invalid description.");
             Description = description;
+            if (string.IsNullOrWhiteSpace(difficulty)) throw new ArgumentException("Invalid difficulty.");
             Difficulty = difficulty;
             if (tags == null || tags.Count == 0)
             { tags = new List<TourTags>(); }
@@ -39,7 +39,7 @@
 
             Status = status;
             Price = price;
-            //LengthInKm = lengthInKm;
+            LengthInKm = lengthInKm;
             //PublishedTime = publishedTime;
             //ArchiveTime = archivedTime;
 
@@ -52,7 +52,9 @@
             Id = id;
             if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Invalid Name.");
             Name = name;
+            if (string.IsNullOrWhiteSpace(description)) throw new ArgumentException("Invalid description.");
             Description = description;
+            if (string.IsNullOrWhiteSpace(difficulty)) throw new ArgumentException("Invalid difficulty.");
             Difficulty = difficulty;
             if (tags == null || tags.Count == 0)
             { tags = new List<TourTags>(); }
@@ -64,7 +66,7 @@
             Status = status;
             Price = price;
             //DiscountPrice = discountedPrice;
-            //LengthInKm = lengthInKm;
+            LengthInKm = lengthInKm;
             //PublishedTime = publishedTime;
             //ArchiveTime = archivedTime;
 
