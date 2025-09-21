@@ -119,8 +119,8 @@ services:
   # 🔹 NEW: Tours Service (API)
   tours-service:
     build:
-      dockerfile: Dockerfile
-      context: ./tours-service
+      dockerfile:  ./tours-service/Dockerfile
+      context: .
       target: final
     restart: on-failure
     networks:

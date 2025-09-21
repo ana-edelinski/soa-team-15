@@ -287,10 +287,16 @@ export class CreateKeyPointsComponent implements AfterViewInit, OnDestroy {
     this.errorMessage = '';
 
     try {
+
+      //TODO: 1.Kreiramo TourTransportTime - create pozovi
+
       // Use the service method to upload all key points
       await this.tourService.addMultipleKeyPoints(this.tourId, this.keyPoints);
       
        const km = await this.tourService.updateTourKM(this.tourId);
+
+             //TODO: 1.Update TourTransportTime - update pozovi
+
 
       if ((this as any).currentTour) {
         (this as any).currentTour.lengthInKm = km;

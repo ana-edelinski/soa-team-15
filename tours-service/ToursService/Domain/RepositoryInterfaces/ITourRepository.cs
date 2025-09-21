@@ -12,5 +12,7 @@
         void Update(Tour tour);
         List<Tour> GetPublished();
 
+        void RemoveTransportTime(TourTransportTime transportTime);
+
     }
 }

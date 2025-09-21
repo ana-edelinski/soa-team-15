@@ -49,6 +49,17 @@ namespace ToursService.Domain
 
         }
 
+
+        //TODO: kada se obrise tura, pozziva se i brisanje ovoga
+        public bool RemoveTransportTime(long authorId, TransportType type)
+        {
+            IsAuthor(authorId);
+            var existing = TransportTimes.FirstOrDefault(t => t.Type == type);
+            if (existing is null) return false;
+            TransportTimes.Remove(existing);
+            return true;
+        }
+
         public void Archive(long authorId)
         {
             if (Status != TourStatus.Published) throw new ArgumentException("Tour must be published in order to be archived");

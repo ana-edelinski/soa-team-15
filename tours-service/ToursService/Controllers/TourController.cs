@@ -130,6 +130,8 @@ namespace ToursService.Controllers
             if (result.IsFailed) return BadRequest(result.Errors.Select(e => e.Message));
             return Ok(result.Value);
         }
+
+
         
         
     }

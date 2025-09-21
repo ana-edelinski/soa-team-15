@@ -75,5 +75,12 @@ namespace ToursService.Repositories
                 .OrderByDescending(t => t.PublishedTime) 
                 .ToList();
         }
+        
+
+        public void RemoveTransportTime(TourTransportTime transportTime)
+        {
+            _db.Set<TourTransportTime>().Remove(transportTime);
+            _db.SaveChanges();
+        }
     }
 }
