@@ -1,17 +1,17 @@
 <section class="page">
   <header class="page-header">
-    <h2>Blogovi</h2>
+    <h2>Blogovi koje pratim</h2>
     <div class="subtle" *ngIf="loading">Učitavanje…</div>
   </header>
 
-  <div *ngIf="!loading && blogs.length === 0" class="empty-state">
-    <div class="empty-emoji">📝</div>
-    <h3>Još uvek nema blogova</h3>
-    <p>Budite prvi koji će podeliti priču.</p>
+  <div *ngIf="!loading && followingReady && filtered.length === 0" class="empty-state">
+    <div class="empty-emoji">👀</div>
+    <h3>Nema blogova za prikaz</h3>
+    <p>Počnite da pratite autore pa će se ovde pojaviti njihovi blogovi.</p>
   </div>
 
-  <div class="blog-grid" *ngIf="blogs.length > 0">
-    <article class="blog-card" *ngFor="let blog of blogs">
+  <div class="blog-grid" *ngIf="filtered.length > 0">
+    <article class="blog-card" *ngFor="let blog of filtered">
       <div class="card-header">
         <div class="title-wrap">
           <h3 class="title" [title]="blog.title">{{ blog.title }}</h3>
@@ -22,19 +22,12 @@
           </div>
         </div>
 
-        <button
-          class="delete-btn"
-          *ngIf="canDelete(blog)"
-          (click)="onDelete(blog.id)"
-          aria-label="Obriši blog">
-          Obriši
-        </button>
-
+        <!-- (opciono) follow/unfollow dugme -->
         <button
           class="follow-btn"
           (click)="toggleFollow(blog.authorId)"
           aria-label="Zaprati/Unfollow korisnika">
-          {{ following[blog.authorId] ? 'Unfollow' : 'Follow' }}
+          {{ isFollowing(blog.authorId) ? 'Unfollow' : 'Follow' }}
         </button>
       </div>
 
@@ -53,21 +46,17 @@
       </div>
 
       <div class="comments">
-          <!-- Sačekaj da sa servera stigne stanje "koga pratiš" -->
-          <ng-container *ngIf="followingReady">
-            <ng-container *ngIf="canComment(blog.authorId); else mustFollow">
-              <xp-comment [blogId]="blog.id"></xp-comment>
-            </ng-container>
-
-            <ng-template #mustFollow>
-              <div class="comment-locked">
-                <p>Da biste ostavili komentar, najpre zapratite ovog autora.</p>
-              </div>
-            </ng-template>
+        <ng-container *ngIf="followingReady">
+          <ng-container *ngIf="canComment(blog.authorId); else mustFollow">
+            <xp-comment [blogId]="blog.id"></xp-comment>
           </ng-container>
-        </div>
-
-
+          <ng-template #mustFollow>
+            <div class="comment-locked">
+              <p>Da biste ostavili komentar, najpre zapratite ovog autora.</p>
+            </div>
+          </ng-template>
+        </ng-container>
+      </div>
     </article>
   </div>
 </section>
