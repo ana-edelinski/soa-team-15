@@ -6,8 +6,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TourService } from '../../tour-authoring/tour.service';
 import { Tour } from '../../tour-authoring/model/tour.model';
 import { ReviewDialogComponent } from '../../tour-authoring/review-dialog/review-dialog.component';
-import { TourExecutionService } from '../../tour-execution/tour-execution.service';
-import { TourExecution } from '../../tour-execution/tour-execution.model';
+import { TourExecutionService } from '../../tour-execution/tour-execution.service'; 
+import { CompletedKeys, TourExecution } from '../../tour-execution/tour-execution.model';
+import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 import { CartService } from 'src/app/feature-modules/payments/cart.service';
 import { OrderItem } from 'src/app/feature-modules/payments/model/order-item.model';
@@ -210,6 +211,7 @@ console.table(
     });
   }
 
+
   createNewCart(userId: number): void {
     const cart: ShoppingCart = { id: 0, userId, items: [], totalPrice: 0 };
     this.cartService.createShoppingCart(cart).subscribe({
@@ -220,6 +222,16 @@ console.table(
       error: () => this.snack.open('Error creating cart', 'OK', { duration: 3000 })
     });
   }
+
+ /* const execution: TourExecution = {
+    tourId: tourId,
+    touristId: this.user.id,
+    completedKeys: [],
+    locationId: 1 //to do get position id for tourist
+    //completedKeys: [{keyPointId: 1, completionTime: Date()}]
+    // locationId i ostalo dodati kasnije kada se poveze sa simulatorom
+  };*/
+
 
   addToCart(tour: Tour): void {
     if (!this.user) {

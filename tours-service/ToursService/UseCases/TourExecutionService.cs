@@ -109,5 +109,60 @@ namespace ToursService.UseCases
 
             return Result.Fail<TourExecutionDto>($"No active tour found for tourist with ID {touristId}.");
         }
+
+        public Result<TourExecutionDto> CompleteKeyPoint(long executionId, long keyPointId)
+        {
+            var execution = _tourExecutionRepository.Get(executionId);
+            if (execution == null)
+            {
+                return Result.Fail<TourExecutionDto>($"Tour execution with ID {executionId} not found.");
+            }
+
+            if (!_tourExecutionRepository.KeyPointExists(keyPointId))
+            {
+                return Result.Fail<TourExecutionDto>($"Key point with ID {keyPointId} does not exist.");
+            }
+
+            try
+            {
+                execution.CompleteKeyPoint(keyPointId);
+                _tourExecutionRepository.Update(execution);
+                return Result.Ok(_mapper.Map<TourExecutionDto>(execution));
+            }
+            catch (ArgumentException ex)
+            {
+                return Result.Fail<TourExecutionDto>(ex.Message);
+            }
+        }
+
+        public void UpdateLastActivity(long executionId)
+        {
+            var execution = _tourExecutionRepository.Get(executionId);
+            if (execution != null)
+            {
+                execution.UpdateLastActivity();
+                _tourExecutionRepository.Update(execution);
+            }
+            else
+            {
+                throw new Exception("Execution not found.");
+            }
+        }
+
+        public ICollection<KeyPointDto> GetKeyPointsForTour(long tourId)
+        {
+            var keyPoints = _tourExecutionRepository.GetKeyPointsByTourId(tourId);
+
+            var keyPointDtos = keyPoints.Select(kp => new KeyPointDto
+            {
+                Id = kp.Id,
+                Name = kp.Name,
+                Latitude = kp.Latitude,
+                Longitude = kp.Longitude,
+                Description = kp.Description
+            }).ToList();
+
+            return keyPointDtos;
+        }
     }
 }

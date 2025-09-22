@@ -13,5 +13,10 @@ namespace ToursService.UseCases
         Result<TourExecutionDto> GetByTourAndTouristId(long touristId, long tourId);
         public Result<TourExecutionDto> GetActiveTourByTouristId(long touristId);
 
+        public Result<TourExecutionDto> CompleteKeyPoint(long executionId, long keyPointId);
+        public void UpdateLastActivity(long executionId);
+
+        public ICollection<KeyPointDto> GetKeyPointsForTour(long tourId);
+
     }
 }

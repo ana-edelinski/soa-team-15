@@ -24,6 +24,39 @@
       </div>
     </div>
 
+
+     <!-- ⬇️ INFO O TURI -->
+    <ng-container *ngIf="isActive && currentTour as t">
+      <hr />
+      <h3>Active tour</h3>
+
+      <div class="row">
+        <label>Name</label>
+        <div>{{ t.name }}</div>
+      </div>
+
+      <div class="row">
+        <label>Difficulty</label>
+        <div>{{ t.difficulty || '—' }}</div>
+      </div>
+
+      <div class="row">
+        <label>Length</label>
+        <div>{{ t.lengthInKm ?? '—' }} <span *ngIf="t.lengthInKm !== undefined">km</span></div>
+      </div>
+
+      
+
+      <div class="row" *ngIf="t.tags?.length">
+        <label>Tags</label>
+        <div class="chips">
+          <mat-chip-set>
+            <mat-chip *ngFor="let tag of t.tags" disabled>{{ tagLabel(tag) }}</mat-chip>
+          </mat-chip-set>
+        </div>
+      </div>
+    </ng-container>
+
   <div class="row" *ngIf="isActive && currentExecution">
     <button mat-raised-button color="warn" (click)="abandonTour(currentExecution.id!)">
       Abandon Tour
@@ -34,10 +67,14 @@
 
   <section class="map-wrap">
     <xp-map
+      *ngIf="showMap"
       [center]="defaultCenter"
+      [markers]="kpMarkers"
       [zoom]="13"
       [initialMarker]="initialMarker"
-      (mapClick)="onMapClick($event)">
+      [routeWaypoints]="routeWaypoints"
+      [routeMode]="routeMode"
+      (mapClick)="onMapClick($event)">      
     </xp-map>
   </section>
 </div>

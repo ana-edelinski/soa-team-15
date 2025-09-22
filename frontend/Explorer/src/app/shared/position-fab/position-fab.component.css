@@ -7,6 +7,7 @@
   background: linear-gradient(135deg, var(--primary), var(--primary-600));
   color:#fff; box-shadow: var(--shadow);
   transition: transform .15s ease, filter .15s ease;
+  z-index: 5000; 
 }
 .fab:hover { transform: translateY(-1px) scale(1.03); filter: brightness(1.03); }
 .material-icons{ font-size:28px; line-height:1; }

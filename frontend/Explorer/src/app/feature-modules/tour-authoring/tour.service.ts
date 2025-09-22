@@ -9,8 +9,7 @@ import { KeyPoint } from "./model/keypoint.model";
     providedIn: 'root'
   })
   export class TourService {
-    // private baseUrl = 'http://localhost:8082/api/';
-    private baseUrl = 'http://localhost:5226/api/';
+    private baseUrl = 'http://localhost:8082/api/';
 
     constructor(private http: HttpClient) { }
   
@@ -33,8 +32,8 @@ import { KeyPoint } from "./model/keypoint.model";
       if (keyPoint.pictureFile) {
         formData.append('pictureFile', keyPoint.pictureFile);
       }
-      formData.append('latitude', keyPoint.latitude.toString());
-      formData.append('longitude', keyPoint.longitude.toString());
+      formData.append('latitude', keyPoint.latitude.toLocaleString('sr-RS', { useGrouping: false }));
+      formData.append('longitude', keyPoint.longitude.toLocaleString('sr-RS', { useGrouping: false }));
       formData.append('name', keyPoint.name);
       formData.append('description', keyPoint.description);
       formData.append('image', ' a');

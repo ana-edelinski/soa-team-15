@@ -58,7 +58,6 @@ import { MatListModule } from '@angular/material/list';
     MatCardModule,
     MatButtonModule,
     MatTooltipModule,
-    TourExecutionModule,
     AuthModule,
     MatIconModule,
     MatListModule
