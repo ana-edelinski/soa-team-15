@@ -12,6 +12,7 @@
         void Update(Tour tour);
         void Delete(long id);
         List<Tour> GetPublished();
+        public Task<List<Tour>> GetByIdsAsync(IEnumerable<long> ids);
 
 
     }

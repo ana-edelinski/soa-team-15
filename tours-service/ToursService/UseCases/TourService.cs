@@ -3,6 +3,7 @@ using FluentResults;
 using ToursService.Domain;
 using ToursService.Domain.RepositoryInterfaces;
 using ToursService.Dtos;
+using ToursService.Integrations;
 
 
 namespace ToursService.UseCases
@@ -12,12 +13,14 @@ namespace ToursService.UseCases
         private readonly ITourRepository _tourRepository;
         private readonly IKeyPointRepository _keyPointRepository;
         private readonly IMapper _mapper;
+        private readonly IPaymentClient _payments;
 
-        public TourService(ITourRepository tourRepository, IMapper mapper, IKeyPointRepository keyPointRepository)
+        public TourService(ITourRepository tourRepository, IMapper mapper, IKeyPointRepository keyPointRepository, IPaymentClient payment)
         {
             _tourRepository = tourRepository;
             _keyPointRepository = keyPointRepository;
             _mapper = mapper;
+            _payments = payment;
         }
 
         public Result<TourDto> Create(TourDto dto)
@@ -238,6 +241,23 @@ namespace ToursService.UseCases
             var dto = new TourForTouristDto(tour, keyPoints.OrderBy(k => k.Id));
 
             return Result.Ok(dto);
+        }
+
+        public async Task<Result<List<TourDto>>> GetPurchasedForUserAsync(long userId)
+        {
+            // 1) IDs iz payments-a
+            var ids = await _payments.GetPurchasedIdsAsync(userId);
+            if (ids == null || ids.Count == 0)
+                return Result.Ok(new List<TourDto>());
+
+            // 2) Ture iz tours-db
+            var tours = await _tourRepository.GetByIdsAsync(ids);
+
+           
+
+            // 3) Mapiranje na DTO
+            var dtos = _mapper.Map<List<TourDto>>(tours);
+            return Result.Ok(dtos);
         }
 
     }

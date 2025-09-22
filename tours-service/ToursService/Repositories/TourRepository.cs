@@ -1,4 +1,5 @@
-﻿using ToursService.Database;
+﻿using Microsoft.EntityFrameworkCore;
+using ToursService.Database;
 using ToursService.Domain;
 using ToursService.Domain.RepositoryInterfaces;
 
@@ -74,6 +75,17 @@ namespace ToursService.Repositories
                       .Where(t => t.Status == TourStatus.Published)
                       .OrderByDescending(t => t.PublishedTime)
                       .ToList();
+        }
+
+        public async Task<List<Tour>> GetByIdsAsync(IEnumerable<long> ids)
+        {
+            var idList = ids?.Distinct().ToList() ?? new List<long>();
+            if (idList.Count == 0) return new List<Tour>();
+
+            return await _db.Tours
+                .AsNoTracking()
+                .Where(t => idList.Contains(t.Id))
+                .ToListAsync();
         }
     }
 }

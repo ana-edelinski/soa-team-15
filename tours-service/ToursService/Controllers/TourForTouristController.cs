@@ -34,5 +34,19 @@ namespace ToursService.Controllers
             if (result.IsSuccess) return Ok(result.Value);
             return BadRequest(result.Errors.FirstOrDefault()?.Message ?? "Failed to fetch published tours.");
         }
+
+
+        [HttpGet("purchased/{userId:long}")]
+        [Authorize(Policy = "touristPolicy")]
+        public async Task<ActionResult<List<TourDto>>> GetPurchased(long userId)
+        {
+            // zaštita: korisnik može tražiti samo svoje
+            var claimIdStr = User.FindFirst("id")?.Value;
+            if (!long.TryParse(claimIdStr, out var claimId) || claimId != userId) return Forbid();
+
+            var res = await _tourService.GetPurchasedForUserAsync(userId);
+            if (res.IsFailed) return BadRequest(res.Errors.Select(e => e.Message));
+            return Ok(res.Value);
+        }
     }
 }

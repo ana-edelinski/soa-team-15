@@ -51,7 +51,7 @@ export class TourExecutionService {
   }
 
   getStartableToursForUser(id: number): Observable<Tour[]> { // za sada dobavlja publikovane posle kupljene
-    return this.http.get<Tour[]>('http://localhost:8082/api/tour/published');
+     return this.http.get<Tour[]>(`http://localhost:8082/api/tour/purchased/${id}`);
   }
 
   getTourInfoForExecution(id: number): Observable<TourForTourist> {

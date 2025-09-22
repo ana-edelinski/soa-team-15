@@ -11,6 +11,7 @@ namespace ToursService.UseCases
         Result<KeyPointDto> AddKeyPoint(long tourId, KeyPointDto keyPointDto);
         Result<List<KeyPointDto>> GetKeyPointsByTour(long tourId);
         public Result<TourForTouristDto> GetTourWithKeyPoints(long tourId);
+        public Task<Result<List<TourDto>>> GetPurchasedForUserAsync(long userId);
 
 
     }

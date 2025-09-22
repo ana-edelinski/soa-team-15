@@ -117,6 +117,15 @@ builder.Services.AddScoped<ITourReviewService, TourReviewService>();
 builder.Services.AddScoped<ITourExecutionService, TourExecutionService>();
 
 
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddHttpClient<ToursService.Integrations.IPaymentClient,
+                               ToursService.Integrations.PaymentClient>(c =>
+                               {
+                                   c.BaseAddress = new Uri(builder.Configuration["PAYMENTS_BASE_URL"] ?? "http://localhost:5027");
+                               });
+
+
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
