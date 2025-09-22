@@ -28,7 +28,7 @@ public static class SerilogSetup
                .Enrich.WithProperty("env", env)
                .WriteTo.Console(new CompactJsonFormatter());
 
-            // 🧩 Loki konfiguracija
+    
             var lokiUrl = ctx.Configuration["Logging:Loki:Url"];
             if (!string.IsNullOrWhiteSpace(lokiUrl))
             {
@@ -45,7 +45,6 @@ public static class SerilogSetup
         return host;
     }
 
-    // Jednostavan middleware za CorrelationId (bez OpenTelemetry)
     public static IApplicationBuilder UseCorrelationId(this IApplicationBuilder app)
     {
         return app.Use(async (ctx, next) =>

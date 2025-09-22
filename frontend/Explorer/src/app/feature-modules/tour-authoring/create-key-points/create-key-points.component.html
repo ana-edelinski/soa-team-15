@@ -49,6 +49,17 @@
                     required></textarea>
         </mat-form-field>
 
+        <!-- Transport Type -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Transport Type</mat-label>
+          <mat-select [(ngModel)]="selectedTransportType" name="transportType" required>
+            <mat-option [value]="0">Walk</mat-option>
+            <mat-option [value]="1">Bike</mat-option>
+            <mat-option [value]="2">Car</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        
         <!-- Submit -->
         <div class="text-end">
           <button mat-raised-button color="primary" type="submit">

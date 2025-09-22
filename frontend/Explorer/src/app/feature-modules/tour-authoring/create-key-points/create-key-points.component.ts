@@ -6,7 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import * as L from 'leaflet';
 import { TourService } from '../tour.service';
 import { KeyPoint } from '../model/keypoint.model';
-
+import { firstValueFrom } from 'rxjs';
 
 
 @Component({
@@ -20,7 +20,9 @@ export class CreateKeyPointsComponent implements AfterViewInit, OnDestroy {
   private map?: L.Map;
   private markers: L.Marker[] = [];
   private polyline?: L.Polyline;
-  
+  selectedTransportType: number = 0; 
+
+
   keyPoints: KeyPoint[] = [];
   selectedKeyPointIndex: number | null = null;
   errorMessage: string = '';
@@ -295,7 +297,25 @@ export class CreateKeyPointsComponent implements AfterViewInit, OnDestroy {
       
        const km = await this.tourService.updateTourKM(this.tourId);
 
-             //TODO: 1.Update TourTransportTime - update pozovi
+      const minutes = this.tourService.calcMinutes(km, this.selectedTransportType);
+
+      // 1) CREATE
+      try {
+        await firstValueFrom(
+          this.tourService.createTransportTime(this.tourId!, this.selectedTransportType, minutes)
+        );
+      } catch (err: any) {
+        // ako već postoji, create će baciti 409 → ignoriši
+        if (err?.status !== 409) {
+          this.errorMessage = 'Failed to create transport time.';
+          return;
+        }
+      }
+
+      // 2) UPDATE (uvijek pozovi da se uskladi sa trenutnim km)
+      await firstValueFrom(
+        this.tourService.updateTransportTime(this.tourId!, this.selectedTransportType, minutes)
+      );
 
 
       if ((this as any).currentTour) {

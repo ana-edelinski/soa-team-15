@@ -101,4 +101,27 @@ import { firstValueFrom } from 'rxjs';
       }
       
 
+
+
+
+      createTransportTime(tourId: string | number, type: number, minutes: number) {
+      const url = `${this.baseUrl}author/tour/${tourId}/transport-times`;
+      const body = { type, minutes };
+      return this.http.post<void>(url, body);
+    }
+
+    // UPDATE jedan transport time
+    updateTransportTime(tourId: string | number, type: number, minutes: number) {
+      const url = `${this.baseUrl}author/tour/${tourId}/transport-times`;
+      const body = { type, minutes };
+      return this.http.put<void>(url, body);
+    }
+
+    // (opciono) lokalni proračun minuta kao na backendu (5 / 16 / 50 km/h)
+    calcMinutes(distanceKm: number, type: number): number {
+      const speed = type === 0 ? 5.0 : type === 1 ? 16.0 : 50.0;
+      if (distanceKm <= 0 || speed <= 0) return 0;
+      return Math.round((distanceKm / speed) * 60.0);
+    }
+
   }

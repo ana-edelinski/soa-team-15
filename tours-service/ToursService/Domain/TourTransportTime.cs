@@ -22,6 +22,14 @@ namespace ToursService.Domain
             Type = type;
             Minutes = minutes;
         }
+        public TourTransportTime(long tourId, TransportType type, int minutes)
+        {
+            if (minutes <= 0) throw new ArgumentException("Minutes must be > 0.");
+            if (tourId <= 0) throw new ArgumentException("Invalid tour id.");
+            TourId = tourId;
+            Type = type;
+            Minutes = minutes;
+        }
 
         public void Update(int minutes)
         {

@@ -11,6 +11,7 @@ namespace ToursService.Database
         public DbSet<KeyPoint> KeyPoints { get; set; }
         public DbSet<TourReview> TourReviews { get; set; }
         public DbSet<TourReviewImage> TourReviewImages { get; set; }
+        public DbSet<TourTransportTime> TourTransportTimes { get; set; }
 
         public DbSet<Position> Positions { get; set; }
         public DbSet<TourExecution> TourExecution { get; set; }
@@ -41,6 +42,12 @@ namespace ToursService.Database
 
                 e.HasIndex(x => new { x.UserId, x.Status });
                 e.HasIndex(x => x.PublishedTime);
+
+                // 1:N Tour -> TransportTimes
+                e.HasMany(t => t.TransportTimes)
+                .WithOne()
+                .HasForeignKey(tt => tt.TourId)
+                .OnDelete(DeleteBehavior.Cascade);
             });
 
             // KEYPOINT
@@ -110,6 +117,26 @@ namespace ToursService.Database
             .HasOne<Position>()
             .WithMany()
             .HasForeignKey(s => s.LocationId);
+
+            // TOUR TRANSPORT TIME
+            b.Entity<TourTransportTime>(e =>
+            {
+                e.ToTable("TourTransportTimes");         
+                e.HasKey(x => x.Id);
+
+                e.Property(x => x.TourId).IsRequired();
+
+                e.Property(x => x.Type)
+                .HasConversion<int>()
+                .IsRequired();
+
+                e.Property(x => x.Minutes)
+                .IsRequired();
+
+                e.HasIndex(x => new { x.TourId, x.Type }).IsUnique();
+
+                e.ToTable(t => t.HasCheckConstraint("CK_TourTransportTime_Minutes_Positive", "\"Minutes\" > 0"));
+            });
 
 
         }

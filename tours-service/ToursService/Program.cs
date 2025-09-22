@@ -147,17 +147,20 @@
 
 
 
+using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 using Serilog;
 using Serilog.Context;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
 using Serilog.Sinks.Grafana.Loki;
-using System.Security.Claims;
-using System.Text;
 using ToursService.Database;
 using ToursService.Domain.RepositoryInterfaces;
 using ToursService.Repositories;
@@ -192,6 +195,7 @@ try
            .Enrich.WithProperty("env", env)
            .WriteTo.Console(new CompactJsonFormatter());
 
+        // Opcioni Loki sink (ako postoji Logging:Loki:Url)
         var lokiUrl = ctx.Configuration["Logging:Loki:Url"];
         if (!string.IsNullOrWhiteSpace(lokiUrl))
         {
@@ -209,6 +213,14 @@ try
     //
     // 3) Services
     //
+    // DbContext preko NpgsqlDataSource sa EnableDynamicJson (kao u starom kodu)
+    var cs = builder.Configuration.GetConnectionString("DefaultConnection");
+    var dsb = new NpgsqlDataSourceBuilder(cs);
+    dsb.EnableDynamicJson(); // ili: dsb.UseJsonNet();
+    var dataSource = dsb.Build();
+    builder.Services.AddDbContext<ToursContext>(opt => opt.UseNpgsql(dataSource));
+
+    // Controllers
     builder.Services.AddControllers();
 
     // Swagger + JWT schema
@@ -223,14 +235,15 @@ try
             Scheme = "Bearer",
             BearerFormat = "JWT",
             In = ParameterLocation.Header,
-            Description = "Enter 'Bearer {token}'"
+            Description = "Enter 'Bearer' [space] and then your valid token."
         });
         options.AddSecurityRequirement(new OpenApiSecurityRequirement
         {
             {
                 new OpenApiSecurityScheme {
                     Reference = new OpenApiReference {
-                        Type = ReferenceType.SecurityScheme, Id = "Bearer"
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
                     }
                 },
                 Array.Empty<string>()
@@ -238,11 +251,7 @@ try
         });
     });
 
-    // DbContext (može i preko NpgsqlDataSource ako želiš)
-    builder.Services.AddDbContext<ToursContext>(opt =>
-        opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-    // AuthN
+    // AuthN (JWT)
     builder.Services.AddAuthentication("Bearer")
         .AddJwtBearer("Bearer", options =>
         {
@@ -260,8 +269,18 @@ try
                 RoleClaimType = ClaimTypes.Role,
                 NameClaimType = "id"
             };
+
             options.TokenValidationParameters.ClockSkew = TimeSpan.FromMinutes(2);
         });
+
+    // AuthZ
+    builder.Services.AddAuthorization(options =>
+    {
+        options.AddPolicy("administratorPolicy", p => p.RequireRole("Administrator"));
+        options.AddPolicy("touristPolicy", p => p.RequireRole("Tourist"));
+        options.AddPolicy("authorPolicy", p => p.RequireRole("TourAuthor"));
+        options.AddPolicy("userPolicy", p => p.RequireRole("TourAuthor", "Tourist"));
+    });
 
     // CORS
     builder.Services.AddCors(options =>
@@ -281,13 +300,16 @@ try
     builder.Services.AddScoped<ITourReviewRepository, TourReviewRepository>();
     builder.Services.AddScoped<IPositionRepository, PositionRepository>();
     builder.Services.AddScoped<ITourExecutionRepository, TourExecutionRepository>();
+    builder.Services.AddScoped<ITourTransportTimeRepository, TourTransportTimeRepository>();
 
     // Services
     builder.Services.AddScoped<IPositionService, PositionService>();
     builder.Services.AddScoped<ITourService, TourService>();
     builder.Services.AddScoped<ITourReviewService, TourReviewService>();
     builder.Services.AddScoped<ITourExecutionService, TourExecutionService>();
+    builder.Services.AddScoped<ITourTransportTimeService, TourTransportTimeService>();
 
+    // AutoMapper
     builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
     //
@@ -298,7 +320,7 @@ try
     //
     // 5) Middleware
     //
-    app.UseSerilogRequestLogging(); // request log u Serilog
+    app.UseSerilogRequestLogging(); // Serilog request log
 
     // Correlation-ID
     app.Use(async (ctx, next) =>
@@ -314,12 +336,13 @@ try
         }
     });
 
+    // Swagger
     app.UseSwagger();
     app.UseSwaggerUI();
 
     app.UseCors("AllowAngularDevClient");
-    app.UseStaticFiles();
-    app.UseAuthentication();
+    app.UseStaticFiles(); // wwwroot/*
+    app.UseAuthentication(); 
     app.UseAuthorization();
 
     app.MapControllers();
