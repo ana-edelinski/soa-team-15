@@ -373,3 +373,11 @@
   border-color: rgba(154,163,178,.35);
   background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
 }
+
+.stats {
+  margin-top: 14px;
+  display: grid;
+  /* umjesto fiksna 3, koristi auto-fit da stane 4–6 kartica responsive */
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}

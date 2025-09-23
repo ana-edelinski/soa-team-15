@@ -11,7 +11,7 @@ export interface Tour {
     discountedPrice?: number;
     originalPrice?: number; 
     userId: number;
-    // lengthInKm: number;
+    lengthInKm?: number;
     publishedTime?: Date;
     archiveTime?: Date;
     // equipmentIds: number[] | null; 

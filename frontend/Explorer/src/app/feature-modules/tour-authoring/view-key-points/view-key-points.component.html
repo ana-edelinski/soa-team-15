@@ -19,8 +19,7 @@
             {{ statusLabel }}
           </span>
 
-          <!-- AKCIJE -->
-          <div class="hero-actions">
+          <div class="hero-actions" *ngIf="tour && isOwner">
             <button
               class="btn primary"
               *ngIf="isDraft"
@@ -48,6 +47,8 @@
               {{ isPublishing ? 'Reaktiviram…' : 'Reaktiviraj' }}
             </button>
           </div>
+
+
         </div>
         <div class="tags-wrap" *ngIf="tour?.tags?.length">
           <div class="tags-label">Tagovi</div>
@@ -92,6 +93,31 @@
           <div class="stat-label">Key points</div>
           <div class="stat-value" *ngIf="!isLoadingKeyPoints; else s3">{{ keyPoints.length }}</div>
           <ng-template #s3><div class="skeleton skeleton-text"></div></ng-template>
+        </div>
+
+
+        <div class="stat-card">
+          <div class="stat-label">Dužina</div>
+          <div class="stat-value" *ngIf="tour; else sLen">
+            {{ tour?.lengthInKm | number:'1.1-1' }} km
+          </div>
+          <ng-template #sLen><div class="skeleton skeleton-text"></div></ng-template>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Prevoz</div>
+          <div class="stat-value">
+            {{ formatTransportTypeLabel(transportTime?.type) }}
+          </div>
+          <ng-template #sTrans><div class="skeleton skeleton-text"></div></ng-template>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Vrijeme</div>
+          <div class="stat-value" *ngIf="transportTime; else sMin">
+            {{ transportTime?.minutes }} min
+          </div>
+          <ng-template #sMin><div class="skeleton skeleton-text"></div></ng-template>
         </div>
       </div>
     </div>

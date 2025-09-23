@@ -4,6 +4,8 @@ import * as L from 'leaflet';
 import { TourService } from '../tour.service';
 import { KeyPoint } from '../model/keypoint.model';
 import { Tour } from '../model/tour.model';
+import { TransportTimeDto, TransportType } from '../tour.service';
+
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -11,10 +13,20 @@ import { finalize } from 'rxjs/operators';
   templateUrl: './view-key-points.component.html',
   styleUrls: ['./view-key-points.component.css']
 })
+
+
+
 export class ViewKeyPointsComponent implements OnInit, AfterViewInit, OnDestroy {
   private map?: L.Map;
   private markers: L.Marker[] = [];
   private polyline?: L.Polyline;
+
+
+  currentUserId: number | null = null;
+
+  transportTimes: TransportTimeDto[] = [];    
+  transportTime?: TransportTimeDto; 
+
 
   keyPoints: KeyPoint[] = [];
   tour?: Tour;
@@ -75,6 +87,9 @@ export class ViewKeyPointsComponent implements OnInit, AfterViewInit, OnDestroy 
 
   /** Učitavanje podataka ide u OnInit */
   ngOnInit(): void {
+    this.currentUserId = this.readUserIdFromLocalStorageDirect();
+
+
     const tourId = this.route.snapshot.paramMap.get('id');
     if (!tourId) {
       this.errorMsg = 'Tour ID is missing.';
@@ -82,6 +97,9 @@ export class ViewKeyPointsComponent implements OnInit, AfterViewInit, OnDestroy 
       this.isLoadingKeyPoints = false;
       return;
     }
+
+
+    
 
     // TOUR
     this.isLoadingTour = true;
@@ -120,6 +138,21 @@ export class ViewKeyPointsComponent implements OnInit, AfterViewInit, OnDestroy 
           this.errorMsg = 'Failed to load key points.';
         }
       });
+
+
+    
+      this.tourService.getTransportTimes(tourId)
+        .subscribe({
+          next: (list) => {
+            this.transportTimes = list ?? [];
+            this.transportTime = this.transportTimes[0]; // ako u UI prikazuješ jedan zapis
+          },
+          error: () => {
+            this.transportTimes = [];
+            this.transportTime = undefined;
+          }
+        });
+      
   }
 
   /** Inicijalizacija mape ide u AfterViewInit */
@@ -325,4 +358,72 @@ export class ViewKeyPointsComponent implements OnInit, AfterViewInit, OnDestroy 
   trackByKpId(index: number, kp: any) {
     return kp.id ?? `${kp.latitude},${kp.longitude},${index}`;
   }
+
+  
+
+  formatTransportTypeLabel(t?: TransportType | number | string): string {
+  if (t === undefined || t === null) return '—';
+  const map: Record<string, string> = {
+    '0': 'walk',
+    '1': 'bike',
+    '2': 'car',
+    Walk: 'walk',
+    Bike: 'bike',
+    Car: 'car'
+  };
+  return map[String(t)] ?? '—';
 }
+
+
+
+
+
+private base64UrlDecode(input: string): string {
+  // decode JWT payload (url-safe base64)
+  input = input.replace(/-/g, '+').replace(/_/g, '/');
+  const pad = input.length % 4;
+  if (pad) input += '='.repeat(4 - pad);
+  return decodeURIComponent(
+    atob(input).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')
+  );
+}
+
+private readUserIdFromJwtInLocalStorage(): number | null {
+  // probaj više tipičnih ključeva
+  const keys = ['access_token', 'accessToken', 'jwt', 'token'];
+  let raw: string | null = null;
+  for (const k of keys) { raw = localStorage.getItem(k); if (raw) break; }
+  if (!raw) return null;
+
+  const parts = raw.split('.');
+  if (parts.length < 2) return null;
+  try {
+    const payload = JSON.parse(this.base64UrlDecode(parts[1]));
+    const id = payload?.id ?? payload?.sub ?? payload?.nameid ?? payload?.NameId;
+    return id != null ? Number(id) : null;
+  } catch {
+    return null;
+  }
+}
+private readUserIdFromLocalStorageDirect(): number | null {
+  // ako si negdje direktno snimila userId poslije login-a
+  const raw = localStorage.getItem('userId') ?? localStorage.getItem('currentUserId');
+  return raw != null ? Number(raw) : null;
+}
+
+get ownerId(): number | null {
+  // tvoj Tour već ima userId (vidim u logu)
+  const raw = (this.tour as any)?.userId ?? (this.tour as any)?.UserId ?? null;
+  return raw != null ? Number(raw) : null;
+}
+
+get isOwner(): boolean {
+  return this.ownerId != null && this.currentUserId != null &&
+         Number(this.ownerId) === Number(this.currentUserId);
+}
+
+
+}
+
+
+
