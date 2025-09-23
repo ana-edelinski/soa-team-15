@@ -3,6 +3,7 @@ using FluentResults;
 using PaymentsService.Domain;
 using PaymentsService.Domain.RepositoryInterfaces;
 using PaymentsService.Dtos;
+using PaymentsService.Integrations.Saga;
 using System.Security.Cryptography;
 
 namespace PaymentsService.UseCases
@@ -12,6 +13,12 @@ namespace PaymentsService.UseCases
         Result<List<PurchaseTokenDto>> Checkout(long cartId, long userId);
         Result<bool> HasPurchase(long userId, long tourId);
         Result<List<long>> PurchasedTourIds(long userId);
+
+        //SAGA
+        Task<ValidatePurchaseReply> ValidatePurchase(long userId, long tourId, long executionId, string correlationId, CancellationToken ct);
+        Task<PaymentLockReply> LockPurchase(long userId, long tourId, long executionId, string correlationId, CancellationToken ct);
+        Task<PaymentFinalizeReply> FinalizePurchase(long executionId, string correlationId, CancellationToken ct);
+        Task<PaymentCompensateReply> CompensatePurchase(long executionId, string reason, string correlationId, CancellationToken ct);
     }
 
     public class PurchaseService : IPurchaseService
@@ -54,6 +61,7 @@ namespace PaymentsService.UseCases
                     {
                         UserId = userId,
                         TourId = it.TourId,
+                        Status = "Available",
                         Token = NewToken()
                     });
                 }
@@ -88,6 +96,86 @@ namespace PaymentsService.UseCases
         public Result<List<long>> PurchasedTourIds(long userId)
         {
             return Result.Ok(_tokenRepo.GetPurchasedTourIds(userId));
+        }
+
+
+        //SAGA
+
+
+        public async Task<ValidatePurchaseReply> ValidatePurchase(long userId, long tourId, long executionId, string correlationId, CancellationToken ct)
+        {
+            var exists = _tokenRepo.Exists(userId, tourId);
+
+            if (exists)
+                return new ValidatePurchaseReply(ValidatePurchaseStatus.Ok, null, null, correlationId);
+            else
+                return new ValidatePurchaseReply(ValidatePurchaseStatus.NotFound, "No purchase found", null, correlationId);
+        }
+
+        public async Task<PaymentLockReply> LockPurchase(long userId, long tourId, long executionId, string correlationId, CancellationToken ct)
+        {
+            // 👉 logika: pronađi token (Available) → setuj Status = Locked, ExecutionId = executionId
+            var token = await _tokenRepo.GetAvailableAsync(userId, tourId, ct);
+            if (token == null)
+            {
+                return new PaymentLockReply(false, "No available token found", correlationId);
+            }
+
+            token.Status = "Locked";
+            token.ExecutionId = executionId;
+            token.LockedBy = Guid.NewGuid(); // opcionalno možeš koristiti correlationId
+            token.LockedAt = DateTime.UtcNow;
+            token.ExpiresAt = DateTime.UtcNow.AddMinutes(2); // TTL za lock
+
+            await _tokenRepo.SaveChangesAsync(ct);
+            return new PaymentLockReply(true, null, correlationId);
+        }
+
+        public async Task<PaymentFinalizeReply> FinalizePurchase(long executionId, string correlationId, CancellationToken ct)
+        {
+            // 👉 logika: pronađi token (Locked) → setuj Status = Consumed
+            var token = await _tokenRepo.GetByExecutionIdAsync(executionId, ct);
+            if (token == null)
+            {
+                return new PaymentFinalizeReply(false, "Token not found", correlationId);
+            }
+
+            if (token.Status != "Locked")
+            {
+                return new PaymentFinalizeReply(false, $"Token not locked (status={token.Status})", correlationId);
+            }
+
+            token.Status = "Consumed";
+            token.LockedBy = null;
+            token.LockedAt = null;
+            token.ExpiresAt = null;
+
+            await _tokenRepo.SaveChangesAsync(ct);
+            return new PaymentFinalizeReply(true, null, correlationId);
+        }
+
+        public async Task<PaymentCompensateReply> CompensatePurchase(long executionId, string reason, string correlationId, CancellationToken ct)
+        {
+            // 👉 logika: pronađi token (Locked) → setuj Status = Available
+            var token = await _tokenRepo.GetByExecutionIdAsync(executionId, ct);
+            if (token == null)
+            {
+                return new PaymentCompensateReply(false, "Token not found", correlationId);
+            }
+
+            if (token.Status != "Locked")
+            {
+                return new PaymentCompensateReply(false, $"Token not locked (status={token.Status})", correlationId);
+            }
+
+            token.Status = "Available";
+            token.ExecutionId = null;
+            token.LockedBy = null;
+            token.LockedAt = null;
+            token.ExpiresAt = null;
+
+            await _tokenRepo.SaveChangesAsync(ct);
+            return new PaymentCompensateReply(true, null, correlationId);
         }
     }
 }

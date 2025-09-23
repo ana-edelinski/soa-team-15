@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Text;
 using ToursService.Database;
 using ToursService.Domain.RepositoryInterfaces;
+using ToursService.Integrations;
 using ToursService.Repositories;
 using ToursService.UseCases;
 
@@ -24,6 +25,19 @@ var dsb = new Npgsql.NpgsqlDataSourceBuilder(cs);
 dsb.EnableDynamicJson();                 // ili: dsb.UseJsonNet();
 var dataSource = dsb.Build();
 builder.Services.AddDbContext<ToursContext>(opt => opt.UseNpgsql(dataSource));
+
+// NATS options
+builder.Services.Configure<NatsOptions>(builder.Configuration.GetSection("NATS"));
+builder.Services.AddSingleton(sp =>
+{
+    var opt = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<NatsOptions>>().Value;
+    return new NatsConnectionProvider(opt);
+});
+// Saga bus + payments saga client
+builder.Services.AddSingleton<ToursService.Integrations.Saga.INatsSagaBus, ToursService.Integrations.Saga.NatsSagaBus>();
+builder.Services.AddScoped<ToursService.Integrations.Saga.IPaymentSagaClient, ToursService.Integrations.Saga.PaymentSagaClient>();
+builder.Services.AddHostedService<ToursService.Integrations.Saga.ToursExecutionCommandHandler>();
+
 
 // Controllers
 builder.Services.AddControllers();
@@ -115,6 +129,7 @@ builder.Services.AddScoped<IPositionService, PositionService>();
 builder.Services.AddScoped<ITourService, TourService>();
 builder.Services.AddScoped<ITourReviewService, TourReviewService>();
 builder.Services.AddScoped<ITourExecutionService, TourExecutionService>();
+builder.Services.AddScoped<TourStartSagaOrchestrator>();
 
 
 builder.Services.AddHttpContextAccessor();

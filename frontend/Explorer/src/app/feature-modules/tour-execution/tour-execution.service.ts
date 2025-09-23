@@ -29,7 +29,7 @@ export class TourExecutionService {
 
 
   startTourExecution(execution: TourExecution): Observable<TourExecution> {
-    return this.http.post<TourExecution>(this.baseUrl, execution);
+    return this.http.post<TourExecution>('http://localhost:8082/api/execution/saga/create', execution);
   }
 
   completeTourExecution(id: number): Observable<TourExecution> {

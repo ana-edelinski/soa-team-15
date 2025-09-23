@@ -109,7 +109,8 @@ export class PurchasedToursComponent implements OnInit {
   }
 
    async startTour(tour: Tour) {
-    const tourId = tour.id as number | undefined;
+   const tourId = tour.id as number | undefined;
+   //const tourId = 7;
     if(tourId == null){
       return;
     }
@@ -134,7 +135,7 @@ export class PurchasedToursComponent implements OnInit {
         if (res.isConfirmed) this.router.navigate(['/position-simulator']);
         return; // nema pozicije → ne startujemo
       }
-  
+
       const payload: TourExecution = {
         tourId,
         touristId: this.user.id,

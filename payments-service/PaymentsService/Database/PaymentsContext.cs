@@ -38,6 +38,8 @@ namespace PaymentsService.Database
                 e.HasKey(x => x.Id);
                 e.Property(x => x.Token).HasMaxLength(128);
                 e.HasIndex(x => new { x.UserId, x.TourId }).IsUnique();
+                e.Property(x => x.Status).HasMaxLength(16);
+                e.Property(x => x.LockedBy).HasColumnType("uuid").IsRequired(false);
             });
         }
     }

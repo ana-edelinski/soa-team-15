@@ -13,6 +13,14 @@
 
         public List<CompletedKeyPoint> CompletedKeys { get; private set; } //ovde se nalazi endTime za svaku kt
 
+
+        // POLJA I METODE ZA SAGU
+        public Guid SagaId { get; private set; }                 // korelacija
+        public long? PurchaseTokenId { get; private set; }       // iz Payments
+
+        public void AttachSaga(Guid sagaId) => SagaId = sagaId;
+        public void AttachToken(long tokenId) => PurchaseTokenId = tokenId;
+
         public TourExecution(long tourId, long touristId, long locationId, DateTime? lastActivity, TourExecutionStatus status, List<CompletedKeyPoint> completedKeys)
         {
             TourId = tourId;
@@ -54,6 +62,15 @@
             LastActivity = DateTime.UtcNow;
         }
 
+        public void RejectPending()
+        {
+            if (Status == TourExecutionStatus.Rejected) return;             
+            if (Status != TourExecutionStatus.Pending)
+                throw new ArgumentException($"Cannot reject from status {Status}.");
+            Status = TourExecutionStatus.Rejected;
+            LastActivity = DateTime.UtcNow;
+        }
+
 
         public CompletedKeyPoint CompleteKeyPoint(long keyPointId)
         {
@@ -81,6 +98,16 @@
     {
         Active,
         Completed,
-        Abandoned
+        Abandoned,
+        Pending,
+        Rejected
+    }
+
+    public enum ExecutionSagaState
+    {
+        None = 0,          // još ništa
+        Locked = 1,        // token zaključan
+        ExecutionCreated = 2,
+        Compensated = 3,   // urađena kompenzacija (unlock/rollback)
     }
 }

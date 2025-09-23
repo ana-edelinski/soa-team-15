@@ -192,6 +192,14 @@ services:
         condition: service_healthy
 
 
+  nats:
+    image: nats:2.10
+    command: ["-js", "-m", "8222"]   
+    ports:
+      - "4222:4222"   # klijentske konekcije
+      - "8222:8222"   # monitoring UI
+
+
 
 volumes:
   stakeholdersdb:

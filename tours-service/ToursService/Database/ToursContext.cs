@@ -104,6 +104,8 @@ namespace ToursService.Database
 
                 e.HasIndex(x => x.TouristId);
                 e.HasIndex(x => new { x.TourId, x.TouristId });
+                e.Property(x => x.SagaId).HasColumnType("uuid");
+                e.Property(x => x.PurchaseTokenId).IsRequired(false);
             });
 
             b.Entity<TourExecution>()

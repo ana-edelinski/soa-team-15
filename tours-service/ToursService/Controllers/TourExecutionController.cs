@@ -11,10 +11,13 @@ namespace ToursService.Controllers
     public class TourExecutionController : ControllerBase
     {
         private readonly ITourExecutionService _executionService;
+        private readonly TourStartSagaOrchestrator _orchestrator;
 
-        public TourExecutionController(ITourExecutionService tourService)
+
+        public TourExecutionController(ITourExecutionService tourService, TourStartSagaOrchestrator orchestrator)
         {
             _executionService = tourService;
+            _orchestrator = orchestrator;
         }
 
         [HttpPost]
@@ -121,6 +124,25 @@ namespace ToursService.Controllers
         {
             var keyPoints = _executionService.GetKeyPointsForTour(tourId);
             return Ok(keyPoints);
+        }
+
+        [HttpPost("saga/create")]
+        public async Task<IActionResult> Create([FromBody] TourExecutionDto tour, CancellationToken ct)
+        {
+            if (tour is null) return BadRequest("Body is required.");
+
+            // Ovde ne ide _executionService.Create(tour), već orkestrator
+            var result = await _orchestrator.StartTourSagaAsync(
+                userId: tour.TouristId,   // pretpostavljam da imaš ovo polje u DTO
+                tourId: tour.TourId,
+                locationId: tour.LocationId, // ako ga imaš u DTO
+                ct: ct
+            );
+
+            if (result.Success)
+                return Ok(result);
+            else
+                return BadRequest(result);
         }
 
     }
