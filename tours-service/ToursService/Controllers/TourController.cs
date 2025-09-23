@@ -76,6 +76,7 @@ namespace ToursService.Controllers
             return BadRequest(new { errors = result.Errors.Select(e => e.Message).ToList() });
         }
 
+
         [HttpPost("{tourId:long}/archive")]
         public IActionResult Archive(long tourId)
         {
@@ -99,12 +100,11 @@ namespace ToursService.Controllers
         }
 
 
-
-
         [HttpGet("getKeyPoints/{tourId:long}")]
+        [AllowAnonymous]
         public ActionResult<List<KeyPointDto>> GetKeyPointsForTour(long tourId)
         {
-           
+
 
             var result = _tourService.GetKeyPointsByTour(tourId);
             if (result.IsSuccess) return Ok(result.Value);
@@ -115,7 +115,7 @@ namespace ToursService.Controllers
         [Consumes("multipart/form-data")]
         public IActionResult AddKeyPoint([FromRoute] long tourId, [FromForm] KeyPointDto keyPointDto)
         {
-            
+
 
             var result = _tourService.AddKeyPoint(tourId, keyPointDto);
             if (result.IsSuccess) return Ok(result.Value);
@@ -137,7 +137,4 @@ namespace ToursService.Controllers
     }
 
 
-
-   
-    
 }

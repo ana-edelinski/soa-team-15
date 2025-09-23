@@ -1,4 +1,4 @@
-package config
+/*package config
 
 import (
 	"errors"
@@ -47,4 +47,45 @@ func ParseAndValidateToken(bearer string) (*AuthClaims, error) {
 		}
 	}
 	return claims, nil
+}
+*/
+
+package config
+
+import (
+	"errors"
+	"strings"
+
+	"github.com/golang-jwt/jwt/v5"
+)
+
+type Claims struct {
+	ID   string `json:"id"`
+	Role string `json:"role"`
+	jwt.RegisteredClaims
+}
+
+// ParseAndValidateToken: DEV varijanta bez verifikacije potpisa.
+// U produkciji OBAVEZNO verifikuj potpis!
+func ParseAndValidateToken(authHeader string) (*Claims, error) {
+	if authHeader == "" {
+		return nil, errors.New("missing Authorization header")
+	}
+	parts := strings.SplitN(authHeader, " ", 2)
+	if len(parts) != 2 || !strings.EqualFold(parts[0], "Bearer") {
+		return nil, errors.New("invalid Authorization format")
+	}
+
+	tok, _, err := new(jwt.Parser).ParseUnverified(parts[1], &Claims{})
+	if err != nil {
+		return nil, err
+	}
+	cl, ok := tok.Claims.(*Claims)
+	if !ok {
+		return nil, errors.New("invalid claims")
+	}
+	if cl.Role == "" {
+		cl.Role = "tourist" // default za lokalno
+	}
+	return cl, nil
 }

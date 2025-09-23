@@ -31,6 +31,10 @@
   <mat-menu #blogMenu="matMenu">
     <button mat-menu-item [routerLink]="['/blogs']">Svi blogovi</button>
     <button mat-menu-item [routerLink]="['/blogs/create']">Dodaj blog</button>
+        <button mat-menu-item [routerLink]="['/recommendations']">Preporuceni korisnici </button>
+        <button mat-menu-item [routerLink]="['/following-blogs']">Praceni blogovi</button>
+
+
 
   </mat-menu>
 
@@ -48,6 +52,13 @@
   <button mat-raised-button *ngIf="isLoggedIn" (click)="logout()" style="margin-left: 8px;" color="accent">Logout</button>
   <button mat-raised-button *ngIf="isLoggedIn && currentUserRole !== 'Administrator'" routerLink="/profile" style="margin-left: 8px;" color="accent">Profile</button>
   <button mat-raised-button *ngIf="isLoggedIn && currentUserRole === 'Administrator'" color="accent" routerLink="/admin/users" style="margin-left: 8px;" >Users</button>
+  <button mat-icon-button 
+        *ngIf="isLoggedIn && currentUserRole === 'Tourist'" 
+        routerLink="/cart" 
+        style="margin-left: 8px;" routerLine="/cart" color="accent">
+  <mat-icon>shopping_cart</mat-icon>
+</button>
+
 </mat-toolbar>
 
 <router-outlet></router-outlet>

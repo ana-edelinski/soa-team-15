@@ -1,32 +1,73 @@
-<h2 style="text-align: center; margin: 30px 0; font-size: 32px; color: #333;">Blogovi</h2>
+<section class="page">
+  <header class="page-header">
+    <h2>Blogovi</h2>
+    <div class="subtle" *ngIf="loading">Učitavanje…</div>
+  </header>
 
-<div *ngIf="blogs.length === 0" style="text-align: center; font-style: italic;">Nema blogova.</div>
-
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; padding: 0 20px;">
-  <div *ngFor="let blog of blogs" 
-       style="background: #fafafa; padding: 20px; border: 1px solid #ccc; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; transition: transform 0.2s;">
-
-    <h3 style="margin-bottom: 15px; color: #2c3e50;">{{ blog.title }}</h3>
-    <h4 style="margin-bottom: 15px; color: #2c3e50;">{{ blog.authorId }}</h4>
-
-    <div style="margin: 0 auto 15px auto; max-width: 90%;">
-      <markdown [data]="blog.content"></markdown>
-    </div>
-
-    <div *ngIf="blog.imagePaths && blog.imagePaths.length > 0">
-      <h4 style="margin-bottom: 10px;">Slike:</h4>
-      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
-        <img *ngFor="let imgPath of blog.imagePaths"
-             [src]="'http://localhost:8081' + imgPath"
-             width="150"
-             style="border-radius: 6px; border: 1px solid #ccc;"
-             alt="Blog image" />
-      </div>
-    </div>
-
-    <button (click)="onDelete(blog.id)">Obriši</button>
-
-    <xp-like [blogId]="blog.id"></xp-like>
-    <xp-comment [blogId]="blog.id"></xp-comment>
+  <div *ngIf="!loading && blogs.length === 0" class="empty-state">
+    <div class="empty-emoji">📝</div>
+    <h3>Još uvek nema blogova</h3>
+    <p>Budite prvi koji će podeliti priču.</p>
   </div>
-</div>
+
+  <div class="blog-grid" *ngIf="blogs.length > 0">
+    <article class="blog-card" *ngFor="let blog of blogs">
+      <div class="card-header">
+        <div class="title-wrap">
+          <h3 class="title" [title]="blog.title">{{ blog.title }}</h3>
+          <div class="meta">
+            <span class="author-chip">{{ getAuthorLabel(blog.authorId) }}</span>
+            <span class="dot">•</span>
+            <span class="date" *ngIf="blog.createdAt as dt">{{ dt | date:'medium' }}</span>
+          </div>
+        </div>
+
+        <button
+          class="delete-btn"
+          *ngIf="canDelete(blog)"
+          (click)="onDelete(blog.id)"
+          aria-label="Obriši blog">
+          Obriši
+        </button>
+
+        <button
+          class="follow-btn"
+          (click)="toggleFollow(blog.authorId)"
+          aria-label="Zaprati/Unfollow korisnika">
+          {{ following[blog.authorId] ? 'Unfollow' : 'Follow' }}
+        </button>
+      </div>
+
+      <div class="content">
+        <markdown [data]="blog.content"></markdown>
+      </div>
+
+      <div class="gallery" *ngIf="blog.imagePaths && blog.imagePaths.length">
+        <div class="thumb" *ngFor="let imgPath of blog.imagePaths">
+          <img [src]="'http://localhost:8081' + imgPath" alt="Blog image">
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <xp-like [blogId]="blog.id"></xp-like>
+      </div>
+
+      <div class="comments">
+          <!-- Sačekaj da sa servera stigne stanje "koga pratiš" -->
+          <ng-container *ngIf="followingReady">
+            <ng-container *ngIf="canComment(blog.authorId); else mustFollow">
+              <xp-comment [blogId]="blog.id"></xp-comment>
+            </ng-container>
+
+            <ng-template #mustFollow>
+              <div class="comment-locked">
+                <p>Da biste ostavili komentar, najpre zapratite ovog autora.</p>
+              </div>
+            </ng-template>
+          </ng-container>
+        </div>
+
+
+    </article>
+  </div>
+</section>

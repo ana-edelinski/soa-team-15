@@ -25,6 +25,12 @@ import { BrowseToursComponent } from './feature-modules/tour-browse/browse-tours
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatIconModule } from '@angular/material/icon';
+import { CartComponent } from './feature-modules/payments/cart/cart.component';
+import { MatListModule } from '@angular/material/list';
+import { FollowersRecommendationsComponent } from './blog/recommendation/followers-recommendations/followers-recommendations.component';
+import { FollowingBlogsComponent } from './blog/list/following-blogs/following-blogs.component';
+
 
 @NgModule({
   declarations: [
@@ -35,6 +41,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     LikeComponent,
     PositionFabComponent,
     BrowseToursComponent,
+    CartComponent,
+    FollowersRecommendationsComponent,
+    FollowingBlogsComponent,
   ],
   imports: [
     MarkdownModule.forRoot(),
@@ -53,8 +62,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatCardModule,
     MatButtonModule,
     MatTooltipModule,
-    TourExecutionModule,
     AuthModule,
+    MatIconModule,
+    MatListModule
   ],
   providers: [
     {

@@ -1,0 +1,54 @@
+<div class="shopping-cart-container">
+  <h1 class="cart-title">
+    Shopping Cart
+    <span class="items-count">
+      ({{ cartItems.length }} {{ cartItems.length === 1 ? 'item' : 'items' }})
+    </span>
+  </h1>
+
+  <div *ngIf="loading">Loading…</div>
+
+  <div class="cart-items-scroll">
+    <div *ngFor="let item of cartItems" class="cart-item-card">
+      <mat-card class="cart-item">
+        <mat-card-content class="cart-item-content">
+          <div class="tour-details">
+            <div class="tour-info-left">
+              <h3>{{ item.tourName }}</h3>
+            </div>
+            <button mat-icon-button class="action-button" (click)="removeCartItem(item)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      <div class="price-container">
+        <p><strong>{{ item.price }} €</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="cart-footer">
+    <div class="footer-content">
+      <span class="total-price">Total: {{ totalPrice }} €</span>
+      <div class="divider"></div>
+      <button
+        mat-raised-button
+        class="checkout"
+        color="accent"
+        (click)="checkout()"
+        [disabled]="loading || cartItems.length === 0">
+        BUY
+      </button>
+    </div>
+  </div>
+
+  <!-- Prikaz tokena posle uspešnog checkout-a -->
+  <div *ngIf="purchaseTokens.length > 0" class="tokens-panel">
+    <h2>Purchase tokens</h2>
+    <div class="token-row" *ngFor="let t of purchaseTokens">
+      <span>Tour #{{ t.tourId }}</span>
+      <code>{{ t.token }}</code>
+    </div>
+  </div>
+</div>
