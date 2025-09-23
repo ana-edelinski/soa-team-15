@@ -16,7 +16,7 @@ func (r *FollowRepo) Follow(u, t string) error {
 	session := r.drv.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	defer session.Close(ctx)
 
-	_, err := neo4j.ExecuteWrite(ctx, session, func(tx neo4j.ManagedTransaction) (any, error) {
+	_, err := session.ExecuteWrite(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
 		_, err := tx.Run(ctx, `
 			MERGE (u:User {id:$u})
 			MERGE (t:User {id:$t})
@@ -33,7 +33,7 @@ func (r *FollowRepo) Unfollow(u, t string) error {
 	session := r.drv.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	defer session.Close(ctx)
 
-	_, err := neo4j.ExecuteWrite(ctx, session, func(tx neo4j.ManagedTransaction) (any, error) {
+	_, err := session.ExecuteWrite(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
 		_, err := tx.Run(ctx,
 			`MATCH (u:User {id:$u})-[f:FOLLOWS]->(t:User {id:$t}) DELETE f`,
 			map[string]any{"u": u, "t": t})
@@ -47,7 +47,7 @@ func (r *FollowRepo) Followers(t string) ([]string, error) {
 	session := r.drv.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
 	defer session.Close(ctx)
 
-	recs, err := neo4j.ExecuteRead(ctx, session, func(tx neo4j.ManagedTransaction) (any, error) {
+	data, err := session.ExecuteRead(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
 		res, err := tx.Run(ctx,
 			`MATCH (u:User)-[:FOLLOWS]->(t:User {id:$t}) RETURN u.id AS id`,
 			map[string]any{"t": t})
@@ -57,7 +57,7 @@ func (r *FollowRepo) Followers(t string) ([]string, error) {
 		return out, res.Err()
 	})
 	if err != nil { return nil, err }
-	return recs.([]string), nil
+	return data.([]string), nil
 }
 
 func (r *FollowRepo) Following(u string) ([]string, error) {
@@ -65,7 +65,7 @@ func (r *FollowRepo) Following(u string) ([]string, error) {
 	session := r.drv.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
 	defer session.Close(ctx)
 
-	recs, err := neo4j.ExecuteRead(ctx, session, func(tx neo4j.ManagedTransaction) (any, error) {
+	data, err := session.ExecuteRead(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
 		res, err := tx.Run(ctx,
 			`MATCH (u:User {id:$u})-[:FOLLOWS]->(t:User) RETURN t.id AS id`,
 			map[string]any{"u": u})
@@ -75,7 +75,7 @@ func (r *FollowRepo) Following(u string) ([]string, error) {
 		return out, res.Err()
 	})
 	if err != nil { return nil, err }
-	return recs.([]string), nil
+	return data.([]string), nil
 }
 
 func (r *FollowRepo) IsFollowing(u, t string) (bool, error) {
@@ -83,7 +83,7 @@ func (r *FollowRepo) IsFollowing(u, t string) (bool, error) {
 	session := r.drv.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
 	defer session.Close(ctx)
 
-	val, err := neo4j.ExecuteRead(ctx, session, func(tx neo4j.ManagedTransaction) (any, error) {
+	val, err := session.ExecuteRead(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
 		rx, err := tx.Run(ctx,
 			`MATCH (u:User{id:$u})-[:FOLLOWS]->(t:User{id:$t}) RETURN COUNT(*)>0 AS f`,
 			map[string]any{"u": u, "t": t})
@@ -100,7 +100,7 @@ func (r *FollowRepo) Recommendations(u string) ([]string, error) {
 	session := r.drv.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
 	defer session.Close(ctx)
 
-	recs, err := neo4j.ExecuteRead(ctx, session, func(tx neo4j.ManagedTransaction) (any, error) {
+	data, err := session.ExecuteRead(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
 		res, err := tx.Run(ctx, `
 			MATCH (me:User {id:$u})-[:FOLLOWS]->(:User)-[:FOLLOWS]->(cand:User)
 			WHERE NOT (me)-[:FOLLOWS]->(cand) AND cand.id <> $u
@@ -111,5 +111,5 @@ func (r *FollowRepo) Recommendations(u string) ([]string, error) {
 		return out, res.Err()
 	})
 	if err != nil { return nil, err }
-	return recs.([]string), nil
+	return data.([]string), nil
 }

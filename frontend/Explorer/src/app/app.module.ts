@@ -28,6 +28,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { CartComponent } from './feature-modules/payments/cart/cart.component';
 import { MatListModule } from '@angular/material/list';
+import { FollowersRecommendationsComponent } from './blog/recommendation/followers-recommendations/followers-recommendations.component';
+import { FollowingBlogsComponent } from './blog/list/following-blogs/following-blogs.component';
 
 
 @NgModule({
@@ -40,6 +42,8 @@ import { MatListModule } from '@angular/material/list';
     PositionFabComponent,
     BrowseToursComponent,
     CartComponent,
+    FollowersRecommendationsComponent,
+    FollowingBlogsComponent,
   ],
   imports: [
     MarkdownModule.forRoot(),

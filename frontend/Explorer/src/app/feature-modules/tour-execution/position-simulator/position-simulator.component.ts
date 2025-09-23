@@ -47,6 +47,7 @@ export class PositionSimulatorComponent implements OnInit, OnDestroy {
   private recomputeRouteWaypoints() {
     this.routeWaypoints = (this.kpMarkers ?? [])
       .map(m => [m.lat, m.lng]) as Array<[number, number]>;
+      console.log('[SIM] recomputeRouteWaypoints →', this.routeWaypoints);
   }
 
   kpMarkers: MapMarker[] = [];
@@ -232,6 +233,7 @@ export class PositionSimulatorComponent implements OnInit, OnDestroy {
       image: this.toImageUrl(kp),           // ako backend šalje url
       completed: this.isKpCompleted(kp.id)
     }));
+    console.log('[SIM] rebuildKeyPointMarkers →', this.kpMarkers);
   }
 
   ngOnDestroy(): void {

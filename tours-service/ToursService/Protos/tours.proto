@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+option csharp_namespace = "ToursService.Proto";
+
+package tours;
+
+// -------------------- Services --------------------
+
+service ToursService {
+  rpc Create (TourDto) returns (TourDto);
+  rpc GetByUserId (GetByUserIdRequest) returns (ToursListResponse);
+}
+
+
+
+// -------------------- Messages --------------------
+
+message TourDto {
+  int64 id = 1;
+  string name = 2;
+  string description = 3;
+  string difficulty = 4;        
+  repeated TourTags tags = 5;   
+  int64 userId = 6;
+  TourStatus status = 7;       
+  double price = 8;
+}
+
+message GetByUserIdRequest {
+  int64 userId = 1;
+}
+
+message ToursListResponse {
+  repeated TourDto tours = 1;
+}
+
+
+
+// -------------------- Enums --------------------
+
+enum TourStatus {
+  STATUS_UNSPECIFIED = 0;
+  DRAFT = 1;
+  PUBLISHED = 2;
+  ARCHIVED = 3;
+}
+
+enum TourTags {
+  TAG_UNSPECIFIED = 0;
+  CYCLING = 1;
+  CULTURE = 2;
+  ADVENTURE = 3;
+  FAMILY_FRIENDLY = 4;
+  NATURE = 5;
+  CITY_TOUR = 6;
+  HISTORICAL = 7;
+  RELAXATION = 8;
+  WILDLIFE = 9;
+  NIGHT_TOUR = 10;
+  BEACH = 11;
+  MOUNTAINS = 12;
+  PHOTOGRAPHY = 13;
+  GUIDED = 14;
+  SELF_GUIDED = 15;
+}

@@ -5,24 +5,40 @@ import { Tour } from "./model/tour.model";
 import { environment } from "src/env/environment";
 import { KeyPoint } from "./model/keypoint.model";
 
+import { firstValueFrom } from 'rxjs';
+import { ToursResponse } from "./model/tours-proto-response.model";
+
+
+export enum TransportType { Walk = 0, Bike = 1, Car = 2 }
+export interface TransportTimeDto {
+  id?: number;        
+  tourId?: string;    
+  type: TransportType; 
+  minutes: number;
+}
+
+
+
+
+
 @Injectable({
     providedIn: 'root'
   })
   export class TourService {
     private baseUrl = 'http://localhost:8082/api/';
+    private gatewayUrl = 'http://localhost:8090/api/';
 
     constructor(private http: HttpClient) { }
   
-    getToursForAuthor(id: number): Observable<Tour[]> {
-      return this.http.get<Tour[]>(`${this.baseUrl}author/tour/${id}`);
+    getToursForAuthor(id: number): Observable<ToursResponse> {
+      return this.http.get<ToursResponse>(`${this.gatewayUrl}author/tour/${id}`);
     }
   
     addTour(tour: Tour): Observable<Tour> {
-      return this.http.post<Tour>(`${this.baseUrl}author/tour`, tour);
+      return this.http.post<Tour>(`${this.gatewayUrl}author/tour`, tour);
     }
-      // NOVO: objavljene ture za browse (turista)
     getPublishedTours(): Observable<Tour[]> {
-      return this.http.get<Tour[]>(`${this.baseUrl}author/tour/published`);
+      return this.http.get<Tour[]>(`${this.baseUrl}tour/published`);
     }
 
 
@@ -32,8 +48,8 @@ import { KeyPoint } from "./model/keypoint.model";
       if (keyPoint.pictureFile) {
         formData.append('pictureFile', keyPoint.pictureFile);
       }
-      formData.append('latitude', keyPoint.latitude.toLocaleString('sr-RS', { useGrouping: false }));
-      formData.append('longitude', keyPoint.longitude.toLocaleString('sr-RS', { useGrouping: false }));
+      formData.append('latitude', keyPoint.latitude.toString());
+      formData.append('longitude', keyPoint.longitude.toString());
       formData.append('name', keyPoint.name);
       formData.append('description', keyPoint.description);
       formData.append('image', ' a');
@@ -44,13 +60,25 @@ import { KeyPoint } from "./model/keypoint.model";
       );
     }
 
-    // Method to add multiple key points
+//    async addMultipleKeyPoints(tourId: string, keyPoints: KeyPoint[]): Promise<boolean> {
+  //    try {
+    //    for (const keyPoint of keyPoints) {
+      //    const response = await this.addKeyPoint(tourId, keyPoint).toPromise();
+          
+          
+        //}
+       // return true;
+     // } catch (error) {
+      //  console.error('Error uploading key points:', error);
+       // throw error;
+      //}
+   // }
+
+
     async addMultipleKeyPoints(tourId: string, keyPoints: KeyPoint[]): Promise<boolean> {
       try {
         for (const keyPoint of keyPoints) {
-          const response = await this.addKeyPoint(tourId, keyPoint).toPromise();
-          
-          
+          await firstValueFrom(this.addKeyPoint(tourId, keyPoint));
         }
         return true;
       } catch (error) {
@@ -59,8 +87,69 @@ import { KeyPoint } from "./model/keypoint.model";
       }
     }
 
-     getKeyPointsForTour(tourId: string): Observable<KeyPoint[]> {
-      return this.http.get<KeyPoint[]>(`${this.baseUrl}author/tour/getKeyPoints/${tourId}`);
-    }
+    
+      async updateTourKM(tourId: string): Promise<number> {
+        const url = `${this.baseUrl}author/tour/updateTourKm/${tourId}`;
+        // Ako si backend prebacio da računa iz baze i NE prima body, šalji prazan objekat:
+        const res = await firstValueFrom(this.http.post<number>(url, {}));
+        return res ?? 0;
+      }
 
+     getKeyPointsForTour(tourId: string): Observable<KeyPoint[]> {
+        return this.http.get<KeyPoint[]>(`${this.baseUrl}author/tour/getKeyPoints/${tourId}`);
+      }
+
+
+      
+      getTourById(tourId: string) {
+        return this.http.get<Tour>(`${this.baseUrl}author/tour/byId/${tourId}`);
+      }
+      
+      publishTour(tourId: string) {
+        return this.http.post<void>(`${this.baseUrl}author/tour/${tourId}/publish`, {});
+      }
+      archiveTour(tourId: string) {
+        return this.http.post<void>(`${this.baseUrl}author/tour/${tourId}/archive`, {});
+      }
+      reactivateTour(tourId: string) {
+        return this.http.post<void>(`${this.baseUrl}author/tour/${tourId}/reactivate`, {});
+      }
+      
+
+
+
+
+      createTransportTime(tourId: string | number, type: number, minutes: number) {
+        const url = `${this.baseUrl}author/tour/${tourId}/transport-times`;
+        const body = { type, minutes };
+        return this.http.post<void>(url, body);
+      }
+
+      // UPDATE jedan transport time
+      updateTransportTime(tourId: string | number, type: number, minutes: number) {
+        const url = `${this.baseUrl}author/tour/${tourId}/transport-times`;
+        const body = { type, minutes };
+        return this.http.put<void>(url, body);
+      }
+
+      // (opciono) lokalni proračun minuta kao na backendu (5 / 16 / 50 km/h)
+      calcMinutes(distanceKm: number, type: number): number {
+        const speed = type === 0 ? 5.0 : type === 1 ? 16.0 : 50.0;
+        if (distanceKm <= 0 || speed <= 0) return 0;
+        return Math.round((distanceKm / speed) * 60.0);
+      }
+
+
+      getTransportTimes(tourId: string | number) {
+        const url = `${this.baseUrl}author/tour/${tourId}/transport-times`;
+        return this.http.get<TransportTimeDto[]>(url);
+      }
+
+
+      getMe() {
+      return this.http.get<{ id: number; role?: string; username?: string }>(
+        `${this.baseUrl}users/me`,
+        { withCredentials: true } 
+      );
+    }
   }

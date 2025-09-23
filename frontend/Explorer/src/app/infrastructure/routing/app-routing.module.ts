@@ -17,6 +17,8 @@ import { CreateKeyPointsComponent } from 'src/app/feature-modules/tour-authoring
 import { ViewKeyPointsComponent } from 'src/app/feature-modules/tour-authoring/view-key-points/view-key-points.component';
 import { CartComponent } from 'src/app/feature-modules/payments/cart/cart.component';
 import { PurchasedToursComponent } from 'src/app/feature-modules/tour-execution/purchased-tours/purchased-tours.component';
+import { FollowersRecommendationsComponent } from 'src/app/blog/recommendation/followers-recommendations/followers-recommendations.component';
+import { FollowingBlogsComponent } from 'src/app/blog/list/following-blogs/following-blogs.component';
 
 
 const routes: Routes = [
@@ -36,7 +38,11 @@ const routes: Routes = [
   { path: 'tours', component: BrowseToursComponent },
   { path: 'tours/:id/key-points', component: CreateKeyPointsComponent },
   { path: 'tours/:id/key-points/view', component: ViewKeyPointsComponent},
-  { path: 'cart', component: CartComponent }
+  { path: 'cart', component: CartComponent },
+  { path: 'recommendations', component: FollowersRecommendationsComponent },
+    { path: 'following-blogs', component: FollowingBlogsComponent },
+
+
 ];
 
 @NgModule({

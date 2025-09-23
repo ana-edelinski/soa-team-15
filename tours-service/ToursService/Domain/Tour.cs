@@ -1,5 +1,5 @@
 ﻿using System.Security.Cryptography;
-
+using System.Linq;   
 namespace ToursService.Domain
 {
     public class Tour
@@ -23,6 +23,10 @@ namespace ToursService.Domain
 
 
         public ICollection<KeyPoint> KeyPoints { get; private set; } = new List<KeyPoint>();
+        public ICollection<TourTransportTime> TransportTimes { get; private set; } = new List<TourTransportTime>();
+
+       
+
 
 
         public Tour(string name, string? description, string? difficulty, double price, List<TourTags> tags, long userId)
@@ -39,11 +43,21 @@ namespace ToursService.Domain
             UserId = userId;
             Status = TourStatus.Draft;
             Price = price;
-            LengthInKm = 0;
             PublishedTime = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
             ArchiveTime = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
+            
+
+        }
 
 
+        //TODO: kada se obrise tura, pozziva se i brisanje ovoga
+        public bool RemoveTransportTime(long authorId, TransportType type)
+        {
+            IsAuthor(authorId);
+            var existing = TransportTimes.FirstOrDefault(t => t.Type == type);
+            if (existing is null) return false;
+            TransportTimes.Remove(existing);
+            return true;
         }
 
         public void Archive(long authorId)
@@ -76,14 +90,59 @@ namespace ToursService.Domain
             return true;
         }
 
+        public void Publish(long authorId)
+            {
+                if (Status != TourStatus.Draft)
+                    throw new ArgumentException("Only draft tours can be published.");
+
+                IsAuthor(authorId);
+
+                Status = TourStatus.Published;
+                PublishedTime = DateTime.UtcNow;
+                ArchiveTime = null;
+            }
+
         public void UpdateLength(double length)
         {
             LengthInKm = length;
         }
 
+         public void AddOrUpdateTransportTime(long authorId, TransportType type, int minutes)
+        {
+            IsAuthor(authorId);
+            if (minutes <= 0) throw new ArgumentException("Duration must be > 0 minutes.");
+
+            var existing = TransportTimes.FirstOrDefault(t => t.Type == type);
+            if (existing is null) TransportTimes.Add(new TourTransportTime(type, minutes));
+            else existing.Update(minutes);
+        }
+
+            public double RecalculateLength(List<KeyPoint> keyPoints)
+            {
+                if (keyPoints == null || keyPoints.Count < 2)
+                {
+                    return 20;
+                }
+
+                double total = 0;
+
+                var ordered = keyPoints.OrderBy(kp => kp.Id).ToList();
+
+                for (int i = 1; i < ordered.Count; i++)
+                {
+                    var a = ordered[i - 1];
+                    var b = ordered[i];
+                    total += GeoDistance.HaversineKm(a.Latitude, a.Longitude, b.Latitude, b.Longitude);
+                }
+
+                return Math.Round(total, 3);
+            }
+
+
 
     }
 
+    
     public enum TourStatus
     {
         Draft,

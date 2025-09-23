@@ -13,6 +13,13 @@ namespace ToursService.UseCases
         public Result<TourForTouristDto> GetTourWithKeyPoints(long tourId);
         public Task<Result<List<TourDto>>> GetPurchasedForUserAsync(long userId);
 
+        Result Publish(long tourId, long authorId);
+        Result Archive(long tourId, long authorId);
+        Result Reactivate(long tourId, long authorId);
+        Result<TourDto> GetById(long tourId);
+
+         Result<double> UpdateTourKM(long tourId, List<KeyPointDto> keyPoints);
+
 
     }
 }

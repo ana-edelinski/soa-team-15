@@ -2,6 +2,7 @@
 using ToursService.Database;
 using ToursService.Domain;
 using ToursService.Domain.RepositoryInterfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace ToursService.Repositories
 {
@@ -21,7 +22,9 @@ namespace ToursService.Repositories
         public Tour? GetById(long id)
         {
             return _db.Tours
-                      .FirstOrDefault(t => t.Id == id);
+              .Include(t => t.KeyPoints)
+              //.Include(t => t.TransportTimes)
+              .FirstOrDefault(t => t.Id == id);
         }
 
         public List<Tour> GetAll()
@@ -60,21 +63,25 @@ namespace ToursService.Repositories
             _db.SaveChanges();
         }
 
-        public void Delete(long id)
-        {
-            var entity = _db.Tours.FirstOrDefault(t => t.Id == id);
-            if (entity == null) return;
+        
 
-            _db.Tours.Remove(entity);
-            _db.SaveChanges();
-        }
+        
+
 
         public List<Tour> GetPublished()
         {
             return _db.Tours
-                      .Where(t => t.Status == TourStatus.Published)
-                      .OrderByDescending(t => t.PublishedTime)
-                      .ToList();
+                .Include(t => t.KeyPoints)
+                .Where(t => t.Status == TourStatus.Published)
+                .OrderByDescending(t => t.PublishedTime) 
+                .ToList();
+        }
+        
+
+        public void RemoveTransportTime(TourTransportTime transportTime)
+        {
+            _db.Set<TourTransportTime>().Remove(transportTime);
+            _db.SaveChanges();
         }
 
         public async Task<List<Tour>> GetByIdsAsync(IEnumerable<long> ids)

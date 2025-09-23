@@ -6,6 +6,7 @@ export interface KeyPoint {
     description: string;
     userId?: number | null;
     tourId?: number | null;
+    imageUrl?: string;
     pictureFile?: File | null;
 }
 

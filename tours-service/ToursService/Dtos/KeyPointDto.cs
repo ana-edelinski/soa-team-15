@@ -1,5 +1,4 @@
 ﻿using ToursService.Domain;
-
 namespace ToursService.Dtos
 {
     public class KeyPointDto

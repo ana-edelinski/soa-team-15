@@ -34,6 +34,7 @@
             if (string.IsNullOrWhiteSpace(image)) throw new ArgumentException("Invalid Image.");
             if (longitude <= 0) throw new ArgumentException("Invalid longitude.");
             if (latitude <= 0) throw new ArgumentException("Invalid latitude.");
+            
         }
     }
     public enum PublicStatus

@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StakeholdersService.Dtos;
 using StakeholdersService.UseCases;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+
+
 
 namespace StakeholdersService.Controllers
 {
@@ -43,5 +47,8 @@ namespace StakeholdersService.Controllers
             }
             return Ok(result.Value);
         }
+
+
+
     }
 }

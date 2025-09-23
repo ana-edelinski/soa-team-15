@@ -4,7 +4,7 @@
         <div id="buttons">
             <button *ngIf="user && user.username === ''" color="accent" mat-raised-button [routerLink]="['login']">Login</button>
             <button *ngIf="user && user.username !== ''" color="accent" mat-raised-button (click)="onLogout()">Logout</button>
-            <button color="primary" mat-raised-button [routerLink]="['home']">Home</button>
+            <button color="primary" mat-raised-button [routerLink]="['home']"></button>
             <button *ngIf="user && user.role === 'administrator'"color="primary" mat-raised-button [routerLink]="['admin/users']">Users</button>
         </div>
     </div>

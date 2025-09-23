@@ -247,6 +247,34 @@ namespace ToursService.Migrations
                     b.ToTable("TourReviewImages");
                 });
 
+            modelBuilder.Entity("ToursService.Domain.TourTransportTime", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("Minutes")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("TourId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TourId", "Type")
+                        .IsUnique();
+
+                    b.ToTable("tour_transport_times", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_TourTransportTime_Minutes_Positive", "\"Minutes\" > 0");
+                        });
+                });
+
             modelBuilder.Entity("ToursService.Domain.KeyPoint", b =>
                 {
                     b.HasOne("ToursService.Domain.Tour", null)
@@ -276,9 +304,20 @@ namespace ToursService.Migrations
                     b.Navigation("Review");
                 });
 
+            modelBuilder.Entity("ToursService.Domain.TourTransportTime", b =>
+                {
+                    b.HasOne("ToursService.Domain.Tour", null)
+                        .WithMany("TransportTimes")
+                        .HasForeignKey("TourId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ToursService.Domain.Tour", b =>
                 {
                     b.Navigation("KeyPoints");
+
+                    b.Navigation("TransportTimes");
                 });
 
             modelBuilder.Entity("ToursService.Domain.TourReview", b =>

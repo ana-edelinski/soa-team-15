@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+option csharp_namespace = "ToursService.Proto";
+option go_package = "api-gateway/proto/tours;tours";
+
+package tours;
+
+import "google/api/annotations.proto";
+
+service ToursService {
+  rpc Create (TourDto) returns (TourDto) {
+    option (google.api.http) = {
+      post: "/api/author/tour"
+      body: "*"
+    };
+  }
+
+  rpc GetByUserId (GetByUserIdRequest) returns (ToursListResponse) {
+    option (google.api.http) = {
+      get: "/api/author/tour/{userId}"
+    };
+  }
+}
+
+
+// -------------------- Messages --------------------
+
+message TourDto {
+  int64 id = 1;
+  string name = 2;
+  string description = 3;
+  string difficulty = 4;
+  repeated TourTags tags = 5;
+  int64 userId = 6;
+  TourStatus status = 7;
+  double price = 8;
+}
+
+message GetByUserIdRequest {
+  int64 userId = 1;
+}
+
+message ToursListResponse {
+  repeated TourDto tours = 1;
+}
+
+message GetByTouristIdRequest {
+  int64 touristId = 1;
+}
+
+message PositionDto {
+  int64 touristId = 1;
+  double longitude = 2;
+  double latitude = 3;
+}
+
+// -------------------- Enums --------------------
+
+enum TourTags {
+  TAG_UNSPECIFIED = 0;
+  TAG_CYCLING = 1;
+  TAG_CULTURE = 2;
+  TAG_ADVENTURE = 3;
+  TAG_FAMILY_FRIENDLY = 4;
+  TAG_NATURE = 5;
+  TAG_CITY_TOUR = 6;
+  TAG_HISTORICAL = 7;
+  TAG_RELAXATION = 8;
+  TAG_WILDLIFE = 9;
+  TAG_NIGHT_TOUR = 10;
+  TAG_BEACH = 11;
+  TAG_MOUNTAINS = 12;
+  TAG_PHOTOGRAPHY = 13;
+  TAG_GUIDED = 14;
+  TAG_SELF_GUIDED = 15;
+}
+
+enum TourStatus {
+  STATUS_UNSPECIFIED = 0;
+  STATUS_DRAFT = 1;
+  STATUS_PUBLISHED = 2;
+  STATUS_ARCHIVED = 3;
+}

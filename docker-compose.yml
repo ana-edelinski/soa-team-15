@@ -110,23 +110,26 @@ services:
       - "8090:8090"
     environment:
       - STAKEHOLDERS_SERVICE_ADDRESS=stakeholders-service:5001
+      - TOURS_SERVICE_ADDRESS=tours-service:5002
       - GATEWAY_ADDRESS=:8090
     depends_on:
       - stakeholders-service
       - blog-service
+      - tours-service
     networks:
       - database
   # 🔹 NEW: Tours Service (API)
   tours-service:
     build:
-      dockerfile: Dockerfile
-      context: ./tours-service
+      dockerfile:  ./tours-service/Dockerfile
+      context: .
       target: final
     restart: on-failure
     networks:
       - database
     ports:
-      - "8082:80"
+      - "8082:8082"
+      - "5002:5002"
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - DATABASE_HOST=tours-db

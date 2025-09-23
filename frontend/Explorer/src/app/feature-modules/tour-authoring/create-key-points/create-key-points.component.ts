@@ -6,7 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import * as L from 'leaflet';
 import { TourService } from '../tour.service';
 import { KeyPoint } from '../model/keypoint.model';
-
+import { firstValueFrom } from 'rxjs';
 
 
 @Component({
@@ -20,7 +20,9 @@ export class CreateKeyPointsComponent implements AfterViewInit, OnDestroy {
   private map?: L.Map;
   private markers: L.Marker[] = [];
   private polyline?: L.Polyline;
-  
+  selectedTransportType: number = 0; 
+
+
   keyPoints: KeyPoint[] = [];
   selectedKeyPointIndex: number | null = null;
   errorMessage: string = '';
@@ -259,10 +261,18 @@ export class CreateKeyPointsComponent implements AfterViewInit, OnDestroy {
   }
 
   async finishTour(): Promise<void> {
+
+
+
     if (!this.tourId) {
       this.errorMessage = 'Tour ID not found';
       return;
     }
+    if (this.keyPoints.length < 2) {
+      this.errorMessage = `You need at least2 key points to create a tour.`;
+      return;
+    }
+
 
     for (let i = 0; i < this.keyPoints.length; i++) {
       const kp = this.keyPoints[i];
@@ -279,10 +289,39 @@ export class CreateKeyPointsComponent implements AfterViewInit, OnDestroy {
     this.errorMessage = '';
 
     try {
+
+      //TODO: 1.Kreiramo TourTransportTime - create pozovi
+
       // Use the service method to upload all key points
       await this.tourService.addMultipleKeyPoints(this.tourId, this.keyPoints);
       
-      // Navigate to tours page on success
+       const km = await this.tourService.updateTourKM(this.tourId);
+
+      const minutes = this.tourService.calcMinutes(km, this.selectedTransportType);
+
+      // 1) CREATE
+      try {
+        await firstValueFrom(
+          this.tourService.createTransportTime(this.tourId!, this.selectedTransportType, minutes)
+        );
+      } catch (err: any) {
+        // ako već postoji, create će baciti 409 → ignoriši
+        if (err?.status !== 409) {
+          this.errorMessage = 'Failed to create transport time.';
+          return;
+        }
+      }
+
+      // 2) UPDATE (uvijek pozovi da se uskladi sa trenutnim km)
+      await firstValueFrom(
+        this.tourService.updateTransportTime(this.tourId!, this.selectedTransportType, minutes)
+      );
+
+
+      if ((this as any).currentTour) {
+        (this as any).currentTour.lengthInKm = km;
+      }
+
       this.router.navigate(['/my-tours']);
       
     } catch (error) {

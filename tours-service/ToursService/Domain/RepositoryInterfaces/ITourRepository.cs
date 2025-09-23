@@ -10,10 +10,10 @@
         PagedResult<Tour> GetPaged(int page, int pageSize);
 
         void Update(Tour tour);
-        void Delete(long id);
         List<Tour> GetPublished();
         public Task<List<Tour>> GetByIdsAsync(IEnumerable<long> ids);
 
+        void RemoveTransportTime(TourTransportTime transportTime);
 
     }
 }

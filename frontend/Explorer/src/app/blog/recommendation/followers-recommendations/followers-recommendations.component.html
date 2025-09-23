@@ -1,0 +1,39 @@
+<section class="page">
+  <header class="page-header">
+    <h2>Preporuke za praćenje</h2>
+    <div class="subtle" *ngIf="loading">Učitavanje…</div>
+  </header>
+
+  <div *ngIf="!loading && recs.length === 0" class="empty-state">
+    <div class="empty-emoji">🧭</div>
+    <h3>Trenutno nema preporuka</h3>
+    <p>Zapratite još nekog pa ćemo vam predložiti nove ljude.</p>
+  </div>
+
+  <div class="blog-grid" *ngIf="recs.length > 0">
+    <article class="blog-card" *ngFor="let u of recs">
+      <div class="card-header">
+        <div class="title-wrap user">
+          <div class="avatar">{{ (u.userName || u.id).slice(0,1).toUpperCase() }}</div>
+          <div>
+            <h3 class="title">{{ displayName(u) }}</h3>
+            <div class="meta">
+              <span class="author-chip">Preporuka</span>
+            </div>
+          </div>
+        </div>
+
+        <button
+          class="follow-btn"
+          (click)="toggleFollow(u.id)"
+          aria-label="Zaprati/Unfollow korisnika">
+          {{ isFollowing(u.id) ? 'Unfollow' : 'Follow' }}
+        </button>
+      </div>
+
+      <div class="content">
+        <p class="hint">Osoba koju pratite prati i ovog korisnika.</p>
+      </div>
+    </article>
+  </div>
+</section>

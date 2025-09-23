@@ -100,6 +100,12 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnChanges {
     this.map?.remove();
   }
 
+
+  public getDistanceKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+    const point1 = L.latLng(lat1, lng1);
+    const point2 = L.latLng(lat2, lng2);
+    return point1.distanceTo(point2) / 1000; // u km
+  }
   private makeKPIcon(completed?: boolean): L.Icon {
     return L.icon({
       iconUrl:  completed
@@ -159,7 +165,12 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnChanges {
     this.routingControl = undefined;
   }
 
-  if (!this.routeWaypoints || this.routeWaypoints.length < 2) return;
+  if (!this.routeWaypoints || this.routeWaypoints.length < 2) {
+    console.warn('[MAP] renderRoute skipped, waypoints:', this.routeWaypoints);
+    return;
+  }
+
+  console.log('[MAP] renderRoute with waypoints:', this.routeWaypoints);
 
   const wps = this.routeWaypoints.map(([lat, lng]) => L.latLng(lat, lng));
 
@@ -170,7 +181,7 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnChanges {
     waypoints: wps,
     router: (L as any).Routing.osrmv1({
       serviceUrl: 'https://router.project-osrm.org/route/v1',
-      profile // ako tvoja LRM verzija ignoriše profile, vidi napomenu ispod
+      profile: this.routeMode,
     }),
     addWaypoints: false,
     draggableWaypoints: false,
@@ -181,7 +192,14 @@ export class MapComponent implements AfterViewInit, OnDestroy, OnChanges {
     lineOptions: {
       styles: [{ color: '#1310c0ff', weight: 5, opacity: 0.9 }]
     }
-  }).addTo(this.map);
+    
+  }).on('routesfound', (e: any) => {
+  console.log('[MAP] route found ✅', e.routes);
+})
+.on('routingerror', (e: any) => {
+  console.error('[MAP] routing error ❌', e.error);
+}).addTo(this.map);
+
 }
 
 }

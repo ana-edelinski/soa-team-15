@@ -1,16 +1,196 @@
-<div class="view-container">
-  <h1>Tour Key Points</h1>
+<div class="vk-page">
+  <!-- HERO / HEADER -->
+  <header class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-inner">
+      <ng-container *ngIf="tour; else titleSkeleton">
+        <div class="hero-title">
+          <h1 class="title">{{ tour.name }}</h1>
 
-  <div id="view-map" style="height: 500px;"></div>  
+          <!-- STATUS BADGE -->
+          <span
+            class="status-chip"
+            [ngClass]="{
+              'chip-draft': isDraft,
+              'chip-published': isPublished,
+              'chip-archived': isArchived
+            }"
+          >
+            {{ statusLabel }}
+          </span>
 
-  <div class="keypoints-list">
-    <h3>Key Points</h3>
-    <ul>
-      <li *ngFor="let kp of keyPoints; let i = index">
-        <strong>{{ i + 1 }}. {{ kp.name }}</strong> <br />
-        <em>{{ kp.description }}</em> <br />
-        <img *ngIf="kp.pictureFile" [src]="kp.pictureFile" width="120" />
-      </li>
-    </ul>
+          <div class="hero-actions" *ngIf="tour && isOwner">
+            <button
+              class="btn primary"
+              *ngIf="isDraft"
+              [disabled]="isPublishing || !canPublish()"
+              (click)="publish()"
+            >
+              {{ isPublishing ? 'Objavljujem…' : 'Objavi' }}
+            </button>
+
+            <button
+              class="btn ghost"
+              *ngIf="isPublished"
+              [disabled]="isPublishing"
+              (click)="archive()"
+            >
+              {{ isPublishing ? 'Arhiviram…' : 'Arhiviraj' }}
+            </button>
+
+            <button
+              class="btn ghost"
+              *ngIf="isArchived"
+              [disabled]="isPublishing"
+              (click)="reactivate()"
+            >
+              {{ isPublishing ? 'Reaktiviram…' : 'Reaktiviraj' }}
+            </button>
+          </div>
+
+
+        </div>
+        <div class="tags-wrap" *ngIf="tour?.tags?.length">
+          <div class="tags-label">Tagovi</div>
+          <div class="tags-row">
+            <span class="tag-chip" *ngFor="let t of tour!.tags">
+              {{ formatTag(t) }}
+            </span>
+          </div>
+        </div>
+        <!-- hint zašto Objavi nije aktivno -->
+        <div class="hint" *ngIf="isDraft && !canPublish()">
+          Za objavu je potrebno: naziv, opis i najmanje 2 key point-a.
+        </div>
+
+        <!-- publish/back-end greške -->
+        <div *ngIf="publishErrors?.length" class="alert error">
+          <ul>
+            <li *ngFor="let e of publishErrors">{{ e }}</li>
+          </ul>
+        </div>
+      </ng-container>
+
+      <ng-template #titleSkeleton>
+        <div class="skeleton skeleton-title"></div>
+      </ng-template>
+
+      <!-- HERO STATS -->
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-label">Težina</div>
+          <div class="stat-value" *ngIf="tour; else s1">{{ tour?.difficulty || '—' }}</div>
+          <ng-template #s1><div class="skeleton skeleton-text"></div></ng-template>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Cijena</div>
+          <div class="stat-value" *ngIf="tour; else s2">{{ tour?.price | number:'1.0-2' }} €</div>
+          <ng-template #s2><div class="skeleton skeleton-text"></div></ng-template>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Key points</div>
+          <div class="stat-value" *ngIf="!isLoadingKeyPoints; else s3">{{ keyPoints.length }}</div>
+          <ng-template #s3><div class="skeleton skeleton-text"></div></ng-template>
+        </div>
+
+
+        <div class="stat-card">
+          <div class="stat-label">Dužina</div>
+          <div class="stat-value" *ngIf="tour; else sLen">
+            {{ tour?.lengthInKm | number:'1.1-1' }} km
+          </div>
+          <ng-template #sLen><div class="skeleton skeleton-text"></div></ng-template>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Prevoz</div>
+          <div class="stat-value">
+            {{ formatTransportTypeLabel(transportTime?.type) }}
+          </div>
+          <ng-template #sTrans><div class="skeleton skeleton-text"></div></ng-template>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Vrijeme</div>
+          <div class="stat-value" *ngIf="transportTime; else sMin">
+            {{ transportTime?.minutes }} min
+          </div>
+          <ng-template #sMin><div class="skeleton skeleton-text"></div></ng-template>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="vk-container">
+    <!-- LEFT: INFO FIRST -->
+    <aside class="info-col">
+      <!-- Tour description -->
+      <div class="card tour-card">
+        <h3>O turi</h3>
+        <p class="desc" *ngIf="tour; else descSkeleton">{{ tour?.description || 'Nema opisa.' }}</p>
+        <ng-template #descSkeleton>
+          <div class="skeleton skeleton-line"></div>
+          <div class="skeleton skeleton-line w-70"></div>
+          <div class="skeleton skeleton-line w-50"></div>
+        </ng-template>
+      </div>
+
+      <!-- Key points timeline -->
+      <div class="card">
+        <div class="list-header">
+          <h3 class="subtitle">Key points ({{ keyPoints.length || 0 }})</h3>
+        </div>
+
+        <div *ngIf="isLoadingKeyPoints" class="kp-skeleton">
+          <div class="skeleton skeleton-item" *ngFor="let n of [1,2,3]"></div>
+        </div>
+
+        <div *ngIf="!isLoadingKeyPoints && (keyPoints.length || 0) === 0" class="empty-state">
+          <div class="empty-ill">🗺️</div>
+          <div class="empty-title">Nema key point-ova</div>
+          <div class="empty-text">Dodajte prve tačke rute kako bi se prikazale ovdje.</div>
+        </div>
+
+        <ul class="kp-timeline" *ngIf="!isLoadingKeyPoints && keyPoints.length">
+          <li class="kp-row" *ngFor="let kp of keyPoints; trackBy: trackByKpId" (click)="focusKeyPoint(kp)">
+            <div class="dot"></div>
+            <div class="kp-card">
+              <div class="kp-head">
+                <div class="kp-title">
+                  <strong>{{ kp.name || 'Bez naziva' }}</strong>
+                  <span class="kp-geo">Lat {{ kp.latitude | number:'1.6-6' }} · Lng {{ kp.longitude | number:'1.6-6' }}</span>
+                </div>
+                <button class="kp-zoom" type="button" (click)="focusKeyPoint(kp); $event.stopPropagation()">Prikaži na mapi</button>
+              </div>
+              <div class="kp-body">
+                <img *ngIf="kp.imageUrl" class="thumb" [src]="kp.imageUrl" alt="keypoint" loading="lazy" />
+                <div class="kp-desc" *ngIf="kp.description">{{ kp.description }}</div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- RIGHT: MAP (sticky) -->
+    <section class="map-col">
+      <div class="map-card">
+        <div id="view-map" class="map"></div>
+
+        <div class="map-overlay" *ngIf="isLoadingTour || isLoadingKeyPoints">
+          <div class="spinner"></div>
+          <div>Učitavam…</div>
+        </div>
+
+        <div class="map-error" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+        <div class="map-legend" *ngIf="!isLoadingKeyPoints && keyPoints.length">
+          <div class="legend-dot"></div>
+          <span>Ruta sa {{ keyPoints.length }} tačaka</span>
+        </div>
+      </div>
+    </section>
   </div>
 </div>

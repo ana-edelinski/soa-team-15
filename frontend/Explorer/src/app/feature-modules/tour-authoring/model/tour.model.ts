@@ -11,10 +11,15 @@ export interface Tour {
     discountedPrice?: number;
     originalPrice?: number; 
     userId: number;
-    lengthInKm?: number;        // već postoji u .NET modelu
-  durationMinutes?: number;   // novo polje iz backend DTO-a
-  startPointName?: string;    // novo polje iz backend DTO-a
-  previewImages?: string[];   // urls za 3-4 slike
-  keyPoints?: any[];
+    lengthInKm?: number;
+    publishedTime?: Date;
+    archiveTime?: Date;
+    // equipmentIds: number[] | null; 
+    // keyPoints: KeyPoint[];
+       // već postoji u .NET modelu
+    durationMinutes?: number;   // novo polje iz backend DTO-a
+    startPointName?: string;    // novo polje iz backend DTO-a
+    previewImages?: string[];   // urls za 3-4 slike
+    keyPoints?: any[];
     selected?: boolean;
   }
