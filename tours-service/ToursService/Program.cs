@@ -147,10 +147,6 @@
 
 
 
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -161,6 +157,11 @@ using Serilog.Context;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
 using Serilog.Sinks.Grafana.Loki;
+using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Text;
+using ToursService.Controllers;
 using ToursService.Database;
 using ToursService.Domain.RepositoryInterfaces;
 using ToursService.Repositories;
@@ -222,6 +223,9 @@ try
 
     // Controllers
     builder.Services.AddControllers();
+
+    // gRPC
+    builder.Services.AddGrpc();
 
     // Swagger + JWT schema
     builder.Services.AddEndpointsApiExplorer();
@@ -294,6 +298,8 @@ try
         });
     });
 
+   
+
     // Repositories
     builder.Services.AddScoped<ITourRepository, TourRepository>();
     builder.Services.AddScoped<IKeyPointRepository, KeyPointRepository>();
@@ -346,6 +352,9 @@ try
     app.UseAuthorization();
 
     app.MapControllers();
+
+    //gRPC endpoint(5002, bez Swagger-a)
+    app.MapGrpcService<ToursProtoController>();
 
     // Health
     app.MapGet("/health/db", async (ToursContext db) =>

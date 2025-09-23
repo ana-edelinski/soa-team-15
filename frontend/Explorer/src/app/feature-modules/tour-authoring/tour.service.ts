@@ -6,6 +6,7 @@ import { environment } from "src/env/environment";
 import { KeyPoint } from "./model/keypoint.model";
 
 import { firstValueFrom } from 'rxjs';
+import { ToursResponse } from "./model/tours-proto-response.model";
 
 
 export enum TransportType { Walk = 0, Bike = 1, Car = 2 }
@@ -25,15 +26,16 @@ export interface TransportTimeDto {
   })
   export class TourService {
     private baseUrl = 'http://localhost:8082/api/';
+    private gatewayUrl = 'http://localhost:8090/api/';
 
     constructor(private http: HttpClient) { }
   
-    getToursForAuthor(id: number): Observable<Tour[]> {
-      return this.http.get<Tour[]>(`${this.baseUrl}author/tour/${id}`);
+    getToursForAuthor(id: number): Observable<ToursResponse> {
+      return this.http.get<ToursResponse>(`${this.gatewayUrl}author/tour/${id}`);
     }
   
     addTour(tour: Tour): Observable<Tour> {
-      return this.http.post<Tour>(`${this.baseUrl}author/tour`, tour);
+      return this.http.post<Tour>(`${this.gatewayUrl}author/tour`, tour);
     }
     getPublishedTours(): Observable<Tour[]> {
       return this.http.get<Tour[]>(`${this.baseUrl}author/tour/published`);

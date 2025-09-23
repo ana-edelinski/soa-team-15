@@ -10,6 +10,7 @@ import (
 
 	"api-gateway/config"
 	pb "api-gateway/proto/stakeholders"
+	tours "api-gateway/proto/tours"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/cors"
