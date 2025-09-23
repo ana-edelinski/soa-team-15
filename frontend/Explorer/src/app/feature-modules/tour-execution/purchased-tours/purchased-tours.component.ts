@@ -88,7 +88,6 @@ export class PurchasedToursComponent implements OnInit {
       this.tours = await firstValueFrom(this.execService.getStartableToursForUser(this.user.id));
     } catch (err) {
       console.error(err);
-      this.snack.open('Failed to load tours', 'OK', { duration: 3000 });
     } finally {
       this.loading = false;
     }

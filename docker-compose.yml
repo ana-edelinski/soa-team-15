@@ -205,7 +205,7 @@ services:
     networks:
       - database
     ports:
-      - "5027:5027"
+      - "5027:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - DATABASE_HOST=payments-db
@@ -240,6 +240,10 @@ services:
     ports:
       - "4222:4222"   # klijentske konekcije
       - "8222:8222"   # monitoring UI
+    networks:
+    - database
+    
+
 
 
 
