@@ -38,7 +38,7 @@ export interface TransportTimeDto {
       return this.http.post<Tour>(`${this.gatewayUrl}author/tour`, tour);
     }
     getPublishedTours(): Observable<Tour[]> {
-      return this.http.get<Tour[]>(`${this.baseUrl}author/tour/published`);
+      return this.http.get<Tour[]>(`${this.baseUrl}tour/published`);
     }
 
 

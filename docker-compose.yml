@@ -128,7 +128,7 @@ services:
     networks:
       - database
     ports:
-      - "8082:80"
+      - "8082:8082"
       - "5002:5002"
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker

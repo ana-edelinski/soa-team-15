@@ -63,6 +63,7 @@ export class BrowseToursComponent implements OnInit {
       next: data => {
         this.tours = data;
         this.loading = false;
+        console.log(this.tours)
 
         // === DEBUG: ispisi sta tacno stize iz back-a ===
 console.log('%c[Tours] RAW array', 'color:#0aa', data);
@@ -89,6 +90,7 @@ console.table(
       },
       error: err => {
         console.error(err);
+        console.log(err);
         this.error = 'Failed to load tours.';
         this.loading = false;
       }
