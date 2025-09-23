@@ -17,21 +17,21 @@
     <!-- VIEW MODE -->
     <div *ngIf="!editMode" class="content">
       <div class="profile-section">
-        <h3>Moto</h3>
+        <h3>Motto</h3>
         <p class="section-text" [class.placeholder]="!infoPerson.motto">
-          {{ infoPerson.motto || 'Nema unet moto' }}
+          {{ infoPerson.motto || 'No motto provided' }}
         </p>
       </div>
 
       <div class="profile-section">
-        <h3>Biografija</h3>
+        <h3>Bio</h3>
         <p class="section-text" [class.placeholder]="!infoPerson.biography">
-          {{ infoPerson.biography || 'Nema unetu biografiju' }}
+          {{ infoPerson.biography || 'No bio provided' }}
         </p>
       </div>
 
       <div class="actions">
-        <button class="btn btn-primary" (click)="enableEditMode()">Izmeni profil</button>
+        <button class="btn btn-primary" (click)="enableEditMode()">Change profile</button>
       </div>
     </div>
 
@@ -40,35 +40,35 @@
       <div class="profile-section editor">
         <label class="file-label">
           <input type="file" (change)="onFileSelected($event)" />
-          Promeni fotografiju
+          Change to
         </label>
       </div>
 
       <div class="profile-section">
-        <h3>Osnovni podaci</h3>
+        <h3>Basic info</h3>
         <div class="form-grid">
           <div class="form-row">
-            <label>Ime</label>
-            <input type="text" [(ngModel)]="editPerson.name" placeholder="Ime" />
+            <label>Name</label>
+            <input type="text" [(ngModel)]="editPerson.name" placeholder="Name" />
           </div>
           <div class="form-row">
-            <label>Prezime</label>
-            <input type="text" [(ngModel)]="editPerson.surname" placeholder="Prezime" />
+            <label>Lastname</label>
+            <input type="text" [(ngModel)]="editPerson.surname" placeholder="Lastname" />
           </div>
           <div class="form-row full">
-            <label>Moto</label>
-            <input type="text" [(ngModel)]="editPerson.motto" placeholder="Moto" />
+            <label>Motto</label>
+            <input type="text" [(ngModel)]="editPerson.motto" placeholder="Motto" />
           </div>
           <div class="form-row full">
-            <label>Biografija</label>
-            <textarea rows="5" [(ngModel)]="editPerson.biography" placeholder="Biografija"></textarea>
+            <label>Bio</label>
+            <textarea rows="5" [(ngModel)]="editPerson.biography" placeholder="Bio"></textarea>
           </div>
         </div>
       </div>
 
       <div class="actions">
-        <button class="btn btn-primary" (click)="updateProfile()">Sačuvaj</button>
-        <button class="btn btn-ghost" (click)="cancelEdit()">Otkaži</button>
+        <button class="btn btn-primary" (click)="updateProfile()">Save</button>
+        <button class="btn btn-ghost" (click)="cancelEdit()">Cancel</button>
       </div>
     </div>
 

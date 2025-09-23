@@ -31,25 +31,48 @@ namespace ToursService.Controllers
             return BadRequest(result.Errors);
         }
 
+        //[HttpPost("complete/{executionId:long}")]
+        //public IActionResult CompleteTourExecution(long executionId)
+        //{
+        //    var result = _executionService.CompleteTourExecution(executionId);
+        //    if (result is null) return NotFound($"TourExecution with ID {executionId} not found.");
+
+        //    if (result.IsSuccess) return Ok(result.Value);
+        //    return BadRequest(result.Errors);
+        //}
+
+        //[HttpPost("abandon/{executionId:long}")]
+        //public IActionResult AbandonTourExecution(long executionId)
+        //{
+        //    var result = _executionService.AbandonTourExecution(executionId);
+        //    if (result is null) return NotFound($"TourExecution with ID {executionId} not found.");
+
+        //    if (result.IsSuccess) return Ok(result.Value);
+        //    return BadRequest(result.Errors);
+        //}
+
         [HttpPost("complete/{executionId:long}")]
-        public IActionResult CompleteTourExecution(long executionId)
+        public async Task<IActionResult> CompleteTourExecution(long executionId, CancellationToken ct)
         {
             var result = _executionService.CompleteTourExecution(executionId);
             if (result is null) return NotFound($"TourExecution with ID {executionId} not found.");
+            if (!result.IsSuccess) return BadRequest(result.Errors);
 
-            if (result.IsSuccess) return Ok(result.Value);
-            return BadRequest(result.Errors);
+            await _orchestrator.NotifyFinalizeAsync(executionId, ct);
+            return Ok(result.Value);
         }
 
         [HttpPost("abandon/{executionId:long}")]
-        public IActionResult AbandonTourExecution(long executionId)
+        public async Task<IActionResult> AbandonTourExecution(long executionId, CancellationToken ct)
         {
             var result = _executionService.AbandonTourExecution(executionId);
             if (result is null) return NotFound($"TourExecution with ID {executionId} not found.");
+            if (!result.IsSuccess) return BadRequest(result.Errors);
 
-            if (result.IsSuccess) return Ok(result.Value);
-            return BadRequest(result.Errors);
+            await _orchestrator.NotifyFinalizeAsync(executionId, ct);
+            return Ok(result.Value);
         }
+
 
         [HttpGet("by_tour_and_tourist/{touristId:long}/{tourId:long}")]
         public ActionResult<TourExecutionDto> GetByTourAndTouristId(long touristId, long tourId)

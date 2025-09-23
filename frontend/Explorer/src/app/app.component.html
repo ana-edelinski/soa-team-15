@@ -5,12 +5,12 @@
   <span class="spacer"></span>
 
   <button mat-button [matMenuTriggerFor]="toursMenu" *ngIf="isLoggedIn && currentUserRole === 'TourAuthor'">
-    Ture
+    Tours
   </button>
 
   <mat-menu #toursMenu="matMenu">
-    <button mat-menu-item [routerLink]="['/my-tours']">Moje ture</button>
-    <button mat-menu-item [routerLink]="['create-tour']">Kreiraj turu</button>
+    <button mat-menu-item [routerLink]="['/my-tours']">My tours</button>
+    <button mat-menu-item [routerLink]="['create-tour']">Create tour</button>
 
   </mat-menu>
 
@@ -25,27 +25,27 @@
   </mat-menu>
 
   <button mat-button [matMenuTriggerFor]="blogMenu">
-    Blogovi
+    Blogs
   </button>
 
   <mat-menu #blogMenu="matMenu">
-    <button mat-menu-item [routerLink]="['/blogs']">Svi blogovi</button>
-    <button mat-menu-item [routerLink]="['/blogs/create']">Dodaj blog</button>
-        <button mat-menu-item [routerLink]="['/recommendations']">Preporuceni korisnici </button>
-        <button mat-menu-item [routerLink]="['/following-blogs']">Praceni blogovi</button>
+    <button mat-menu-item [routerLink]="['/blogs']">All blogs</button>
+    <button mat-menu-item [routerLink]="['/blogs/create']">Create blog</button>
+        <button mat-menu-item [routerLink]="['/recommendations']">Recommended users </button>
+        <button mat-menu-item [routerLink]="['/following-blogs']">Recommended blogs</button>
 
 
 
   </mat-menu>
 
-    <button 
+    <!-- <button 
     mat-raised-button 
     *ngIf="isLoggedIn && currentUserRole === 'Tourist'" 
     routerLink="/tours" 
     style="margin-left: 8px;" 
     color="accent">
     Objavljene ture
-  </button>
+  </button> -->
 
   <!-- Ostala dugmad -->
   <button mat-raised-button *ngIf="!isLoggedIn" routerLink="/login" style="margin-left: 8px;" color="accent">Login</button>

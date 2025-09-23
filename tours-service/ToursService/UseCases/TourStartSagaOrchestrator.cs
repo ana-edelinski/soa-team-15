@@ -104,21 +104,21 @@ namespace ToursService.UseCases
                     }
 
                     // === 5. Finalizacija u Payments ===
-                    var finalizeReply = await _bus.RequestAsync<
-                        PaymentFinalizeCommand,
-                        PaymentFinalizeReply>(
-                            SagaSubjects.PaymentsFinalize,
-                            new PaymentFinalizeCommand(executionId, corr),
-                            timeout: TimeSpan.FromSeconds(3),
-                            ct: ct);
+                    //var finalizeReply = await _bus.RequestAsync<
+                    //    PaymentFinalizeCommand,
+                    //    PaymentFinalizeReply>(
+                    //        SagaSubjects.PaymentsFinalize,
+                    //        new PaymentFinalizeCommand(executionId, corr),
+                    //        timeout: TimeSpan.FromSeconds(3),
+                    //        ct: ct);
 
-                    if (finalizeReply == null || !finalizeReply.Success)
-                    {
-                        // Kompenzacija u Tours i Payments
-                        await CompensateToursAsync(executionId, finalizeReply?.Reason ?? "Failed to finalize payment", corr, ct);
-                        await CompensatePaymentsAsync(executionId, "Finalize failed", corr, ct);
-                        return new StartTourResult(false, $"Payment finalize failed: {finalizeReply?.Reason}");
-                    }
+                    //if (finalizeReply == null || !finalizeReply.Success)
+                    //{
+                    //    // Kompenzacija u Tours i Payments
+                    //    await CompensateToursAsync(executionId, finalizeReply?.Reason ?? "Failed to finalize payment", corr, ct);
+                    //    await CompensatePaymentsAsync(executionId, "Finalize failed", corr, ct);
+                    //    return new StartTourResult(false, $"Payment finalize failed: {finalizeReply?.Reason}");
+                    //}
 
                     return new StartTourResult(true, "Tour started successfully", executionId);
                 }
@@ -133,6 +133,17 @@ namespace ToursService.UseCases
                     return new StartTourResult(false, $"Unexpected error: {ex.Message}");
                 }
             }
+
+        public async Task NotifyFinalizeAsync(long executionId, CancellationToken ct)
+        {
+            var corr = Guid.NewGuid().ToString("N");
+            await _bus.RequestAsync<PaymentFinalizeCommand, PaymentFinalizeReply>(
+                SagaSubjects.PaymentsFinalize,
+                new PaymentFinalizeCommand(executionId, corr),
+                timeout: TimeSpan.FromSeconds(3),
+                ct: ct);
+        }
+
 
         private async Task CompensateToursAsync(long executionId, string? reason, string corr, CancellationToken ct)
         {

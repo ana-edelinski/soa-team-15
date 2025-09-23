@@ -1,13 +1,13 @@
 <section class="page">
   <header class="page-header">
-    <h2>Blogovi</h2>
-    <div class="subtle" *ngIf="loading">Učitavanje…</div>
+    <h2>Blogs</h2>
+    <div class="subtle" *ngIf="loading">Loading…</div>
   </header>
 
   <div *ngIf="!loading && blogs.length === 0" class="empty-state">
     <div class="empty-emoji">📝</div>
-    <h3>Još uvek nema blogova</h3>
-    <p>Budite prvi koji će podeliti priču.</p>
+    <h3>No blogs yet</h3>
+    <p>Be the first to share your story.</p>
   </div>
 
   <div class="blog-grid" *ngIf="blogs.length > 0">
@@ -27,7 +27,7 @@
           *ngIf="canDelete(blog)"
           (click)="onDelete(blog.id)"
           aria-label="Obriši blog">
-          Obriši
+          Delete
         </button>
 
         <button
@@ -61,7 +61,7 @@
 
             <ng-template #mustFollow>
               <div class="comment-locked">
-                <p>Da biste ostavili komentar, najpre zapratite ovog autora.</p>
+                <p>To leave a comment, first follow this user.</p>
               </div>
             </ng-template>
           </ng-container>

@@ -1,13 +1,13 @@
 <section class="page">
   <header class="page-header">
-    <h2>Preporuke za praćenje</h2>
-    <div class="subtle" *ngIf="loading">Učitavanje…</div>
+    <h2>Following recommendations</h2>
+    <div class="subtle" *ngIf="loading">Loading…</div>
   </header>
 
   <div *ngIf="!loading && recs.length === 0" class="empty-state">
     <div class="empty-emoji">🧭</div>
-    <h3>Trenutno nema preporuka</h3>
-    <p>Zapratite još nekog pa ćemo vam predložiti nove ljude.</p>
+    <h3>No recommendations yet</h3>
+    <p>Follow someone and we will recomend more people to follow.</p>
   </div>
 
   <div class="blog-grid" *ngIf="recs.length > 0">
@@ -18,7 +18,7 @@
           <div>
             <h3 class="title">{{ displayName(u) }}</h3>
             <div class="meta">
-              <span class="author-chip">Preporuka</span>
+              <span class="author-chip">Recommendation</span>
             </div>
           </div>
         </div>
@@ -32,7 +32,7 @@
       </div>
 
       <div class="content">
-        <p class="hint">Osoba koju pratite prati i ovog korisnika.</p>
+        <p class="hint">User you follow follows this user too.</p>
       </div>
     </article>
   </div>
