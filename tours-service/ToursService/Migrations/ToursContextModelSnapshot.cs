@@ -269,7 +269,7 @@ namespace ToursService.Migrations
                     b.HasIndex("TourId", "Type")
                         .IsUnique();
 
-                    b.ToTable("tour_transport_times", null, t =>
+                    b.ToTable("TourTransportTimes", null, t =>
                         {
                             t.HasCheckConstraint("CK_TourTransportTime_Minutes_Positive", "\"Minutes\" > 0");
                         });

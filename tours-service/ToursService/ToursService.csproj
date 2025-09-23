@@ -33,6 +33,10 @@
     <ItemGroup>
 	    <Protobuf Include="Protos\tours.proto" GrpcServices="Server" />
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Database\" />
+      <Folder Include="Migrations\" />
+    </ItemGroup>
 	
 
 </Project>

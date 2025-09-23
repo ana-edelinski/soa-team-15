@@ -133,7 +133,7 @@ namespace PaymentsService.UseCases
 
         public async Task<PaymentFinalizeReply> FinalizePurchase(long executionId, string correlationId, CancellationToken ct)
         {
-            // 👉 logika: pronađi token (Locked) → setuj Status = Consumed
+            // 👉 logika: pronađi token (Locked) → setuj Status = Available
             var token = await _tokenRepo.GetByExecutionIdAsync(executionId, ct);
             if (token == null)
             {
@@ -145,7 +145,7 @@ namespace PaymentsService.UseCases
                 return new PaymentFinalizeReply(false, $"Token not locked (status={token.Status})", correlationId);
             }
 
-            token.Status = "Consumed";
+            token.Status = "Available";
             token.LockedBy = null;
             token.LockedAt = null;
             token.ExpiresAt = null;

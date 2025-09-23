@@ -139,6 +139,7 @@ services:
       - DATABASE_NAME=toursdb
     depends_on:
       - tours-db
+      - nats
 
   # 🔹 NEW: Tours Database
   tours-db:
@@ -195,6 +196,44 @@ services:
         condition: service_healthy
 
 
+  payments-service:
+    build:
+      dockerfile: Dockerfile
+      context: ./payments-service
+      target: final
+    restart: on-failure
+    networks:
+      - database
+    ports:
+      - "5027:5027"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - DATABASE_HOST=payments-db
+      - DATABASE_PORT=5432
+      - DATABASE_PASSWORD=super
+      - DATABASE_USER=postgres
+      - DATABASE_SCHEMA=paymentsdb
+    depends_on:
+      - payments-db
+      - nats
+
+  payments-db:
+    image: postgres:13
+    restart: always
+    networks:
+      - database
+    environment:
+      POSTGRES_PASSWORD: super
+      POSTGRES_USER: postgres
+      POSTGRES_DB: paymentsdb
+    volumes:
+      - type: volume
+        source: paymentsdb
+        target: /var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+
+
   nats:
     image: nats:2.10
     command: ["-js", "-m", "8222"]   
@@ -213,6 +252,8 @@ volumes:
     name: blog-uploads
   toursdb:
     name: toursdb
+  paymentsdb:
+    name: paymentsdb
   neo4j_data:
   neo4j_logs:
   neo4j_plugins:
