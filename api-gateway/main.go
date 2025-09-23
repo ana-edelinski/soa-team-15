@@ -34,6 +34,20 @@ func main() {
 
 	defer conn.Close()
 
+	// 2. konekcija prema Tours servisu
+	log.Println("Dialing gRPC server at", cfg.ToursServiceAddress)
+	toursConn, err := grpc.DialContext(
+		context.Background(),
+		cfg.ToursServiceAddress,
+		grpc.WithBlock(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Fatalln("Failed to dial ToursService:", err)
+	}
+	defer toursConn.Close()
+	log.Println("Connected to ToursService at", cfg.ToursServiceAddress)
+
 	// gRPC-Gateway mux
 	gwmux := runtime.NewServeMux()
 	client := pb.NewStakeholdersServiceClient(conn)
@@ -44,6 +58,17 @@ func main() {
 	)
 	if err != nil {
 		log.Fatalln("Failed to register StakeholdersService handler:", err)
+	}
+
+	// Register ToursService
+	toursClient := tours.NewToursServiceClient(toursConn)
+	err = tours.RegisterToursServiceHandlerClient(
+		context.Background(),
+		gwmux,
+		toursClient,
+	)
+	if err != nil {
+		log.Fatalln("Failed to register ToursService handler:", err)
 	}
 
 	// 👉 Dodaj CORS ovde
