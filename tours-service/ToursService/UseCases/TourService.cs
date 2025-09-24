@@ -14,7 +14,7 @@ namespace ToursService.UseCases
         private readonly ITourRepository _tourRepository;
         private readonly IKeyPointRepository _keyPointRepository;
         private readonly IMapper _mapper;
-
+        private readonly IPaymentClient _payments;
         private readonly ILogger<TourService> _log;
 
        
