@@ -1,3 +1,44 @@
 .spacer {
   flex: 1 1 auto;
 }
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2); /* senka */
+}
+
+.title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: 700;
+  font-size: 1.5rem;
+  font-family: 'Roboto', sans-serif;
+  letter-spacing: 2px;
+  color: white;
+}
+
+mat-icon {
+  color: white !important;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Hover efekti */
+button.mat-icon-button:hover mat-icon,
+button.mat-button:hover {
+  opacity: 0.85;
+  transform: scale(1.1);
+}
+
+/* Responsive: sakrij leve menije na mobilnom */
+@media (max-width: 768px) {
+  .navbar button[mat-button] {
+    display: none;
+  }
+  .title {
+    font-size: 1.2rem;
+  }
+}

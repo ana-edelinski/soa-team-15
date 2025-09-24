@@ -40,3 +40,35 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .leaflet-popup-content .kp-popup h4 { margin: 0 0 6px; font-size: 14px; }
 .leaflet-popup-content .kp-popup p  { margin: 0;      font-size: 13px; line-height: 1.35; }
+
+/* Panel: zaobljeni ivici, senka, odmak od navbar-a */
+/* sužavanje mat-menu */
+.mat-mdc-menu-panel {
+  border-radius: 8px !important;
+  padding: 4px 0 !important;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25) !important;
+  min-width: 160px !important;   /* smanji min širinu */
+  max-width: 220px !important;   /* da ne štrči previše */
+  overflow-x: hidden !important; /* ukloni horizontalni skrol */
+  margin-top: 8px !important;   /* ⬅⬅ spušta ispod navbara */
+
+}
+
+
+/* Itemi: malo lepši izgled */
+.mat-mdc-menu-item {
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  padding: 12px 20px !important;
+  color: #1e293b !important;
+  transition: all 0.2s ease-in-out !important;
+  border-radius: 6px !important;
+  margin: 2px 6px !important;
+}
+
+/* Hover efekat: svetloplava pozadina + animacija */
+.mat-mdc-menu-item:hover {
+  background-color: #e3f2fd !important;
+  transform: translateX(5px);
+}
+
