@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PaymentsService.Database;
 using PaymentsService.Domain.RepositoryInterfaces;
+using PaymentsService.Integrations.Saga;
 using PaymentsService.Mappers;
 using PaymentsService.Repositories;
 using PaymentsService.UseCases;
@@ -25,6 +26,21 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
     });
+
+
+// NATS options
+builder.Services.Configure<NatsOptions>(builder.Configuration.GetSection("NATS"));
+builder.Services.AddSingleton(sp =>
+{
+    var opt = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<NatsOptions>>().Value;
+    return new NatsConnectionProvider(opt);
+});
+
+// Saga bus
+builder.Services.AddSingleton<INatsSagaBus, NatsSagaBus>();
+
+// HostedService za NATS subscription-e
+builder.Services.AddHostedService<PaymentsCommandHandler>();
 
 // ------------------------
 // Swagger + JWT schema

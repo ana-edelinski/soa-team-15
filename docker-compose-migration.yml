@@ -5,7 +5,7 @@ services:
     build:
       context: ./stakeholders-service
       dockerfile: Dockerfile
-      target: migration-base
+      target: execute-migration
     networks:
       - database
     environment:
@@ -22,9 +22,10 @@ services:
   
   tours-migration:
     build:
+
       context: ./tours-service
       dockerfile: Dockerfile
-      target: migration-base
+      target: execute-migration
     networks:
       - database
     environment:
@@ -37,6 +38,21 @@ services:
     volumes:
       - ./:/src
     working_dir: /src/tours-service/ToursService
+
+  payments-migration:
+    build:
+      context: ./payments-service
+      dockerfile: Dockerfile
+      target: execute-migration
+    networks:
+      - database
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - DATABASE_HOST=payments-db
+      - DATABASE_PORT=5432
+      - DATABASE_PASSWORD=super
+      - DATABASE_USER=postgres
+      - DATABASE_SCHEMA=paymentsdb
 
 networks:
   database:

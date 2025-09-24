@@ -11,6 +11,7 @@
 
         void Update(Tour tour);
         List<Tour> GetPublished();
+        public Task<List<Tour>> GetByIdsAsync(IEnumerable<long> ids);
 
         void RemoveTransportTime(TourTransportTime transportTime);
         List<Tour> GetAllIncludingUnpublished();

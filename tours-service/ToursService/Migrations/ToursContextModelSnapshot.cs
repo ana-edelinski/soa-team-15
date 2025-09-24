@@ -160,6 +160,12 @@ namespace ToursService.Migrations
                     b.Property<long>("LocationId")
                         .HasColumnType("bigint");
 
+                    b.Property<long?>("PurchaseTokenId")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("SagaId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)

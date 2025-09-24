@@ -1,13 +1,13 @@
 <section class="page">
   <header class="page-header">
-    <h2>Blogovi koje pratim</h2>
-    <div class="subtle" *ngIf="loading">Učitavanje…</div>
+    <h2>Blogs you follow</h2>
+    <div class="subtle" *ngIf="loading">Loading…</div>
   </header>
 
   <div *ngIf="!loading && followingReady && filtered.length === 0" class="empty-state">
     <div class="empty-emoji">👀</div>
-    <h3>Nema blogova za prikaz</h3>
-    <p>Počnite da pratite autore pa će se ovde pojaviti njihovi blogovi.</p>
+    <h3>No blogs to show</h3>
+    <p>Start following authors and new blogs will appear.</p>
   </div>
 
   <div class="blog-grid" *ngIf="filtered.length > 0">
@@ -52,7 +52,7 @@
           </ng-container>
           <ng-template #mustFollow>
             <div class="comment-locked">
-              <p>Da biste ostavili komentar, najpre zapratite ovog autora.</p>
+              <p>To leave a comment, first follow this user.</p>
             </div>
           </ng-template>
         </ng-container>

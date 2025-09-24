@@ -147,10 +147,6 @@
 
 
 
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -161,14 +157,15 @@ using Serilog.Context;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
 using Serilog.Sinks.Grafana.Loki;
+using System.Security.Claims;
+using System.Text;
+using ToursService.Controllers;
 using ToursService.Database;
 using ToursService.Domain.RepositoryInterfaces;
+using ToursService.Integrations;
 using ToursService.Repositories;
 using ToursService.UseCases;
 
-//
-// 1) Minimalni bootstrap logger (prije builder-a)
-//
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
     .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
@@ -181,9 +178,7 @@ try
 {
     var builder = WebApplication.CreateBuilder(args);
 
-    //
-    // 2) Host -> Serilog
-    //
+    // Serilog host integration
     builder.Host.UseSerilog((ctx, cfg) =>
     {
         var env = ctx.HostingEnvironment.EnvironmentName;
@@ -195,7 +190,6 @@ try
            .Enrich.WithProperty("env", env)
            .WriteTo.Console(new CompactJsonFormatter());
 
-        // Opcioni Loki sink (ako postoji Logging:Loki:Url)
         var lokiUrl = ctx.Configuration["Logging:Loki:Url"];
         if (!string.IsNullOrWhiteSpace(lokiUrl))
         {
@@ -210,20 +204,29 @@ try
         }
     });
 
-    //
-    // 3) Services
-    //
-    // DbContext preko NpgsqlDataSource sa EnableDynamicJson (kao u starom kodu)
+    // DbContext
     var cs = builder.Configuration.GetConnectionString("DefaultConnection");
     var dsb = new NpgsqlDataSourceBuilder(cs);
-    dsb.EnableDynamicJson(); // ili: dsb.UseJsonNet();
+    dsb.EnableDynamicJson();
     var dataSource = dsb.Build();
     builder.Services.AddDbContext<ToursContext>(opt => opt.UseNpgsql(dataSource));
 
-    // Controllers
-    builder.Services.AddControllers();
+    // NATS options
+    builder.Services.Configure<NatsOptions>(builder.Configuration.GetSection("NATS"));
+    builder.Services.AddSingleton(sp =>
+    {
+        var opt = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<NatsOptions>>().Value;
+        return new NatsConnectionProvider(opt);
+    });
+    builder.Services.AddSingleton<ToursService.Integrations.Saga.INatsSagaBus, ToursService.Integrations.Saga.NatsSagaBus>();
+    builder.Services.AddScoped<ToursService.Integrations.Saga.IPaymentSagaClient, ToursService.Integrations.Saga.PaymentSagaClient>();
+    builder.Services.AddHostedService<ToursService.Integrations.Saga.ToursExecutionCommandHandler>();
 
-    // Swagger + JWT schema
+    // Controllers & gRPC
+    builder.Services.AddControllers();
+    builder.Services.AddGrpc();
+
+    // Swagger
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(options =>
     {
@@ -251,7 +254,7 @@ try
         });
     });
 
-    // AuthN (JWT)
+    // AuthN & AuthZ
     builder.Services.AddAuthentication("Bearer")
         .AddJwtBearer("Bearer", options =>
         {
@@ -269,11 +272,9 @@ try
                 RoleClaimType = ClaimTypes.Role,
                 NameClaimType = "id"
             };
-
             options.TokenValidationParameters.ClockSkew = TimeSpan.FromMinutes(2);
         });
 
-    // AuthZ
     builder.Services.AddAuthorization(options =>
     {
         options.AddPolicy("administratorPolicy", p => p.RequireRole("Administrator"));
@@ -308,21 +309,21 @@ try
     builder.Services.AddScoped<ITourReviewService, TourReviewService>();
     builder.Services.AddScoped<ITourExecutionService, TourExecutionService>();
     builder.Services.AddScoped<ITourTransportTimeService, TourTransportTimeService>();
+    builder.Services.AddScoped<TourStartSagaOrchestrator>();
 
-    // AutoMapper
+    builder.Services.AddHttpContextAccessor();
+    builder.Services.AddHttpClient<ToursService.Integrations.IPaymentClient,
+                                   ToursService.Integrations.PaymentClient>(c =>
+    {
+        c.BaseAddress = new Uri(builder.Configuration["PAYMENTS_BASE_URL"] ?? "http://localhost:5027");
+    });
+
     builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
-    //
-    // 4) Build
-    //
     var app = builder.Build();
 
-    //
-    // 5) Middleware
-    //
-    app.UseSerilogRequestLogging(); // Serilog request log
-
-    // Correlation-ID
+    // Middleware
+    app.UseSerilogRequestLogging();
     app.Use(async (ctx, next) =>
     {
         const string header = "X-Correlation-ID";
@@ -336,18 +337,17 @@ try
         }
     });
 
-    // Swagger
     app.UseSwagger();
     app.UseSwaggerUI();
 
     app.UseCors("AllowAngularDevClient");
-    app.UseStaticFiles(); // wwwroot/*
-    app.UseAuthentication(); 
+    app.UseStaticFiles();
+    app.UseAuthentication();
     app.UseAuthorization();
 
     app.MapControllers();
+    app.MapGrpcService<ToursProtoController>();
 
-    // Health
     app.MapGet("/health/db", async (ToursContext db) =>
     {
         var ok = await db.Database.CanConnectAsync();

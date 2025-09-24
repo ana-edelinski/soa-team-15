@@ -50,7 +50,7 @@ export class BrowseToursComponent implements OnInit {
     private router: Router,
     private dialog: MatDialog,
     private snack: MatSnackBar,
-    private cartService: CartService
+    private cartService: CartService,
   ) {
     this.auth.user$.subscribe(u => (this.user = u));
   }
@@ -63,6 +63,7 @@ export class BrowseToursComponent implements OnInit {
       next: data => {
         this.tours = data;
         this.loading = false;
+        console.log(this.tours)
 
         // === DEBUG: ispisi sta tacno stize iz back-a ===
 console.log('%c[Tours] RAW array', 'color:#0aa', data);
@@ -89,6 +90,7 @@ console.table(
       },
       error: err => {
         console.error(err);
+        console.log(err);
         this.error = 'Failed to load tours.';
         this.loading = false;
       }
@@ -193,22 +195,8 @@ console.table(
       this.snack.open('You must be logged in as Tourist to start a tour.', 'OK', { duration: 3000 });
       return;
     }
-    const execution: TourExecution = {
-      tourId: tourId,
-      touristId: this.user.id
-    };
-    this.tourExecutionService.startTourExecution(execution).subscribe({
-      next: (data) => {
-        console.log('Tour execution started', data);
-        this.snack.open(`Tour started`, 'OK', { duration: 3000 });
-        this.isActive = true;
-        this.router.navigate(['/position-simulator']);
-      },
-      error: (err) => {
-        console.error('Failed to start tour', err);
-        this.snack.open('Failed to start tour', 'OK', { duration: 3000 });
-      }
-    });
+    this.router.navigate(['/purchased-tours']);
+   
   }
 
 

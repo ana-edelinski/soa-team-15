@@ -17,6 +17,8 @@ namespace ToursService.UseCases
         public void UpdateLastActivity(long executionId);
 
         public ICollection<KeyPointDto> GetKeyPointsForTour(long tourId);
-
+        Task CompensateAsync(long executionId, string v, CancellationToken ct);
+        Task<long?> CreatePendingAsync(long touristId, long tourId, long locationId, string correlationId, CancellationToken ct);
+        Task ActivateAsync(long executionId, CancellationToken ct);
     }
 }

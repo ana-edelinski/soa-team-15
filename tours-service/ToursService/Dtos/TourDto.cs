@@ -29,9 +29,9 @@
 
         public TourDto() { }
 
-     
+
         public TourDto(long id, string name, string? description, string? difficulty,
-                       List<TourTags> tags, long userId, TourStatus status, double price)
+                       List<TourTags> tags, long userId, TourStatus status, double price, double lengthInKm)
         {
             Id = id;
             if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Invalid Name.");

@@ -10,18 +10,33 @@
     <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="FluentResults" Version="4.0.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.32.1" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.72.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="NATS.Client" Version="1.1.8" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.3" />
   </ItemGroup>
 
-<ItemGroup>
-  <ProjectReference Include="..\..\shared\logging\Logging.csproj" />
-</ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\shared\logging\Logging.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+	    <Protobuf Include="Protos\tours.proto" GrpcServices="Server" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Database\" />
+      <Folder Include="Migrations\" />
+    </ItemGroup>
+	
 
 </Project>

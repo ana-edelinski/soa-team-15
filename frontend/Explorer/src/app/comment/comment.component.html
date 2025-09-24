@@ -1,10 +1,10 @@
 <!-- Prikaz komentara -->
 <div *ngIf="comments.length > 0" class="comment-box">
-  <h3>Komentari</h3>
+  <h3>Comments</h3>
   <div class="comment-scroll">
     <div *ngFor="let comment of comments; let i = index" [class.hidden-comment]="i >= 3" class="comment-item">
       <div class="comment-meta">
-    <strong>Korisnik {{ comment.authorId }}:</strong>
+    <strong>User {{ comment.authorId }}:</strong>
     <span class="timestamp">{{ comment.createdAt | date: 'short' }}</span>
   </div>
       <p>{{ comment.content }}</p>
@@ -16,7 +16,7 @@
 
 <!-- Forma za unos komentara -->
 <form (submit)="postComment(); $event.preventDefault();">
-  <label for="comment">Dodaj komentar:</label>
-  <textarea [(ngModel)]="commentText" name="comment" required rows="4" placeholder="Unesite svoj komentar ovde..."></textarea>
-  <button type="submit">Pošalji komentar</button>
+  <label for="comment">Add comment:</label>
+  <textarea [(ngModel)]="commentText" name="comment" required rows="4" placeholder="Write your comment here..."></textarea>
+  <button type="submit">Post comment</button>
 </form>

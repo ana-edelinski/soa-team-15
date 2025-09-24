@@ -11,10 +11,13 @@ namespace ToursService.Controllers
     public class TourExecutionController : ControllerBase
     {
         private readonly ITourExecutionService _executionService;
+        private readonly TourStartSagaOrchestrator _orchestrator;
 
-        public TourExecutionController(ITourExecutionService tourService)
+
+        public TourExecutionController(ITourExecutionService tourService, TourStartSagaOrchestrator orchestrator)
         {
             _executionService = tourService;
+            _orchestrator = orchestrator;
         }
 
         [HttpPost]
@@ -28,25 +31,48 @@ namespace ToursService.Controllers
             return BadRequest(result.Errors);
         }
 
+        //[HttpPost("complete/{executionId:long}")]
+        //public IActionResult CompleteTourExecution(long executionId)
+        //{
+        //    var result = _executionService.CompleteTourExecution(executionId);
+        //    if (result is null) return NotFound($"TourExecution with ID {executionId} not found.");
+
+        //    if (result.IsSuccess) return Ok(result.Value);
+        //    return BadRequest(result.Errors);
+        //}
+
+        //[HttpPost("abandon/{executionId:long}")]
+        //public IActionResult AbandonTourExecution(long executionId)
+        //{
+        //    var result = _executionService.AbandonTourExecution(executionId);
+        //    if (result is null) return NotFound($"TourExecution with ID {executionId} not found.");
+
+        //    if (result.IsSuccess) return Ok(result.Value);
+        //    return BadRequest(result.Errors);
+        //}
+
         [HttpPost("complete/{executionId:long}")]
-        public IActionResult CompleteTourExecution(long executionId)
+        public async Task<IActionResult> CompleteTourExecution(long executionId, CancellationToken ct)
         {
             var result = _executionService.CompleteTourExecution(executionId);
             if (result is null) return NotFound($"TourExecution with ID {executionId} not found.");
+            if (!result.IsSuccess) return BadRequest(result.Errors);
 
-            if (result.IsSuccess) return Ok(result.Value);
-            return BadRequest(result.Errors);
+            await _orchestrator.NotifyFinalizeAsync(executionId, ct);
+            return Ok(result.Value);
         }
 
         [HttpPost("abandon/{executionId:long}")]
-        public IActionResult AbandonTourExecution(long executionId)
+        public async Task<IActionResult> AbandonTourExecution(long executionId, CancellationToken ct)
         {
             var result = _executionService.AbandonTourExecution(executionId);
             if (result is null) return NotFound($"TourExecution with ID {executionId} not found.");
+            if (!result.IsSuccess) return BadRequest(result.Errors);
 
-            if (result.IsSuccess) return Ok(result.Value);
-            return BadRequest(result.Errors);
+            await _orchestrator.NotifyFinalizeAsync(executionId, ct);
+            return Ok(result.Value);
         }
+
 
         [HttpGet("by_tour_and_tourist/{touristId:long}/{tourId:long}")]
         public ActionResult<TourExecutionDto> GetByTourAndTouristId(long touristId, long tourId)
@@ -121,6 +147,25 @@ namespace ToursService.Controllers
         {
             var keyPoints = _executionService.GetKeyPointsForTour(tourId);
             return Ok(keyPoints);
+        }
+
+        [HttpPost("saga/create")]
+        public async Task<IActionResult> Create([FromBody] TourExecutionDto tour, CancellationToken ct)
+        {
+            if (tour is null) return BadRequest("Body is required.");
+
+            // Ovde ne ide _executionService.Create(tour), već orkestrator
+            var result = await _orchestrator.StartTourSagaAsync(
+                userId: tour.TouristId,   // pretpostavljam da imaš ovo polje u DTO
+                tourId: tour.TourId,
+                locationId: tour.LocationId, // ako ga imaš u DTO
+                ct: ct
+            );
+
+            if (result.Success)
+                return Ok(result);
+            else
+                return BadRequest(result);
         }
 
     }

@@ -3,12 +3,14 @@ using FluentResults;
 using ToursService.Domain;
 using ToursService.Domain.RepositoryInterfaces;
 using ToursService.Dtos;
+using ToursService.Integrations.Saga;
 using ToursService.Repositories;
 
 namespace ToursService.UseCases
 {
     public class TourExecutionService : ITourExecutionService
     {
+
         private readonly ITourExecutionRepository _tourExecutionRepository;
         private readonly IMapper _mapper;
 
@@ -163,6 +165,75 @@ namespace ToursService.UseCases
             }).ToList();
 
             return keyPointDtos;
+        }
+
+        public async Task CompensateAsync(long executionId, string v, CancellationToken ct)
+        {
+            var exec = _tourExecutionRepository.Get(executionId);
+            if (exec == null) return; 
+
+            // Ako je još Pending → označi kao Rejected (ostaje trag u bazi)
+            if (exec.Status == Domain.TourExecutionStatus.Pending)
+            {
+                exec.RejectPending();
+                _tourExecutionRepository.Update(exec);
+                await Task.CompletedTask;
+                return;
+            }
+
+            // Ako je (teoretski) već Active, kompenzacija može biti "Abandon"?
+            
+
+            await Task.CompletedTask;
+        }
+
+        public async Task<long?> CreatePendingAsync(long touristId, long tourId, long locationId, string correlationId, CancellationToken ct)
+        {
+            var alreadyActive = _tourExecutionRepository.GetActiveTourByTourist(touristId);
+            if (alreadyActive != null)
+                return await Task.FromResult<long?>(null);   // ili baci izuzetak / Result.Fail → 409
+
+            
+
+            var now = DateTime.UtcNow;
+            var pending = new TourExecution(
+                tourId: tourId,
+                touristId: touristId,
+                locationId: locationId,
+                lastActivity: now,
+                status: Domain.TourExecutionStatus.Pending,
+                completedKeys: new List<CompletedKeyPoint>()
+            );
+
+            // Korelacija (ako može da se upiše)
+            if (Guid.TryParse(correlationId, out var sagaId))
+            {
+                try { pending.AttachSaga(sagaId); } catch { /* ako nema polja, ignore */ }
+            }
+
+            var created = _tourExecutionRepository.Create(pending);
+            if (created == null) return await Task.FromResult<long?>(null);
+
+            return await Task.FromResult<long?>(created.Id);
+        }
+
+        public async Task ActivateAsync(long executionId, CancellationToken ct)
+        {
+            var exec = _tourExecutionRepository.Get(executionId);
+            if (exec == null) throw new KeyNotFoundException($"TourExecution {executionId} not found.");
+
+            // ako je već ACTIVE, samo izađi
+            if (exec.Status == Domain.TourExecutionStatus.Active) return;
+
+            if (exec.Status != Domain.TourExecutionStatus.Pending)
+                throw new InvalidOperationException(
+                    $"Cannot activate execution {executionId} from status {exec.Status}.");
+
+            // koristi postojeću domensku metodu (postavlja Active + LastActivity)
+            exec.StartTourExecution();
+
+            _tourExecutionRepository.Update(exec);
+            await Task.CompletedTask;
         }
     }
 }
