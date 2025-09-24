@@ -1,11 +1,17 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using StakeholdersService.Authentication;
 using StakeholdersService.Controllers;
 using StakeholdersService.Database;
 using StakeholdersService.Domain.RepositoryInterfaces;
 using StakeholdersService.Repositories;
 using StakeholdersService.UseCases;
+using System.Diagnostics;
+
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -95,7 +101,43 @@ builder.Services.AddCors(options =>
 builder.Services.AddDbContext<StakeholdersContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(r => r.AddService("stakeholders-service", serviceVersion: "1.0.0"))
+    .WithTracing(t => t
+        .AddAspNetCoreInstrumentation(o => o.RecordException = true)
+        .AddHttpClientInstrumentation()
+        .AddSource("stakeholders.custom")           // << BITNO: da se manual span iz /trace-test izvozi
+        .SetSampler(new AlwaysOnSampler())
+
+        // 1) Zipkin ? Jaeger (9411)
+        .AddZipkinExporter(o =>
+        {
+            o.Endpoint = new Uri("http://jaeger:9411/api/v2/spans");
+        })
+
+        // 2) OTLP gRPC ? Jaeger (4317) (drxi oba paralelno, nema stete)
+        .AddOtlpExporter(o =>
+        {
+            o.Protocol = OtlpExportProtocol.Grpc;
+            o.Endpoint = new Uri("http://jaeger:4317");
+        })
+    );
+
+
+
+
 var app = builder.Build();
+
+var actSource = new ActivitySource("stakeholders.custom");
+
+app.MapGet("/trace-test", async () =>
+{
+    using var span = actSource.StartActivity("manual-span");
+    await Task.Delay(120);
+    return Results.Text("traced", "text/plain");
+});
+
+
 
 app.UseSwagger();
 app.UseSwaggerUI();
@@ -110,5 +152,6 @@ app.MapControllers();
 
 // gRPC endpoint (5001, bez Swagger-a)
 app.MapGrpcService<AuthenticationProtoController>();
+
 
 app.Run();

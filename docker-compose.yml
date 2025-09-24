@@ -190,6 +190,64 @@ services:
     depends_on:
       neo4j-db:
         condition: service_healthy
+  # --- TRACING (Jaeger sa uključenim Zipkin endpointom) ---
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    networks: [database]
+    environment:
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411   # <-- obavezno, pali Zipkin
+    ports:
+      - "16686:16686"  # Jaeger UI
+      - "9411:9411"    # Zipkin endpoint
+    # (nije potrebno mapirati 4317/4318 za ovu varijantu)
+
+  # --- METRIKE ---
+  prometheus:
+    image: prom/prometheus:latest
+    networks: [database]
+    ports: ["9090:9090"]
+    volumes:
+      - ./observability/prometheus-windows.yml:/etc/prometheus/prometheus.yml:ro
+
+  grafana:
+    image: grafana/grafana:latest
+    networks: [database]
+    ports: ["3000:3000"]
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./observability/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./observability/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    container_name: cadvisor
+    privileged: true
+    cgroup: host                    # ← KLJUČNO: vidi sve cgroup-ove (sve kontejnere)
+    volumes:
+      - /:/rootfs:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /sys:/sys:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /run/containerd/containerd.sock:/run/containerd/containerd.sock:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /dev/disk:/dev/disk:ro
+    ports:
+      - "8084:8080"
+    restart: unless-stopped
+    networks: [database]
+
+  telegraf:
+    image: telegraf:1.31
+    container_name: telegraf
+    restart: unless-stopped
+    networks: [database]
+    ports:
+      - "9273:9273"                # Prometheus /metrics endpoint
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./observability/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+
 
 
 
