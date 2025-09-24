@@ -12,6 +12,6 @@ namespace ToursService.Dtos
     public double LengthInKm { get; set; }
     public DateTime? PublishedAt { get; set; }
 
-    public KeyPointBriefDto? FirstKeyPoint { get; set; }
+    public KeyPointDto? FirstKeyPoint { get; set; } 
 }
 }

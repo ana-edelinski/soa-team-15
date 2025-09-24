@@ -82,5 +82,17 @@ namespace ToursService.Repositories
             _db.Set<TourTransportTime>().Remove(transportTime);
             _db.SaveChanges();
         }
+
+
+
+        public List<Tour> GetAllIncludingUnpublished()
+        {
+            return _db.Tours
+                    .Include(t => t.KeyPoints)
+                    .Include(t => t.TransportTimes)
+                    .OrderBy(t => t.Id)
+                    .ToList();
+        }
+
     }
 }

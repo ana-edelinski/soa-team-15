@@ -1,66 +1,62 @@
 <mat-toolbar color="primary">
   <span style="font-weight: bold;">Explorer</span>
 
-  <!-- Dropdown meni -->
   <span class="spacer"></span>
 
+  <!-- AUTHOR MENU -->
   <button mat-button [matMenuTriggerFor]="toursMenu" *ngIf="isLoggedIn && currentUserRole === 'TourAuthor'">
-    Ture
+    Tours
   </button>
-
   <mat-menu #toursMenu="matMenu">
-    <button mat-menu-item [routerLink]="['/my-tours']">Moje ture</button>
-    <button mat-menu-item [routerLink]="['create-tour']">Kreiraj turu</button>
-
+    <button mat-menu-item [routerLink]="['/my-tours']">My Tours</button>
+    <button mat-menu-item [routerLink]="['/create-tour']">Create Tour</button>
+    <button mat-menu-item [routerLink]="['/all-tours']">All Tours (Admin)</button>
+    <button mat-menu-item [routerLink]="['/public/tours']">Published Tours</button>
   </mat-menu>
 
+  <!-- TOURIST MENU -->
   <button mat-button [matMenuTriggerFor]="toursMenuForTourist" *ngIf="isLoggedIn && currentUserRole === 'Tourist'">
     Tours
   </button>
-
   <mat-menu #toursMenuForTourist="matMenu">
     <button mat-menu-item [routerLink]="['/purchased-tours']">Purchased Tours</button>
-    <button mat-menu-item [routerLink]="['/tours']">Browse Tours</button>
-
+    <button mat-menu-item [routerLink]="['/public/tours']">Published Tours</button>
   </mat-menu>
 
-  <button mat-button [matMenuTriggerFor]="blogMenu">
-    Blogovi
-  </button>
-
+  <!-- BLOGS -->
+  <button mat-button [matMenuTriggerFor]="blogMenu">Blogs</button>
   <mat-menu #blogMenu="matMenu">
-    <button mat-menu-item [routerLink]="['/blogs']">Svi blogovi</button>
-    <button mat-menu-item [routerLink]="['/blogs/create']">Dodaj blog</button>
-        <button mat-menu-item [routerLink]="['/recommendations']">Preporuceni korisnici </button>
-        <button mat-menu-item [routerLink]="['/following-blogs']">Praceni blogovi</button>
-
-
-
+    <button mat-menu-item [routerLink]="['/blogs']">All Blogs</button>
+    <button mat-menu-item [routerLink]="['/blogs/create']">Create Blog</button>
+    <button mat-menu-item [routerLink]="['/recommendations']">Recommended Users</button>
+    <button mat-menu-item [routerLink]="['/following-blogs']">Followed Blogs</button>
   </mat-menu>
 
-    <button 
-    mat-raised-button 
-    *ngIf="isLoggedIn && currentUserRole === 'Tourist'" 
-    routerLink="/tours" 
-    style="margin-left: 8px;" 
+  <!-- QUICK ACTION -->
+  <button
+    mat-raised-button
+    *ngIf="isLoggedIn && currentUserRole === 'Tourist'"
+    routerLink="/public/tours"
+    style="margin-left: 8px;"
     color="accent">
-    Objavljene ture
+    Published Tours
   </button>
 
-  <!-- Ostala dugmad -->
+  <!-- AUTH -->
   <button mat-raised-button *ngIf="!isLoggedIn" routerLink="/login" style="margin-left: 8px;" color="accent">Login</button>
   <button mat-raised-button *ngIf="isLoggedIn" (click)="logout()" style="margin-left: 8px;" color="accent">Logout</button>
   <button mat-raised-button *ngIf="isLoggedIn && currentUserRole !== 'Administrator'" routerLink="/profile" style="margin-left: 8px;" color="accent">Profile</button>
-  <button mat-raised-button *ngIf="isLoggedIn && currentUserRole === 'Administrator'" color="accent" routerLink="/admin/users" style="margin-left: 8px;" >Users</button>
-  <button mat-icon-button 
-        *ngIf="isLoggedIn && currentUserRole === 'Tourist'" 
-        routerLink="/cart" 
-        style="margin-left: 8px;" routerLine="/cart" color="accent">
-  <mat-icon>shopping_cart</mat-icon>
-</button>
+  <button mat-raised-button *ngIf="isLoggedIn && currentUserRole === 'Administrator'" color="accent" routerLink="/admin/users" style="margin-left: 8px;">Users</button>
 
+  <button
+    mat-icon-button
+    *ngIf="isLoggedIn && currentUserRole === 'Tourist'"
+    routerLink="/cart"
+    style="margin-left: 8px;"
+    color="accent">
+    <mat-icon>shopping_cart</mat-icon>
+  </button>
 </mat-toolbar>
 
 <router-outlet></router-outlet>
 <xp-position-fab></xp-position-fab>
-

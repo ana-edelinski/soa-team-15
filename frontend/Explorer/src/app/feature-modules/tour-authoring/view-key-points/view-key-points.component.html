@@ -50,6 +50,16 @@
 
 
         </div>
+
+        <div class="status-meta" *ngIf="tour?.publishedTime || tour?.archiveTime">
+          <ng-container *ngIf="tour?.publishedTime">
+            <span class="time-pill">Published: {{ tour.publishedTime | date:'short' }}</span>
+          </ng-container>
+          <ng-container *ngIf="tour?.archiveTime">
+            <span class="time-pill">Archived: {{ tour.archiveTime | date:'short' }}</span>
+          </ng-container>
+        </div>
+
         <div class="tags-wrap" *ngIf="tour?.tags?.length">
           <div class="tags-label">Tagovi</div>
           <div class="tags-row">

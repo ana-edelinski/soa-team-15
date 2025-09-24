@@ -13,6 +13,6 @@
         List<Tour> GetPublished();
 
         void RemoveTransportTime(TourTransportTime transportTime);
-
+        List<Tour> GetAllIncludingUnpublished();
     }
 }

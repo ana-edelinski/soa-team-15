@@ -1,0 +1,33 @@
+<div class="all-tours-page">
+  <h2 class="page-title">All Tours</h2>
+
+  <div *ngIf="loading && !error" class="state">Učitavam…</div>
+  <div *ngIf="error" class="state error">{{ error }}</div>
+  <div *ngIf="!loading && !error && (tours?.length ?? 0) === 0" class="state">Nema tura.</div>
+
+  <div class="cards" *ngIf="!loading && !error && (tours?.length ?? 0) > 0">
+    <article class="tour-card" *ngFor="let t of tours; trackBy: trackById">
+      <header class="card-header">
+        <h3 class="tour-title">{{ t?.name }}</h3>
+        <div class="tour-subtitle">Difficulty: {{ t?.difficulty || 'n/a' }}</div>
+      </header>
+
+      <ul class="facts">
+        <li class="fact"><span class="label"> {{ t?.name }} </span></li>
+        <li class="fact"><span class="label">Price:</span> <span class="value">{{ t?.price ?? 0 }} $</span></li>
+        <li class="fact">
+          <span class="label">Status:</span>
+          <span class="value">
+            {{ t?.status === 1 ? 'Published' : t?.status === 0 ? 'Draft' : t?.status === 2 ? 'Archived' : ('Status ' + (t?.status ?? 'n/a')) }}
+          </span>
+        </li>
+      </ul>
+
+      <a class="view-link" (click)="t?.id!=null && goToKeyPoints(t.id!)">View Key Points</a>
+
+      <div class="actions">
+        <button class="btn" [disabled]="t?.id == null">Leave a review</button>
+      </div>
+    </article>
+  </div>
+</div>

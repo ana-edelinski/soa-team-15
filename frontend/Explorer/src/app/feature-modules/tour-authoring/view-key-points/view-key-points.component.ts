@@ -7,6 +7,7 @@ import { Tour } from '../model/tour.model';
 import { TransportTimeDto, TransportType } from '../tour.service';
 
 import { finalize } from 'rxjs/operators';
+import { TokenStorage } from 'src/app/infrastructure/auth/jwt/token.service';
 
 @Component({
   selector: 'app-view-key-points',
@@ -82,12 +83,19 @@ export class ViewKeyPointsComponent implements OnInit, AfterViewInit, OnDestroy 
   constructor(
     private elementRef: ElementRef,
     private route: ActivatedRoute,
-    private tourService: TourService
+    private tourService: TourService,
+    private tokenStorage: TokenStorage,
+    
   ) {}
 
   /** Učitavanje podataka ide u OnInit */
   ngOnInit(): void {
-    this.currentUserId = this.readUserIdFromLocalStorageDirect();
+        console.log('Current user ID:', this.currentUserId);
+
+     this.extractCurrentUserIdFromJwt();
+    console.log('Current user ID:', this.currentUserId);
+
+
 
 
     const tourId = this.route.snapshot.paramMap.get('id');
@@ -155,6 +163,48 @@ export class ViewKeyPointsComponent implements OnInit, AfterViewInit, OnDestroy 
       
   }
 
+    private extractCurrentUserIdFromJwt(): void {
+    const token = this.tokenStorage.getAccessToken?.();
+    if (!token) {
+      this.currentUserId = null;
+      return;
+    }
+    try {
+      const payloadBase64 = token.split('.')[1]
+        .replace(/-/g, '+')
+        .replace(/_/g, '/');
+      const json = JSON.parse(atob(payloadBase64));
+      // pokrivamo razne tipične ključeve
+      const candidates = ['id', 'userId', 'nameid', 'sub'];
+      for (const k of candidates) {
+        if (json?.[k] !== undefined && json?.[k] !== null) {
+          this.currentUserId = json[k];
+          break;
+        }
+      }
+    } catch {
+      this.currentUserId = null;
+    }
+  }
+
+
+
+  private refreshTourById(id: string) {
+    this.tourService.getTourById(id).subscribe({
+      next: (fresh: Tour) => {
+        // ako servis već mapira Pascal→camel, ovo je dovoljno:
+        this.tour = { ...this.tour, ...fresh };
+
+        // fallback ako backend šalje PascalCase
+        (this.tour as any).publishedTime = (fresh as any).publishedTime ?? (fresh as any).PublishedTime ?? null;
+        (this.tour as any).archiveTime   = (fresh as any).archiveTime   ?? (fresh as any).ArchiveTime   ?? null;
+      }
+    });
+  }
+
+
+
+
   /** Inicijalizacija mape ide u AfterViewInit */
   ngAfterViewInit(): void {
     this.initializeMap();
@@ -211,83 +261,87 @@ export class ViewKeyPointsComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   publish(): void {
-    if (!this.tour) return;
-    this.isPublishing = true;
-    this.publishErrors = [];
-    const id = String(this.tour.id);
+  if (!this.tour?.id) return;
+  this.isPublishing = true;
+  this.publishErrors = [];
+  const id = String(this.tour.id);
 
-    this.tourService.publishTour(id)
-      .pipe(finalize(() => (this.isPublishing = false)))
-      .subscribe({
-        next: () => {
-          // 204 No Content -> samo lokalno promijeni status
-          if (typeof (this.tour as any).status === 'number') {
-            (this.tour as any).status = this.STATUS.PUBLISHED;
-          } else {
-            (this.tour as any).status = 'Published';
-          }
-        },
-        error: (err) => {
-          const s = err?.error;
-          this.publishErrors =
-            (s?.errors && Array.isArray(s.errors) && s.errors.length ? s.errors : null)
-            ?? (s?.detail ? [s.detail] : null)
-            ?? (typeof s === 'string' ? [s] : ['Neuspjelo objavljivanje.']);
+  this.tourService.publishTour(id)
+    .pipe(finalize(() => (this.isPublishing = false)))
+    .subscribe({
+      next: (res: any) => {
+        // status lokalno
+        (this.tour as any).status = this.STATUS.PUBLISHED;
+        // ako API vraća { publishedTime }, upiši; u suprotnom refetch
+        if (res?.publishedTime) {
+          (this.tour as any).publishedTime = res.publishedTime;
+          (this.tour as any).archiveTime = null;
+        } else {
+          this.refreshTourById(id);
         }
-      });
-  }
+      },
+      error: (err) => {
+        const s = err?.error;
+        this.publishErrors =
+          (s?.errors && Array.isArray(s.errors) && s.errors.length ? s.errors : null)
+          ?? (s?.detail ? [s.detail] : null)
+          ?? (typeof s === 'string' ? [s] : ['Neuspjelo objavljivanje.']);
+      }
+    });
+}
 
-  archive(): void {
-    if (!this.tour) return;
-    this.isPublishing = true;
-    this.publishErrors = [];
-    const id = String(this.tour.id);
+archive(): void {
+  if (!this.tour?.id) return;
+  this.isPublishing = true;
+  this.publishErrors = [];
+  const id = String(this.tour.id);
 
-    this.tourService.archiveTour(id)
-      .pipe(finalize(() => (this.isPublishing = false)))
-      .subscribe({
-        next: () => {
-          if (typeof (this.tour as any).status === 'number') {
-            (this.tour as any).status = this.STATUS.ARCHIVED;
-          } else {
-            (this.tour as any).status = 'Archived';
-          }
-        },
-        error: (err) => {
-          const s = err?.error;
-          this.publishErrors =
-            (s?.errors && Array.isArray(s.errors) && s.errors.length ? s.errors : null)
-            ?? (s?.detail ? [s.detail] : null)
-            ?? (typeof s === 'string' ? [s] : ['Neuspjelo arhiviranje.']);
+  this.tourService.archiveTour(id)
+    .pipe(finalize(() => (this.isPublishing = false)))
+    .subscribe({
+      next: (res: any) => {
+        (this.tour as any).status = this.STATUS.ARCHIVED;
+        if (res?.archiveTime) {
+          (this.tour as any).archiveTime = res.archiveTime;
+        } else {
+          this.refreshTourById(id);
         }
-      });
-  }
+      },
+      error: (err) => {
+        const s = err?.error;
+        this.publishErrors =
+          (s?.errors && Array.isArray(s.errors) && s.errors.length ? s.errors : null)
+          ?? (s?.detail ? [s.detail] : null)
+          ?? (typeof s === 'string' ? [s] : ['Neuspjelo arhiviranje.']);
+      }
+    });
+}
 
-  reactivate(): void {
-    if (!this.tour) return;
-    this.isPublishing = true;
-    this.publishErrors = [];
-    const id = String(this.tour.id);
+reactivate(): void {
+  if (!this.tour?.id) return;
+  this.isPublishing = true;
+  this.publishErrors = [];
+  const id = String(this.tour.id);
 
-    this.tourService.reactivateTour(id)
-      .pipe(finalize(() => (this.isPublishing = false)))
-      .subscribe({
-        next: () => {
-          if (typeof (this.tour as any).status === 'number') {
-            (this.tour as any).status = this.STATUS.PUBLISHED;
-          } else {
-            (this.tour as any).status = 'Published';
-          }
-        },
-        error: (err) => {
-          const s = err?.error;
-          this.publishErrors =
-            (s?.errors && Array.isArray(s.errors) && s.errors.length ? s.errors : null)
-            ?? (s?.detail ? [s.detail] : null)
-            ?? (typeof s === 'string' ? [s] : ['Neuspjela reaktivacija.']);
-        }
-      });
-  }
+  this.tourService.reactivateTour(id)
+    .pipe(finalize(() => (this.isPublishing = false)))
+    .subscribe({
+      next: () => {
+        (this.tour as any).status = this.STATUS.PUBLISHED;
+        // reaktivacija briše archiveTime; za svaki slučaj i refetch
+        (this.tour as any).archiveTime = null;
+        this.refreshTourById(id);
+      },
+      error: (err) => {
+        const s = err?.error;
+        this.publishErrors =
+          (s?.errors && Array.isArray(s.errors) && s.errors.length ? s.errors : null)
+          ?? (s?.detail ? [s.detail] : null)
+          ?? (typeof s === 'string' ? [s] : ['Neuspjela reaktivacija.']);
+      }
+    });
+}
+
   // ---------- MAPA ----------
 
   private initializeMap(): void {
@@ -388,26 +442,12 @@ private base64UrlDecode(input: string): string {
   );
 }
 
-private readUserIdFromJwtInLocalStorage(): number | null {
-  // probaj više tipičnih ključeva
-  const keys = ['access_token', 'accessToken', 'jwt', 'token'];
-  let raw: string | null = null;
-  for (const k of keys) { raw = localStorage.getItem(k); if (raw) break; }
-  if (!raw) return null;
-
-  const parts = raw.split('.');
-  if (parts.length < 2) return null;
-  try {
-    const payload = JSON.parse(this.base64UrlDecode(parts[1]));
-    const id = payload?.id ?? payload?.sub ?? payload?.nameid ?? payload?.NameId;
-    return id != null ? Number(id) : null;
-  } catch {
-    return null;
-  }
-}
 private readUserIdFromLocalStorageDirect(): number | null {
+
   // ako si negdje direktno snimila userId poslije login-a
   const raw = localStorage.getItem('userId') ?? localStorage.getItem('currentUserId');
+  console.log('LOCAL STORAGE user ID:', this.currentUserId);
+
   return raw != null ? Number(raw) : null;
 }
 

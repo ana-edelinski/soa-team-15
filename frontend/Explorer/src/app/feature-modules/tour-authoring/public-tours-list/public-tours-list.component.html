@@ -1,0 +1,36 @@
+<div class="page pretty">
+  <h2 class="page-title">Published tours</h2>
+
+  <div *ngIf="loading" class="state">Loading…</div>
+  <div *ngIf="!loading && error" class="state err">{{ error }}</div>
+  <div *ngIf="!loading && !error && (!tours || !tours.length)" class="state">No published tours.</div>
+
+  <div class="cards" *ngIf="!loading && !error && tours?.length">
+    <article class="card" *ngFor="let t of tours; trackBy: trackById">
+      <header class="head">
+        <h3 class="title">{{ t?.name }}</h3>
+        <span class="chip">{{ t?.difficulty || 'n/a' }}</span>
+      </header>
+
+      <ul class="facts">
+        <li><i></i><span class="k">Price</span><span class="v">{{ (t?.price ?? 0) | number:'1.0-2' }} €</span></li>
+        <li><i></i><span class="k">Length</span><span class="v">{{ (t?.lengthInKm ?? 0) | number:'1.1-1' }} km</span></li>
+        <li *ngIf="t?.publishedAt"><i></i><span class="k">Published</span><span class="v">{{ t.publishedAt | date:'short' }}</span></li>
+      </ul>
+
+      <section class="kp" *ngIf="t?.firstKeyPoint as kp">
+        <div class="kp-head">
+          <div class="bar"></div>
+          <div class="kp-title">First key point</div>
+        </div>
+        <div class="kp-name">{{ kp?.name }}</div>
+        <div class="kp-geo">📍 Lat {{ kp?.latitude | number:'1.5-5' }}, Lng {{ kp?.longitude | number:'1.5-5' }}</div>
+        <div class="kp-desc" *ngIf="kp?.description && kp.description !== kp.name">{{ kp.description }}</div>
+      </section>
+
+      <div class="actions">
+        <a class="btn" [routerLink]="['/public/tours', t?.id]"><span>Open</span></a>
+      </div>
+    </article>
+  </div>
+</div>

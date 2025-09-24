@@ -1,0 +1,113 @@
+<div class="vk-page">
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-inner">
+      <div class="hero-title">
+        <h1 class="title">{{ tour?.name || '—' }}</h1>
+        <span class="status-chip chip-published">Published</span>
+      </div>
+
+      <!-- published time -->
+      <div class="status-meta" *ngIf="tour?.publishedAt">
+        <span class="time-pill">Published: {{ tour?.publishedAt | date:'short' }}</span>
+      </div>
+
+      <!-- TAGS -->
+      <div class="tags-wrap" *ngIf="tour?.tags?.length">
+        <div class="tags-label">Tags</div>
+        <div class="tags-row">
+          <span class="tag-chip" *ngFor="let t of tour!.tags">{{ formatTag(t) }}</span>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-label">Difficulty</div>
+          <div class="stat-value">{{ tour?.difficulty || '—' }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Price</div>
+          <div class="stat-value">{{ (tour?.price ?? 0) | number:'1.0-2' }} €</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Key points</div>
+          <div class="stat-value">{{ tour?.firstKeyPoint ? 1 : 0 }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Length</div>
+          <div class="stat-value">{{ (tour?.lengthInKm ?? 0) | number:'1.1-1' }} km</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="vk-container">
+    <!-- LEFT: INFO -->
+    <aside class="info-col">
+      <!-- description -->
+      <div class="card tour-card">
+        <h3>About the tour</h3>
+        <p class="desc">{{ tour?.description || 'No description.' }}</p>
+      </div>
+
+      <!-- timeline with EXACTLY 1 item -->
+      <div class="card">
+        <div class="list-header">
+          <h3 class="subtitle">Key points ({{ tour?.firstKeyPoint ? 1 : 0 }})</h3>
+        </div>
+
+        <div class="empty-state" *ngIf="!tour?.firstKeyPoint">
+          <div class="empty-ill">🗺️</div>
+          <div class="empty-title">No key points</div>
+          <div class="empty-text">Only the first key point is available in public view.</div>
+        </div>
+
+        <ul class="kp-timeline" *ngIf="tour?.firstKeyPoint as kp">
+          <li class="kp-row" (click)="focusFirst()">
+            <div class="dot"></div>
+            <div class="kp-card">
+              <div class="kp-head">
+                <div class="kp-title">
+                  <strong>{{ kp.name || 'Untitled' }}</strong>
+                  <span class="kp-geo">
+                    Lat {{ kp.latitude | number:'1.6-6' }} · Lng {{ kp.longitude | number:'1.6-6' }}
+                  </span>
+                </div>
+                <button
+                  class="kp-zoom"
+                  type="button"
+                  (click)="focusFirst(); $event.stopPropagation()">
+                  Show on map
+                </button>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- RIGHT: MAP (sticky) -->
+    <section class="map-col">
+      <div class="map-card">
+        <div id="pub-map" class="map"></div>
+
+        <div class="map-overlay" *ngIf="loading">
+          <div class="spinner"></div>
+          <div>Loading…</div>
+        </div>
+
+        <div class="map-error" *ngIf="error">{{ error }}</div>
+
+        <div class="map-legend" *ngIf="tour?.firstKeyPoint">
+          <div class="legend-dot"></div>
+          <span>1 route point</span>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

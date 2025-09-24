@@ -116,15 +116,37 @@ services:
       - blog-service
     networks:
       - database
-  # 🔹 NEW: Tours Service (API)
+
+
+  loki:
+    image: grafana/loki:2.9.8
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+    networks: [observability]
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    ports:
+      - "3000:3000"
+    depends_on: [loki] 
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks: [observability]
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./provisioning/datasources:/etc/grafana/provisioning/datasources
+
   tours-service:
     build:
-      dockerfile:  ./tours-service/Dockerfile
+      dockerfile: ./tours-service/Dockerfile
       context: .
       target: final
     restart: on-failure
     networks:
       - database
+      - observability      
     ports:
       - "8082:80"
     environment:
@@ -134,10 +156,13 @@ services:
       - DATABASE_PASSWORD=super
       - DATABASE_USER=postgres
       - DATABASE_NAME=toursdb
+
+      - Logging__Loki__Url=http://loki:3100  
     depends_on:
       - tours-db
+      - loki                 
 
-  # 🔹 NEW: Tours Database
+
   tours-db:
     image: postgres:13
     restart: always
@@ -207,8 +232,10 @@ volumes:
   neo4j_plugins:
   neo4j_import:
   blogmongo:
+  grafana-data: {}
 
 networks:
   database:
     name: database
     driver: bridge
+  observability: {}

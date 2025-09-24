@@ -19,6 +19,9 @@ import { CartComponent } from 'src/app/feature-modules/payments/cart/cart.compon
 import { PurchasedToursComponent } from 'src/app/feature-modules/tour-execution/purchased-tours/purchased-tours.component';
 import { FollowersRecommendationsComponent } from 'src/app/blog/recommendation/followers-recommendations/followers-recommendations.component';
 import { FollowingBlogsComponent } from 'src/app/blog/list/following-blogs/following-blogs.component';
+import { ToursListComponent } from 'src/app/feature-modules/tour-authoring/all-tours/tours-list.component';
+import { PublicToursListComponent } from 'src/app/feature-modules/tour-authoring/public-tours-list/public-tours-list.component';
+import { PublicTourDetailComponent } from 'src/app/feature-modules/tour-authoring/public-tour-detail/public-tour-detail.component';
 
 
 const routes: Routes = [
@@ -40,9 +43,10 @@ const routes: Routes = [
   { path: 'tours/:id/key-points/view', component: ViewKeyPointsComponent},
   { path: 'cart', component: CartComponent },
   { path: 'recommendations', component: FollowersRecommendationsComponent },
-    { path: 'following-blogs', component: FollowingBlogsComponent },
-
-
+  { path: 'following-blogs', component: FollowingBlogsComponent },
+  { path: 'all-tours', component: ToursListComponent },
+  { path: 'public/tours', component: PublicToursListComponent },
+  { path: 'public/tours/:id', component: PublicTourDetailComponent },
 ];
 
 @NgModule({

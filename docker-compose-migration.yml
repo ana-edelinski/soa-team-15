@@ -5,7 +5,7 @@ services:
     build:
       context: ./stakeholders-service
       dockerfile: Dockerfile
-      target: execute-migration
+      target: migration-base
     networks:
       - database
     environment:
@@ -15,13 +15,16 @@ services:
       - DATABASE_PASSWORD=super
       - DATABASE_USER=postgres
       - DATABASE_SCHEMA=stakeholdersdb
+    volumes:
+      - ./:/src
+    working_dir: /src/stakeholders-service/StakeholdersService
 
   
   tours-migration:
     build:
       context: ./tours-service
       dockerfile: Dockerfile
-      target: execute-migration
+      target: migration-base
     networks:
       - database
     environment:
@@ -31,6 +34,9 @@ services:
       - DATABASE_PASSWORD=super
       - DATABASE_USER=postgres
       - DATABASE_SCHEMA=toursdb
+    volumes:
+      - ./:/src
+    working_dir: /src/tours-service/ToursService
 
 networks:
   database:

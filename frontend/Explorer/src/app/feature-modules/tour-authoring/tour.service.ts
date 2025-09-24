@@ -4,7 +4,7 @@ import { Observable, Subject } from "rxjs";
 import { Tour } from "./model/tour.model";
 import { environment } from "src/env/environment";
 import { KeyPoint } from "./model/keypoint.model";
-
+import { PublicTour } from './model/tour-public.model'; // ⬅ importaj model
 import { firstValueFrom } from 'rxjs';
 
 
@@ -38,6 +38,8 @@ export interface TransportTimeDto {
     getPublishedTours(): Observable<Tour[]> {
       return this.http.get<Tour[]>(`${this.baseUrl}author/tour/published`);
     }
+
+   
 
 
     addKeyPoint(tourId: string, keyPoint: KeyPoint): Observable<any> {
@@ -144,10 +146,19 @@ export interface TransportTimeDto {
       }
 
 
-      getMe() {
-      return this.http.get<{ id: number; role?: string; username?: string }>(
-        `${this.baseUrl}users/me`,
-        { withCredentials: true } 
-      );
-    }
+      getToursByUserId(userId: number): Observable<Tour[]> {
+        return this.http.get<Tour[]>(`${this.baseUrl}/${userId}`);
+      }
+
+      getAllIncludingUnpublished(): Observable<Tour[]> {
+        return this.http.get<Tour[]>(`${this.baseUrl}author/tour/all-with-unpublished`); // ✅
+      }
+
+
+
+
+      getPublicTours() { return this.http.get<PublicTour[]>(`${this.baseUrl}public/tours`); }
+      getPublicTourById(id: number | string) { return this.http.get<PublicTour>(`${this.baseUrl}public/tours/${id}`); }
+
+
   }

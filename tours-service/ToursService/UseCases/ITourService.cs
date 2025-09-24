@@ -17,8 +17,14 @@ namespace ToursService.UseCases
         Result Reactivate(long tourId, long authorId);
         Result<TourDto> GetById(long tourId);
 
-         Result<double> UpdateTourKM(long tourId, List<KeyPointDto> keyPoints);
+        Result<double> UpdateTourKM(long tourId, List<KeyPointDto> keyPoints);
+        Result<List<TourDto>> GetAll();
+        Result<List<TourDto>> GetAllIncludingUnpublished();
 
+
+
+        Result<List<TourPublicDto>> GetPublishedPublic();
+        Result<TourPublicDto> GetPublicTour(long tourId);
 
     }
 }

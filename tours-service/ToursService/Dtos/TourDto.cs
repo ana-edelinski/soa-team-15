@@ -11,23 +11,25 @@
         public double Price { get; set; }
         public long UserId { get; set; }
 
-        
         //public DateTime PublishedTime { get; set; }
         //public DateTime ArchiveTime { get; set; }
         //public ICollection<KeyPointDto> KeyPoints { get; set; } = new List<KeyPointDto>();
+
+        public DateTime? PublishedTime { get; set; }
+        public DateTime? ArchiveTime { get; set; }
+        // 👇 NOVO — ovo traži tvoj front
         public double LengthInKm { get; set; }
         public int? DurationMinutes { get; set; }
         public string? StartPointName { get; set; }
         public List<string> PreviewImages { get; set; } = new();
+
 
         public List<KeyPointBriefDto>? KeyPoints { get; set; }
 
 
         public TourDto() { }
 
-        public TourDto(long id, string name, string description, string difficulty, List<TourTags> tags, long userId, TourStatus status, double price, double lengthInKm, DateTime publishedTime, DateTime archivedTime,List<long> keyPointIds)
-
-
+     
         public TourDto(long id, string name, string? description, string? difficulty,
                        List<TourTags> tags, long userId, TourStatus status, double price)
         {
@@ -44,7 +46,7 @@
             Status = status;
             Price = price;
 
-            LengthInKm = lengthInKm;
+           // LengthInKm = lengthInKm;
             //PublishedTime = publishedTime;
             //ArchiveTime = archivedTime;
 
@@ -74,6 +76,30 @@
             LengthInKm = lengthInKm;
             //PublishedTime = publishedTime;
             //ArchiveTime = archivedTime;
+
+
+        }
+
+
+
+
+
+        public TourDto(
+            long id, string name, string? description, string? difficulty,
+            List<TourTags> tags, long userId, TourStatus status, double price,
+            double lengthInKm, DateTime? publishedTime, DateTime? archiveTime)
+        {
+            Id = id;
+            Name = name ?? string.Empty;
+            Description = description;
+            Difficulty = difficulty;
+            Tags = tags ?? new();
+            UserId = userId;
+            Status = status;
+            Price = price;
+            LengthInKm = lengthInKm;
+            PublishedTime = publishedTime;   // nullable → nullable
+            ArchiveTime   = archiveTime;     // nullable → nullable
         }
     }
 

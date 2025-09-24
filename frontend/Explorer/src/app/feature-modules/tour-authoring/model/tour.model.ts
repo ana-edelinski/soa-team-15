@@ -12,8 +12,8 @@ export interface Tour {
     originalPrice?: number; 
     userId: number;
     lengthInKm?: number;
-    publishedTime?: Date;
-    archiveTime?: Date;
+    publishedTime?: string | null;
+    archiveTime?: string | null;
     // equipmentIds: number[] | null; 
     // keyPoints: KeyPoint[];
        // već postoji u .NET modelu

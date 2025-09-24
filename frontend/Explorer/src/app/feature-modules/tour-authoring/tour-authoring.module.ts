@@ -29,6 +29,9 @@ import { MyToursComponent } from './my-tours/my-tours.component';
 import { ReviewDialogComponent } from './review-dialog/review-dialog.component';
 import { CreateKeyPointsComponent } from './create-key-points/create-key-points.component';
 import { ViewKeyPointsComponent } from './view-key-points/view-key-points.component';
+import { ToursListComponent } from './all-tours/tours-list.component';
+import { PublicToursListComponent } from 'src/app/feature-modules/tour-authoring/public-tours-list/public-tours-list.component';
+import { PublicTourDetailComponent } from 'src/app/feature-modules/tour-authoring/public-tour-detail/public-tour-detail.component';
 
 
 @NgModule({
@@ -37,7 +40,10 @@ import { ViewKeyPointsComponent } from './view-key-points/view-key-points.compon
     MyToursComponent,    
     CreateKeyPointsComponent,    
     ViewKeyPointsComponent,
-    ReviewDialogComponent
+    ReviewDialogComponent,
+    ToursListComponent,
+    PublicToursListComponent,
+    PublicTourDetailComponent,
   ],
   imports: [
     MatFormFieldModule,

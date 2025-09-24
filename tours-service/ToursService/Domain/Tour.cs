@@ -35,19 +35,20 @@ namespace ToursService.Domain
             Name = name;
             Description = description;
             Difficulty = difficulty;
-            if (tags == null || tags.Count == 0)
-            { tags = new List<TourTags>(); }
-            Tags = tags;
-            if (userId <= 0)
-                throw new ArgumentException("Invalid UserId. UserId must be a positive number.");
+            Tags = tags ?? new List<TourTags>();
+            if (userId <= 0) throw new ArgumentException("Invalid UserId.");
             UserId = userId;
+
             Status = TourStatus.Draft;
             Price = price;
-            PublishedTime = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
-            ArchiveTime = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
-            
 
+            // KLJUČNO: kolona je NOT NULL → NIKAD null
+            PublishedTime = DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
+
+            // Ovo je nullable, smije biti null
+            ArchiveTime = null;
         }
+
 
 
         //TODO: kada se obrise tura, pozziva se i brisanje ovoga

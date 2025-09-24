@@ -13,12 +13,14 @@ namespace ToursService.UseCases
         private readonly ITourRepository _tourRepository;
         private readonly IKeyPointRepository _keyPointRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger<TourService> _log;
 
-        public TourService(ITourRepository tourRepository, IMapper mapper, IKeyPointRepository keyPointRepository)
+        public TourService(ITourRepository tourRepository, IMapper mapper, IKeyPointRepository keyPointRepository, ILogger<TourService> log)
         {
             _tourRepository = tourRepository;
             _keyPointRepository = keyPointRepository;
             _mapper = mapper;
+            _log = log;
         }
 
         public Result<TourDto> GetById(long tourId)
@@ -54,7 +56,9 @@ namespace ToursService.UseCases
                 UserId      = t.UserId,
                 Status      = dtoStatus,
                 Price       = t.Price,
-                LengthInKm  = t.LengthInKm
+                LengthInKm  = t.LengthInKm,
+                PublishedTime = t.PublishedTime,
+                ArchiveTime   = t.ArchiveTime
             };
 
             return Result.Ok(dto);
@@ -62,6 +66,7 @@ namespace ToursService.UseCases
 
        public Result<double> UpdateTourKM(long tourId, List<KeyPointDto> _)
         {
+            
             try
             {
                 var tour = _tourRepository.GetById(tourId);
@@ -106,6 +111,10 @@ namespace ToursService.UseCases
 
         public Result<List<KeyPointDto>> GetKeyPointsByTour(long tourId)
         {
+
+             _log.LogInformation("GetKeyPointsByTour called {@Payload}", new { tourId });
+
+             
             try
             {
 
@@ -134,6 +143,16 @@ namespace ToursService.UseCases
 
         public Result<KeyPointDto> AddKeyPoint(long tourId, KeyPointDto keyPointDto)
         {
+
+             _log.LogInformation("AddKeyPoint called {@Payload}", new
+            {
+                tourId,
+                keyPointDto?.Name,
+                keyPointDto?.Latitude,
+                keyPointDto?.Longitude
+            });
+
+
             try
             {
                 KeyPoint keyPoint = _mapper.Map<KeyPoint>(keyPointDto);
@@ -212,6 +231,8 @@ namespace ToursService.UseCases
                     Status = (ToursService.Dtos.TourStatus)t.Status,
                     Price = t.Price,
                     LengthInKm = t.LengthInKm,
+                    PublishedTime = t.PublishedTime,
+                    ArchiveTime   = t.ArchiveTime
                     //KeyPoints = t.KeyPoints.Select(kp => new KeyPointDto
                     //{
                     //    Id = kp.Id,
@@ -230,6 +251,67 @@ namespace ToursService.UseCases
 
             }
         }
+
+
+
+
+        
+
+
+
+
+
+
+
+        public Result<List<TourPublicDto>> GetPublishedPublic()
+            {
+                var tours = _tourRepository.GetPublished();
+                var list = new List<TourPublicDto>();
+
+                foreach (var t in tours)
+                {
+                    var first = _keyPointRepository.GetByTour(t.Id)?
+                        .OrderBy(kp => kp.Id)
+                        .Select(kp => new KeyPointDto
+                        {
+                            Id = kp.Id,
+                            Name = kp.Name,
+                            Latitude = kp.Latitude,
+                            Longitude = kp.Longitude,
+                            Description = kp.Description,
+                            Image = kp.Image,
+                            UserId = kp.UserId, // možeš izbaciti ako ne želiš
+                            TourId = kp.TourId
+                        })
+                        .FirstOrDefault();
+
+                    list.Add(new TourPublicDto
+                    {
+                        Id = t.Id,
+                        Name = t.Name,
+                        Description = t.Description,
+                        Difficulty = t.Difficulty,
+                        Tags = t.Tags.Select(tag => (ToursService.Dtos.TourTags)tag).ToList(),
+                        Price = t.Price,
+                        LengthInKm = t.LengthInKm,
+                        PublishedAt = t.PublishedTime,   // mapiraš na DTO PublishedAt
+                        FirstKeyPoint = first
+                    });
+                }
+
+                return Result.Ok(list);
+            }
+
+
+
+
+
+
+
+
+
+
+
         public Result<List<TourDto>> GetPublished()
         {
             try
@@ -270,7 +352,9 @@ namespace ToursService.UseCases
                         LengthInKm = t.LengthInKm,
                         DurationMinutes = durationMinutes,
                         StartPointName = first?.Name,
-                        PreviewImages = previewImages
+                        PreviewImages = previewImages,
+                        PublishedTime = t.PublishedTime,
+                        ArchiveTime   = t.ArchiveTime
                     });
                 }
 
@@ -348,6 +432,86 @@ namespace ToursService.UseCases
 
             return Result.Ok(dto);
         }
+
+
+
+
+
+
+        public Result<List<TourDto>> GetAll()
+        {
+            try
+            {
+                var tours = _tourRepository.GetAll(); // već postoji u TourRepository
+                var dtos = tours.Select(t => _mapper.Map<TourDto>(t)).ToList();
+                return Result.Ok(dtos);
+            }
+            catch (Exception ex)
+            {
+                return Result.Fail(new Error(ex.Message));
+            }
+        }
+
+
+
+        public Result<List<TourDto>> GetAllIncludingUnpublished()
+        {
+            try
+            {
+                var tours = _tourRepository.GetAllIncludingUnpublished();
+                var dtos = tours.Select(t => _mapper.Map<TourDto>(t)).ToList();
+                return Result.Ok(dtos);
+            }
+            catch (Exception ex)
+            {
+                return Result.Fail(new Error(ex.Message));
+            }
+        }
+
+
+
+
+        public Result<TourPublicDto> GetPublicTour(long tourId)
+        {
+
+              _log.LogInformation("Tour is published {@Payload}", new { tourId });
+
+            var t = _tourRepository.GetById(tourId);
+            if (t is null || t.Status != Domain.TourStatus.Published)
+                return Result.Fail<TourPublicDto>("Tour not found.");
+
+            var first = _keyPointRepository.GetByTour(t.Id)?
+                .OrderBy(k => k.Id)
+                .Select(kp => new KeyPointDto
+                {
+                    Id = kp.Id,
+                    Name = kp.Name,
+                    Latitude = kp.Latitude,
+                    Longitude = kp.Longitude,
+                    Description = kp.Description,
+                    Image = kp.Image,
+                    UserId = kp.UserId,
+                    TourId = kp.TourId
+                })
+                .FirstOrDefault();
+
+            var dto = new TourPublicDto
+            {
+                Id = t.Id,
+                Name = t.Name,
+                Description = t.Description,
+                Difficulty = t.Difficulty,
+                Tags = t.Tags.Select(tag => (ToursService.Dtos.TourTags)tag).ToList(),
+                Price = t.Price,
+                LengthInKm = t.LengthInKm,
+                PublishedAt = t.PublishedTime,
+                FirstKeyPoint = first
+            };
+            return Result.Ok(dto);
+        }
+
+
+
     }
 
 }

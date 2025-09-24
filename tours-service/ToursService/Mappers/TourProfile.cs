@@ -36,6 +36,10 @@ namespace ToursService.Mappers
                 .ForMember(k => k.UserId, opt => opt.Ignore()); // Set from claim if needed
 
             CreateMap<KeyPoint, KeyPointDto>();
+
+
+            CreateMap<Tour, TourDto>()
+            .ForMember(d => d.KeyPoints, o => o.Ignore());
         }
     }
 }
